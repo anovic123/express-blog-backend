@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.blogValidators = exports.findBlogValidator = exports.websiteUrlValidator = exports.descriptionValidator = void 0;
 const express_validator_1 = require("express-validator");
 const inputCheckErrorsMiddleware_1 = require("../../../global-middlewares/inputCheckErrorsMiddleware");
+const blogsRepository_1 = require("../blogsRepository");
 const admin_middleware_1 = require("../../../global-middlewares/admin-middleware");
 // name: string // max 15
 // description: string // max 500
@@ -16,7 +17,8 @@ exports.websiteUrlValidator = (0, express_validator_1.body)('websiteUrl').isStri
 const findBlogValidator = (req, res, next) => {
     (0, express_validator_1.body)('id').isString().withMessage('not id');
     const errors = (0, express_validator_1.validationResult)(req);
-    if (!req.params.id) {
+    const findExistedBlog = blogsRepository_1.blogsRepository.find(req.params.id);
+    if (!req.params.id || !findExistedBlog) {
         res.status(404).json({ messages: errors.array() });
         return;
     }

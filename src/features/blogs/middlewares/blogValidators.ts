@@ -18,7 +18,8 @@ export const websiteUrlValidator = body('websiteUrl').isString().withMessage('no
 export const findBlogValidator = (req: Request<{id: string}>, res: Response, next: NextFunction) => {
     body('id').isString().withMessage('not id')
     const errors = validationResult(req)
-    if (!req.params.id) {
+    const findExistedBlog = blogsRepository.find(req.params.id)
+    if (!req.params.id || !findExistedBlog) {
         res.status(404).json({ messages: errors.array() })
         return
     }
