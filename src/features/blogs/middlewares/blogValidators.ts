@@ -26,7 +26,6 @@ export const findBlogValidator = (req: Request<{id: string}>, res: Response, nex
     next()
 }
 
-
 export const blogValidators = [
     adminMiddleware,
 

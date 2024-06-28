@@ -24,8 +24,7 @@ exports.blogsRepository = {
         return db_1.db.blogs;
     },
     del(id) {
-        const blogRemoveRes = db_1.db.blogs.filter(el => el.id !== id);
-        return !!blogRemoveRes;
+        db_1.db.blogs.filter(el => el.id !== id);
     },
     put(blog, id) {
         const userBlog = this.find(id);
