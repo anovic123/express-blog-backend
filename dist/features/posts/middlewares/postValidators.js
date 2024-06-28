@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postValidators = exports.findPostValidator = exports.blogIdValidator = exports.contentValidator = exports.shortDescriptionValidator = exports.titleValidator = void 0;
+exports.postValidators = exports.putValidators = exports.findPostValidator = exports.blogIdValidator = exports.contentValidator = exports.shortDescriptionValidator = exports.titleValidator = void 0;
 const express_validator_1 = require("express-validator");
 const inputCheckErrorsMiddleware_1 = require("../../../global-middlewares/inputCheckErrorsMiddleware");
 const blogsRepository_1 = require("../../blogs/blogsRepository");
@@ -31,6 +31,13 @@ const findPostValidator = (req, res, next) => {
     next();
 };
 exports.findPostValidator = findPostValidator;
+exports.putValidators = [
+    admin_middleware_1.adminMiddleware,
+    exports.titleValidator,
+    exports.contentValidator,
+    exports.blogIdValidator,
+    inputCheckErrorsMiddleware_1.inputCheckErrorsMiddleware
+];
 exports.postValidators = [
     admin_middleware_1.adminMiddleware,
     exports.titleValidator,
