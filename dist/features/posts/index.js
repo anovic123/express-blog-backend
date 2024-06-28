@@ -14,4 +14,4 @@ exports.postsRouter.post('/', ...postValidators_1.postValidators, createPostCont
 exports.postsRouter.get('/', getPostsController_1.getPostsController);
 exports.postsRouter.get('/:id', postValidators_1.findPostValidator, findPostController_1.findPostController);
 exports.postsRouter.delete('/:id', admin_middleware_1.adminMiddleware, postValidators_1.findPostValidator, delPostController_1.delPostController);
-exports.postsRouter.put('/:id', admin_middleware_1.adminMiddleware, postValidators_1.findPostValidator, putPostController_1.putPostController);
+exports.postsRouter.put('/:id', admin_middleware_1.adminMiddleware, postValidators_1.findPostValidator, postValidators_1.titleValidator, postValidators_1.shortDescriptionValidator, putPostController_1.putPostController);
