@@ -24,7 +24,7 @@ export const blogsRepository = {
         return db.blogs
     },
     del(id: string) {
-        db.blogs.filter(el => el.id !== id)
+       db.blogs = db.blogs.filter(el => el.id !== id)
     },
     put(blog: BlogInputModel, id: string) {
         const userBlog = this.find(id)
