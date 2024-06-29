@@ -35,7 +35,7 @@ export const findPostValidator = (req: Request<{id: string}>, res: Response, nex
 }
 
 export const putValidators = [
-    adminMiddleware, titleValidator, shortDescriptionValidator, findPostValidator, inputCheckErrorsMiddleware
+    adminMiddleware, titleValidator, shortDescriptionValidator, contentValidator, findPostValidator, inputCheckErrorsMiddleware
 ]
 
 export const postValidators = [
