@@ -32,7 +32,7 @@ const findPostValidator = (req, res, next) => {
 };
 exports.findPostValidator = findPostValidator;
 exports.putValidators = [
-    admin_middleware_1.adminMiddleware, exports.titleValidator, exports.shortDescriptionValidator, exports.contentValidator, exports.findPostValidator, inputCheckErrorsMiddleware_1.inputCheckErrorsMiddleware
+    admin_middleware_1.adminMiddleware, exports.titleValidator, exports.shortDescriptionValidator, exports.contentValidator, exports.blogIdValidator, exports.findPostValidator, inputCheckErrorsMiddleware_1.inputCheckErrorsMiddleware
 ];
 exports.postValidators = [
     admin_middleware_1.adminMiddleware,

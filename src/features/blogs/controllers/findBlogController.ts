@@ -1,12 +1,14 @@
-import {Request, Response} from 'express'
+import { Response} from 'express'
 import {BlogViewModel} from '../../../input-output-types/blogs-types'
 import {blogsRepository} from '../blogsRepository'
+import { HTTP_STATUSES } from '../../../utils'
+import { RequestWithParams } from '../../../types'
 
-export const findBlogController = (req: Request<{id: string}>, res: Response<BlogViewModel | {}>) => {
+export const findBlogController = (req: RequestWithParams<{id: string}>, res: Response<BlogViewModel | {}>) => {
     const blogById = blogsRepository.find(req.params.id)
-    console.log(blogById)
+
     if (!blogById) {
-        res.sendStatus(404)
+        res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
         return
     }
 

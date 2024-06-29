@@ -1,15 +1,17 @@
-import {Request, Response} from 'express'
+import { Response } from 'express'
 import {blogsRepository} from '../blogsRepository'
+import { HTTP_STATUSES } from '../../../utils';
+import { RequestWithParams } from '../../../types';
 
-export const delBlogController = (req: Request<{id: string}>, res: Response) => {
+export const delBlogController = (req: RequestWithParams<{id: string}>, res: Response) => {
     const blogId = req.params.id;
     const blog = blogsRepository.find(blogId);
 
     if (!blog) {
-        return res.status(404).json({ message: 'Blog not found' });
+        return res.status(HTTP_STATUSES.NOT_FOUND_404).json({ message: 'Blog not found' });
     }
 
     blogsRepository.del(req.params.id)
 
-    return res.sendStatus(204)
+    return res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
 }

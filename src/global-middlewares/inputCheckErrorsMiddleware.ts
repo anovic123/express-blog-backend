@@ -1,6 +1,7 @@
 import {Response, Request, NextFunction} from 'express'
 import {validationResult} from 'express-validator'
 import {FieldNamesType, OutputErrorsType} from '../input-output-types/output-errors-type'
+import { HTTP_STATUSES } from '../utils'
 
 export const inputCheckErrorsMiddleware = (req: Request, res: Response<OutputErrorsType>, next: NextFunction) => {
     const e = validationResult(req)
@@ -9,7 +10,7 @@ export const inputCheckErrorsMiddleware = (req: Request, res: Response<OutputErr
         // console.log(eArray)
 
         res
-            .status(400)
+            .status(HTTP_STATUSES.BAD_REQUEST_400)
             .json({
                 errorsMessages: eArray.map(x => ({field: x.path, message: x.msg}))
             })

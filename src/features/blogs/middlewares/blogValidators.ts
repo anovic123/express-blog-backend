@@ -3,6 +3,8 @@ import {inputCheckErrorsMiddleware} from '../../../global-middlewares/inputCheck
 import {NextFunction, Request, Response} from 'express'
 import {blogsRepository} from '../blogsRepository'
 import {adminMiddleware} from '../../../global-middlewares/admin-middleware'
+import { HTTP_STATUSES } from '../../../utils'
+import { RequestWithParams } from '../../../types'
 
 // name: string // max 15
 // description: string // max 500
@@ -15,12 +17,12 @@ export const websiteUrlValidator = body('websiteUrl').isString().withMessage('no
     .trim().isURL().withMessage('not url')
     .isLength({min: 1, max: 100}).withMessage('more then 100 or 0')
 
-export const findBlogValidator = (req: Request<{id: string}>, res: Response, next: NextFunction) => {
+export const findBlogValidator = (req: RequestWithParams<{ id: string }>, res: Response, next: NextFunction) => {
     body('id').isString().withMessage('not id')
     const errors = validationResult(req)
     const findExistedBlog = blogsRepository.find(req.params.id)
     if (!req.params.id || !findExistedBlog) {
-        res.status(404).json({ messages: errors.array() })
+        res.status(HTTP_STATUSES.NOT_FOUND_404).json({ messages: errors.array() })
         return
     }
 

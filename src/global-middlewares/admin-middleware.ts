@@ -1,5 +1,6 @@
 import {Response, Request, NextFunction} from 'express'
 import {SETTINGS} from '../settings'
+import { HTTP_STATUSES } from '../utils'
 
 export const fromBase64ToUTF8 = (code: string) => {
     const buff = Buffer.from(code, 'base64')
@@ -17,13 +18,13 @@ export const adminMiddleware = (req: Request, res: Response, next: NextFunction)
     // console.log(auth)
     if (!auth) {
         res
-            .status(401)
+            .status(HTTP_STATUSES.UNAUTHORIZED_401)
             .json({})
         return
     }
     if (auth.slice(0, 6) !== 'Basic ') {
         res
-            .status(401)
+            .status(HTTP_STATUSES.UNAUTHORIZED_401)
             .json({})
         return
     }
@@ -34,7 +35,7 @@ export const adminMiddleware = (req: Request, res: Response, next: NextFunction)
     // if (decodedAuth !== SETTINGS.ADMIN) {
     if (auth.slice(6) !== codedAuth) {
         res
-            .status(401)
+            .status(HTTP_STATUSES.UNAUTHORIZED_401)
             .json({})
         return
     }

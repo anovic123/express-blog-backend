@@ -1,9 +1,10 @@
 import {body} from 'express-validator'
 import {inputCheckErrorsMiddleware} from '../../../global-middlewares/inputCheckErrorsMiddleware'
 import {blogsRepository} from '../../blogs/blogsRepository'
-import {NextFunction, Request, Response} from 'express'
+import {NextFunction, Response} from 'express'
 import {postsRepository} from '../postsRepository'
 import {adminMiddleware} from '../../../global-middlewares/admin-middleware'
+import { RequestWithParams } from '../../../types'
 
 // title: string // max 30
 // shortDescription: string // max 100
@@ -21,7 +22,7 @@ export const blogIdValidator = body('blogId').isString().withMessage('not string
         return !!blog
     }).withMessage('no blog')
 
-export const findPostValidator = (req: Request<{id: string}>, res: Response, next: NextFunction) => {
+export const findPostValidator = (req: RequestWithParams<{ id: string }>, res: Response, next: NextFunction) => {
     const post = postsRepository.find(req.params.id)
     if (!post) {
 

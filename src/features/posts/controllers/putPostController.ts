@@ -1,9 +1,11 @@
-import {Request, Response} from 'express'
-import {PostInputModel} from '../../../input-output-types/posts-types'
-import {postsRepository} from '../postsRepository'
+import { Response} from 'express'
+import { PostInputModel } from '../../../input-output-types/posts-types'
+import { postsRepository } from '../postsRepository'
+import { HTTP_STATUSES } from '../../../utils'
+import { RequestWithParamsAndBody } from '../../../types'
 
-export const putPostController = (req: Request<{id: string}, any, PostInputModel>, res: Response) => {
-    const putRes = postsRepository.put(req.body, req.params.id)
+export const putPostController = (req: RequestWithParamsAndBody<{id: string}, PostInputModel>, res: Response) => {
+    postsRepository.put(req.body, req.params.id)
 
-    res.sendStatus(204)
+    res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
 }

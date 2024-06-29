@@ -4,7 +4,6 @@ import {PostDbType} from '../../src/db/post-db-type'
 import {fromUTF8ToBase64} from '../../src/global-middlewares/admin-middleware'
 import {SETTINGS} from '../../src/settings'
 
-// готовые данные для переиспользования в тестах
 
 export const codedAuth = fromUTF8ToBase64(SETTINGS.ADMIN)
 
@@ -22,7 +21,7 @@ export const blog1/*: BlogDbType*/ = {
     description: 'd1',
     websiteUrl: 'http://some.com',
 } as const // dataset нельзя изменять
-// blog1.name = 'n2' // error!!!
+
 
 export const blog7/*: BlogDbType*/ = {
     id: new Date().toISOString() + Math.random(),
@@ -50,8 +49,5 @@ export const dataset2/*: DBType*/ = {
     blogs: [blog1, blog7],
     posts: [post1],
 } as const // dataset нельзя изменять
-// dataset2.blogs = [] // error!!!
-// dataset2.blogs.push(blog1) // runtime error!!!
-// dataset2.blogs[0].name = 'n3' // error!!!
 
 // ...

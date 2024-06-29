@@ -7,8 +7,6 @@ import {putPostController} from './controllers/putPostController'
 import {
     findPostValidator,
     postValidators, putValidators,
-    shortDescriptionValidator,
-    titleValidator
 } from './middlewares/postValidators'
 import {adminMiddleware} from '../../global-middlewares/admin-middleware'
 
