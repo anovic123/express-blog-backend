@@ -6,7 +6,7 @@ import {delPostController} from './controllers/delPostController'
 import {putPostController} from './controllers/putPostController'
 import {
     findPostValidator,
-    postValidators,
+    postValidators, putValidators,
     shortDescriptionValidator,
     titleValidator
 } from './middlewares/postValidators'
@@ -18,4 +18,4 @@ postsRouter.post('/', ...postValidators, createPostController)
 postsRouter.get('/', getPostsController)
 postsRouter.get('/:id', findPostValidator, findPostController)
 postsRouter.delete('/:id', adminMiddleware, findPostValidator, delPostController)
-postsRouter.put('/:id', adminMiddleware, titleValidator, shortDescriptionValidator, findPostValidator, putPostController)
+postsRouter.put('/:id', ...putValidators, putPostController)
