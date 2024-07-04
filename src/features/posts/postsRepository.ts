@@ -1,4 +1,4 @@
-import {postsCollection} from '../../db/db'
+import {blogsCollection, postsCollection} from '../../db/db'
 import {PostInputModel, PostViewModel} from '../../input-output-types/posts-types'
 import {PostDbType} from '../../db/post-db-type'
 import {blogsRepository} from '../blogs/blogsRepository'
@@ -68,4 +68,9 @@ export const postsRepository = {
         }
         return postForOutput
     },
+    async deleteAll(): Promise<boolean> {
+        await postsCollection.deleteMany()
+
+        return true
+    }
 }
