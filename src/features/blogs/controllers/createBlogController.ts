@@ -4,11 +4,11 @@ import {blogsRepository} from '../blogsRepository'
 import { HTTP_STATUSES } from '../../../utils'
 import { RequestWithBody } from '../../../types'
 
-export const createBlogController = (req: RequestWithBody<BlogInputModel>, res: Response<BlogViewModel>) => {
-    const newBlogId = blogsRepository.create(req.body)
-    const newBlog = blogsRepository.findAndMap(newBlogId)
+export const createBlogController = async (req: RequestWithBody<BlogInputModel>, res: Response<BlogViewModel>) => {
+    const newBlogId = await blogsRepository.create(req.body)
+    const newBlog = await blogsRepository.findAndMap(newBlogId as any)
 
     res
         .status(HTTP_STATUSES.CREATED_201)
-        .json(newBlog)
+        .json(newBlog as any)
 }

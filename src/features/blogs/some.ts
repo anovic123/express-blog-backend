@@ -7,7 +7,6 @@ export type ParamType = {
 export type BodyType = {
     id: number
     title: string
-    // ...
 }
 
 export type QueryType = {

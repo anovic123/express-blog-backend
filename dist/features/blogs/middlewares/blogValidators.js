@@ -5,6 +5,7 @@ const express_validator_1 = require("express-validator");
 const inputCheckErrorsMiddleware_1 = require("../../../global-middlewares/inputCheckErrorsMiddleware");
 const blogsRepository_1 = require("../blogsRepository");
 const admin_middleware_1 = require("../../../global-middlewares/admin-middleware");
+const utils_1 = require("../../../utils");
 // name: string // max 15
 // description: string // max 500
 // websiteUrl: string // max 100 ^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$
@@ -19,7 +20,7 @@ const findBlogValidator = (req, res, next) => {
     const errors = (0, express_validator_1.validationResult)(req);
     const findExistedBlog = blogsRepository_1.blogsRepository.find(req.params.id);
     if (!req.params.id || !findExistedBlog) {
-        res.status(404).json({ messages: errors.array() });
+        res.status(utils_1.HTTP_STATUSES.NOT_FOUND_404).json({ messages: errors.array() });
         return;
     }
     next();

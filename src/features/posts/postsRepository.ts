@@ -1,37 +1,61 @@
-import {db} from '../../db/db'
+import {postsCollection} from '../../db/db'
 import {PostInputModel, PostViewModel} from '../../input-output-types/posts-types'
 import {PostDbType} from '../../db/post-db-type'
 import {blogsRepository} from '../blogs/blogsRepository'
 
 export const postsRepository = {
-    create(post: PostInputModel) {
+    async create(post: PostInputModel) {
+        const blogName = await blogsRepository.find(post.blogId)
+        if (!blogName) return null
         const newPost: PostDbType = {
             id: new Date().toISOString() + Math.random(),
             title: post.title,
             content: post.content,
             shortDescription: post.shortDescription,
             blogId: post.blogId,
-            blogName: blogsRepository.find(post.blogId)!.name,
+            blogName: blogName.name,
+            createdAt: new Date().toISOString(),
+            isMembership: false
         }
-        db.posts = [...db.posts, newPost]
+        await postsCollection.insertOne(newPost)
         return newPost.id
     },
-    find(id: string) {
-        return db.posts.find(p => p.id === id)
+    async find(id: string): Promise<PostDbType | null> {
+        const res =  await postsCollection.findOne({ id: id })
+        return res
     },
-    findAndMap(id: string) {
-        const post = this.find(id)! // ! используем этот метод если проверили существование
+    async findAndMap(id: string): Promise<PostViewModel | null> {
+        const post = await this.find(id)! // ! используем этот метод если проверили существование
+        if (!post) {
+            return null
+        }
         return this.map(post)
     },
-    getAll() {
-        return db.posts.map(p => this.map(p))
+    async getAll() {
+        return postsCollection.find().toArray()
     },
-    del(id: string) {
-        db.posts = db.posts.filter(p => p.id !== id)
+    async del(id: string) {
+        await postsCollection.deleteOne({ id: id })
     },
-    put(post: PostInputModel, id: string) {
-        const blog = blogsRepository.find(post.blogId)!
-        db.posts = db.posts.map(p => p.id === id ? {...p, ...post, blogName: blog.name} : p)
+    async put(post: PostInputModel, id: string) {
+
+        const blog = await blogsRepository.find(post.blogId)
+
+        if (!blog) {
+            return null
+        }
+
+        const result = await postsCollection.updateOne(
+            { id: id },
+            {
+                $set: {
+                    ...post,
+                    blogName: blog.name
+                }
+            }
+        );
+
+        return result.matchedCount === 1
     },
     map(post: PostDbType) {
         const postForOutput: PostViewModel = {

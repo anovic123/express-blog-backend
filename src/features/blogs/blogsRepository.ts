@@ -1,33 +1,40 @@
 import {BlogDbType} from '../../db/blog-db-type'
-import {db} from '../../db/db'
+import {blogsCollection} from '../../db/db'
 import {BlogInputModel, BlogViewModel} from '../../input-output-types/blogs-types'
 
 export const blogsRepository = {
-    create(blog: BlogInputModel) {
+   async create(blog: BlogInputModel): Promise<string> {
         const newBlog: BlogDbType = {
             id: new Date().toISOString() + Math.random(),
             name: blog.name,
             description: blog.description,
             websiteUrl: blog.websiteUrl,
+            createdAt: new Date().toISOString(),
+            isMembership: false
         }
-        db.blogs = [...db.blogs, newBlog]
-        return newBlog.id
+
+       await blogsCollection.insertOne(newBlog)
+       return newBlog.id
     },
-    find(id: string) {
-        return db.blogs.find(b => b.id === id)
+    async find(id: string): Promise<BlogDbType | null> {
+        return await blogsCollection.findOne({ id: id });
     },
-    findAndMap(id: string) {
-        const blog = this.find(id)! // ! используем этот метод если проверили существование
+    async findAndMap(id: string): Promise<BlogViewModel | null> {
+        const blog = await this.find(id)! // ! используем этот метод если проверили существование
+        if (!blog) {
+            return null
+        }
         return this.map(blog)
     },
-    getAll() {
-        return db.blogs
+    async getAll(): Promise<BlogDbType[]> {
+       return await blogsCollection.find().toArray()
     },
-    del(id: string) {
-       db.blogs = db.blogs.filter(el => el.id !== id)
+    async del(id: string): Promise<boolean> {
+       const result = await blogsCollection.deleteOne({ id: id })
+        return result.deletedCount === 1
     },
-    put(blog: BlogInputModel, id: string) {
-        const userBlog = this.find(id)
+    async put(blog: BlogInputModel, id: string): Promise<boolean> {
+        const userBlog = await this.find(id)
         if (userBlog) {
             const updatedBlog = {
                 ...userBlog,
@@ -35,15 +42,8 @@ export const blogsRepository = {
                 description: blog.description,
                 websiteUrl: blog.websiteUrl,
             }
-            console.log(updatedBlog)
-            db.blogs = db.blogs.map(el => {
-                if (el.id === updatedBlog.id) {
-                    return updatedBlog
-                }
-                return el
-            })
-
-            return true
+            const result = await blogsCollection.updateOne({ id: id }, { $set: updatedBlog });
+            return result.matchedCount === 1
         } else {
             return false
         }
@@ -57,4 +57,9 @@ export const blogsRepository = {
         }
         return blogForOutput
     },
+    async deleteAll(): Promise<boolean> {
+       await blogsCollection.deleteMany()
+
+        return true
+    }
 }

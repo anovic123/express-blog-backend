@@ -1,35 +1,50 @@
 import {BlogDbType} from './blog-db-type'
 import {PostDbType} from './post-db-type'
+import {SETTINGS} from "../settings";
+import {MongoClient, ServerApiVersion} from "mongodb";
 
-export type DBType = { // типизация базы данных (что мы будем в ней хранить)
-    blogs: BlogDbType[]
-    posts: PostDbType[]
-    // some: any[]
-}
-export type ReadonlyDBType = { // тип для dataset
-    blogs: Readonly<BlogDbType[]>
-    posts: Readonly<PostDbType[]>
-    // some: any[]
-}
+const client = new MongoClient("mongodb+srv://vkanaev220:Q2tgZaS1r9EQIx2i@api-v1.otqbeom.mongodb.net/?retryWrites=true&w=majority&appName=api-v1");
+const dbApi = client.db('api')
+export const blogsCollection = dbApi.collection<BlogDbType>('blogs')
+export const postsCollection = dbApi.collection<PostDbType>('posts')
 
-export const db: DBType = { // создаём базу данных (пока это просто переменная)
-    blogs: [],
-    posts: [],
-    // some: []
-}
-
-// функция для быстрой очистки/заполнения базы данных для тестов
-export const setDB = (dataset?: Partial<ReadonlyDBType>) => {
-    if (!dataset) { // если в функцию ничего не передано - то очищаем базу данных
-        db.blogs = []
-        db.posts = []
-        // db.some = []
-        return
+export const runDb = async (): Promise<boolean> => {
+    try {
+        await client.connect()
+        console.log('connected to db')
+        return true
+    } catch (e) {
+        console.log(e)
+        await client.close()
+        return false
     }
-
-    // если что-то передано - то заменяем старые значения новыми,
-    // не ссылки - а глубокое копирование, чтобы не изменять dataset
-    db.blogs = dataset.blogs?.map(b => ({...b})) || db.blogs
-    db.posts = dataset.posts?.map(p => ({...p})) || db.posts
-    // db.some = dataset.some?.map(s => ({...s})) || db.some
 }
+
+// export type DBType = {
+//     blogs: BlogDbType[]
+//     posts: PostDbType[]
+// }
+// export type ReadonlyDBType = {
+//     blogs: Readonly<BlogDbType[]>
+//     posts: Readonly<PostDbType[]>
+//     // some: any[]
+// }
+//
+// export const db: DBType = {
+//     blogs: [],
+//     posts: [],
+//     // some: []
+// }
+//
+//
+// export const setDB = (dataset?: Partial<ReadonlyDBType>) => {
+//     if (!dataset) {
+//         db.blogs = []
+//         db.posts = []
+//         // db.some = []
+//         return
+//     }
+//
+//     db.blogs = dataset.blogs?.map(b => ({...b})) || db.blogs
+//     db.posts = dataset.posts?.map(p => ({...p})) || db.posts
+// }
