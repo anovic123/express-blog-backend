@@ -28,8 +28,9 @@ export const blogsRepository = {
         }
         return this.map(blog)
     },
-    async getAll(): Promise<BlogDbType[]> {
-       return await blogsCollection.find().toArray()
+    async getAll(): Promise<BlogViewModel[]> {
+       const res = await blogsCollection.find().toArray()
+        return res.map(blog => this.map(blog));
     },
     async del(id: string): Promise<boolean> {
        const result = await blogsCollection.deleteOne({ id: id })

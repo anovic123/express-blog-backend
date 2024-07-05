@@ -45,7 +45,8 @@ exports.blogsRepository = {
     },
     getAll() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield db_1.blogsCollection.find().toArray();
+            const res = yield db_1.blogsCollection.find().toArray();
+            return res.map(blog => this.map(blog));
         });
     },
     del(id) {
