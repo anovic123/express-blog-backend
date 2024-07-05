@@ -28,7 +28,10 @@ exports.blogsRepository = {
     },
     find(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield db_1.blogsCollection.findOne({ id: id });
+            const res = yield db_1.blogsCollection.findOne({ id: id });
+            if (!res)
+                return null;
+            return this.map(res);
         });
     },
     findAndMap(id) {

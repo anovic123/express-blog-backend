@@ -16,8 +16,10 @@ export const blogsRepository = {
        await blogsCollection.insertOne(newBlog)
        return newBlog.id
     },
-    async find(id: string): Promise<BlogDbType | null> {
-        return await blogsCollection.findOne({ id: id });
+    async find(id: string): Promise<BlogViewModel | null> {
+        const res = await blogsCollection.findOne({ id: id });
+        if (!res) return null
+        return this.map(res)
     },
     async findAndMap(id: string): Promise<BlogViewModel | null> {
         const blog = await this.find(id)! // ! используем этот метод если проверили существование
