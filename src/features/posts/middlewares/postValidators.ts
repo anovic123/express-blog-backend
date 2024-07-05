@@ -16,16 +16,15 @@ export const shortDescriptionValidator = body('shortDescription').isString().isL
 export const contentValidator = body('content').trim().isString().isLength({ min: 3, max: 1000 }).withMessage('not string')
     .trim().isLength({min: 1, max: 1000}).withMessage('more then 1000 or 0')
 export const blogIdValidator = body('blogId').isString().withMessage('not string')
-    .trim().custom(blogId => {
-        const blog = blogsRepository.find(blogId)
-        // console.log(blog)
+    .trim().custom(async (blogId) => {
+        const blog = await blogsRepository.find(blogId)
         return !!blog
     }).withMessage('no blog')
 
-export const findPostValidator = (req: RequestWithParams<{ id: string }>, res: Response, next: NextFunction) => {
-    const post = postsRepository.find(req.params.id)
+export const findPostValidator = async (req: RequestWithParams<{ id: string }>, res: Response, next: NextFunction) => {
+    const post = await postsRepository.find(req.params.id)
+    console.log(post)
     if (!post) {
-
         res
             .status(404)
             .json({})
