@@ -1,9 +1,9 @@
 import {BlogDbType} from './blog-db-type'
 import {PostDbType} from './post-db-type'
 import {SETTINGS} from "../settings";
-import {MongoClient} from "mongodb";
+import {MongoClient, ServerApiVersion} from "mongodb";
 
-const url = SETTINGS.MONGO_URI
+const url = 'mongodb+srv://vkanaev220:Q2tgZaS1r9EQIx2i@api-v1.otqbeom.mongodb.net/?retryWrites=true&w=majority&appName=api-v1'
 if (!url) {
     throw new Error("MongoDB URL is missing")
 }
