@@ -16,11 +16,12 @@ export const shortDescriptionValidator = body('shortDescription').isString().isL
 export const contentValidator = body('content').trim().isString().isLength({ min: 3, max: 1000 }).withMessage('not string')
     .trim().isLength({min: 1, max: 1000}).withMessage('more then 1000 or 0')
 export const blogIdValidator = body('blogId').isString().withMessage('not string')
-    .trim().custom(async (blogId) => {
+    .trim().custom(async blogId => {
         const blog = await blogsRepository.find(blogId)
-        return !!blog
+        if (!blog) {
+            return Promise.reject()
+        }
     }).withMessage('no blog')
-
 export const findPostValidator = async (req: RequestWithParams<{ id: string }>, res: Response, next: NextFunction) => {
     const post = await postsRepository.find(req.params.id)
     console.log(post)
@@ -40,11 +41,10 @@ export const putValidators = [
 
 export const postValidators = [
     adminMiddleware,
-
+    blogIdValidator,
     titleValidator,
     shortDescriptionValidator,
     contentValidator,
-    blogIdValidator,
 
     inputCheckErrorsMiddleware,
 ]

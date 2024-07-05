@@ -26,7 +26,9 @@ exports.contentValidator = (0, express_validator_1.body)('content').trim().isStr
 exports.blogIdValidator = (0, express_validator_1.body)('blogId').isString().withMessage('not string')
     .trim().custom((blogId) => __awaiter(void 0, void 0, void 0, function* () {
     const blog = yield blogsRepository_1.blogsRepository.find(blogId);
-    return !!blog;
+    if (!blog) {
+        return Promise.reject();
+    }
 })).withMessage('no blog');
 const findPostValidator = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const post = yield postsRepository_1.postsRepository.find(req.params.id);
@@ -45,9 +47,9 @@ exports.putValidators = [
 ];
 exports.postValidators = [
     admin_middleware_1.adminMiddleware,
+    exports.blogIdValidator,
     exports.titleValidator,
     exports.shortDescriptionValidator,
     exports.contentValidator,
-    exports.blogIdValidator,
     inputCheckErrorsMiddleware_1.inputCheckErrorsMiddleware,
 ];
