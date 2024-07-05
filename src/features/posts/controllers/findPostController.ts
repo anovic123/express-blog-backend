@@ -11,7 +11,7 @@ export const findPostController = async (req: RequestWithParams<{id: string}>, r
         res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
         return
     } else {
-        res.sendStatus(HTTP_STATUSES.OKK_200)
+        res.status(HTTP_STATUSES.OKK_200).json(blogById)
         return
     }
 }

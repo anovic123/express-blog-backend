@@ -31,8 +31,10 @@ export const postsRepository = {
         }
         return this.map(post)
     },
-    async getAll() {
-        return postsCollection.find().toArray()
+    async getAll(): Promise<PostViewModel[]> {
+        const posts = await postsCollection.find().toArray()
+
+        return posts.map(post => this.map(post))
     },
     async del(id: string) {
         await postsCollection.deleteOne({ id: id })
@@ -65,6 +67,7 @@ export const postsRepository = {
             content: post.content,
             blogId: post.blogId,
             blogName: post.blogName,
+            createdAt: post.createdAt
         }
         return postForOutput
     },

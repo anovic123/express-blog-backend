@@ -49,7 +49,8 @@ exports.postsRepository = {
     },
     getAll() {
         return __awaiter(this, void 0, void 0, function* () {
-            return db_1.postsCollection.find().toArray();
+            const posts = yield db_1.postsCollection.find().toArray();
+            return posts.map(post => this.map(post));
         });
     },
     del(id) {
@@ -77,6 +78,7 @@ exports.postsRepository = {
             content: post.content,
             blogId: post.blogId,
             blogName: post.blogName,
+            createdAt: post.createdAt
         };
         return postForOutput;
     },

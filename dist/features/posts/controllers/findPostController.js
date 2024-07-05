@@ -19,7 +19,7 @@ const findPostController = (req, res) => __awaiter(void 0, void 0, void 0, funct
         return;
     }
     else {
-        res.sendStatus(utils_1.HTTP_STATUSES.OKK_200);
+        res.status(utils_1.HTTP_STATUSES.OKK_200).json(blogById);
         return;
     }
 });
