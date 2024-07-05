@@ -51,9 +51,11 @@ export const blogsRepository = {
     map(blog: BlogDbType) {
         const blogForOutput: BlogViewModel = {
             id: blog.id,
+            name: blog.name,
             description: blog.description,
             websiteUrl: blog.websiteUrl,
-            name: blog.name,
+            createdAt: blog.createdAt,
+            isMembership: blog.isMembership
         }
         return blogForOutput
     },

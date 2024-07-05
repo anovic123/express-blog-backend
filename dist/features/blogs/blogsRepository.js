@@ -67,9 +67,11 @@ exports.blogsRepository = {
     map(blog) {
         const blogForOutput = {
             id: blog.id,
+            name: blog.name,
             description: blog.description,
             websiteUrl: blog.websiteUrl,
-            name: blog.name,
+            createdAt: blog.createdAt,
+            isMembership: blog.isMembership
         };
         return blogForOutput;
     },
