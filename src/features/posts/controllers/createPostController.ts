@@ -4,22 +4,11 @@ import {postsRepository} from '../postsRepository'
 import { HTTP_STATUSES } from '../../../utils'
 import { RequestWithBody } from '../../../types'
 
-export const createPostController = async (req: RequestWithBody<PostInputModel>, res: Response<PostViewModel>) => {
-    const newPostId = await postsRepository.create(req.body)
+export const createPostController = (req: RequestWithBody<PostInputModel>, res: Response<PostViewModel>) => {
+    const newPostId = postsRepository.create(req.body)
+    const newPost = postsRepository.findAndMap(newPostId)
 
-    if (!newPostId) {
-        res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
-        return
-    }
-
-    const newPost = await postsRepository.findAndMap(newPostId)
-
-    if (!newPost) {
-        res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
-        return
-    }
-
-    return res
+    res
         .status(HTTP_STATUSES.CREATED_201)
         .json(newPost)
 }

@@ -1,12 +1,10 @@
 import {Router} from 'express'
+import {setDB} from '../../db/db'
 import { HTTP_STATUSES } from '../../utils'
-import {blogsRepository} from "../blogs/blogsRepository";
-import {postsRepository} from "../posts/postsRepository";
 
 export const testingRouter = Router()
 
-testingRouter.delete('/all-data', async (req, res) => {
-    await blogsRepository.deleteAll()
-    await postsRepository.deleteAll()
+testingRouter.delete('/all-data', (req, res) => {
+    setDB()
     res.status(HTTP_STATUSES.NO_CONTENT_204).json({})
 })

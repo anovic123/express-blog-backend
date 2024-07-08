@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.adminMiddleware = exports.fromUTF8ToBase64 = exports.fromBase64ToUTF8 = void 0;
 const settings_1 = require("../settings");
-const utils_1 = require("../utils");
 const fromBase64ToUTF8 = (code) => {
     const buff = Buffer.from(code, 'base64');
     const decodedAuth = buff.toString('utf8');
@@ -20,13 +19,13 @@ const adminMiddleware = (req, res, next) => {
     // console.log(auth)
     if (!auth) {
         res
-            .status(utils_1.HTTP_STATUSES.UNAUTHORIZED_401)
+            .status(401)
             .json({});
         return;
     }
     if (auth.slice(0, 6) !== 'Basic ') {
         res
-            .status(utils_1.HTTP_STATUSES.UNAUTHORIZED_401)
+            .status(401)
             .json({});
         return;
     }
@@ -35,7 +34,7 @@ const adminMiddleware = (req, res, next) => {
     // if (decodedAuth !== SETTINGS.ADMIN) {
     if (auth.slice(6) !== codedAuth) {
         res
-            .status(utils_1.HTTP_STATUSES.UNAUTHORIZED_401)
+            .status(401)
             .json({});
         return;
     }
