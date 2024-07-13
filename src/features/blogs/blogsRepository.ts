@@ -79,7 +79,7 @@ export const blogsRepository = {
             return false
         }
     },
-    async createPostBlog(id: BlogViewModel['id'], post: BlogPostInputModel): Promise<BlogPostViewModel | null> {
+    async createPostBlog(id: BlogViewModel['id'], post: BlogPostInputModel) {
        const blog = await this.find(id)
         if (!blog) {
             return null
@@ -99,7 +99,12 @@ export const blogsRepository = {
             { $push: { posts: newPost } }
         );
 
-        return newPost
+        return this.mapPostBlog(newPost)
+    },
+    async findBlogPost (id: string): Promise<any | null> {
+        const blog: any = await blogsCollection.findOne({ id })
+
+        return blog
     },
     async getBlogPosts(query: any, blogId: string): Promise<any | null> {
         console.log(blogId);
@@ -109,7 +114,7 @@ export const blogsRepository = {
         };
 
         try {
-            const blog: any = await blogsCollection.findOne(filter);
+            const blog: any = await this.findBlogPost(filter.id)
 
             if (!blog) {
                 return null;

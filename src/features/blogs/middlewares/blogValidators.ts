@@ -30,6 +30,13 @@ export const findBlogValidator = async (req: RequestWithParams<{ id: string }>, 
 }
 
 export const findBlogPostValidator = async (req: RequestWithParams<{ blogId: string }>, res: Response, next: NextFunction) => {
+    body('blogId').isString().withMessage('not id')
+    const errors = validationResult(req)
+    const findExistedBlog = await blogsRepository.findBlogPost(req.params.blogId)
+    if (!req.params.blogId || !findExistedBlog) {
+        res.status(HTTP_STATUSES.NOT_FOUND_404).json({ messages: errors.array() })
+        return
+    }
 
     next()
 }
