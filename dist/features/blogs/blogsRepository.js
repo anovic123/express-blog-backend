@@ -101,7 +101,13 @@ exports.blogsRepository = {
                 createdAt: new Date().toISOString()
             };
             yield db_1.blogsCollection.updateOne({ id: blog.id }, { $push: { posts: newPost } });
-            return newPost;
+            return this.mapPostBlog(newPost);
+        });
+    },
+    findBlogPost(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const blog = yield db_1.blogsCollection.findOne({ id });
+            return blog;
         });
     },
     getBlogPosts(query, blogId) {
@@ -111,7 +117,7 @@ exports.blogsRepository = {
                 id: blogId
             };
             try {
-                const blog = yield db_1.blogsCollection.findOne(filter);
+                const blog = yield this.findBlogPost(filter.id);
                 if (!blog) {
                     return null;
                 }
