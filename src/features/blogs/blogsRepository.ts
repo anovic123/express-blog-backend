@@ -1,5 +1,5 @@
 import {BlogDbType} from '../../db/blog-db-type'
-import {blogsCollection} from '../../db/db'
+import {blogsCollection, postsCollection} from '../../db/db'
 import {
     BlogInputModel,
     BlogPostInputModel,
@@ -81,10 +81,11 @@ export const blogsRepository = {
     },
     async createPostBlog(id: BlogViewModel['id'], post: BlogPostInputModel) {
        const blog = await this.find(id)
+        console.log(blog)
         if (!blog) {
             return null
         }
-       const newPost = {
+       const newPost: any = {
            id: new Date().toISOString() + Math.random(),
            title: post.title,
            shortDescription: post.shortDescription,
@@ -94,15 +95,18 @@ export const blogsRepository = {
            createdAt: new Date().toISOString()
        }
 
-        await blogsCollection.updateOne(
-            { id: blog.id },
-            { $push: { posts: newPost } }
-        );
+        // await blogsCollection.updateOne(
+        //     { id: blog.id },
+        //     { $push: { posts: newPost } }
+        // );
+
+        await postsCollection.insertOne(newPost)
 
         return newPost
     },
     async findBlogPost (id: string): Promise<any | null> {
-        const blog: any = await blogsCollection.findOne({ id })
+        const blog: any = await postsCollection.findOne({ id })
+        console.log(blog)
 
         return blog
     },
