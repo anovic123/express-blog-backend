@@ -101,7 +101,7 @@ exports.blogsRepository = {
                 createdAt: new Date().toISOString()
             };
             yield db_1.blogsCollection.updateOne({ id: blog.id }, { $push: { posts: newPost } });
-            return this.mapPostBlog(newPost);
+            return newPost;
         });
     },
     findBlogPost(id) {

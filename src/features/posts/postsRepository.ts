@@ -43,7 +43,7 @@ export const postsRepository = {
         }
 
         try {
-            const items: any = await postsCollection.find(filter).skip((query.pageNumber - 1) * query.pageSize).limit(query.pageSize).toArray()
+            const items: any = await postsCollection.find(filter).sort(query.sortBy, query.sortDirection).skip((query.pageNumber - 1) * query.pageSize).limit(query.pageSize).toArray()
 
             const totalCount = await postsCollection.countDocuments(filter)
 

@@ -18,7 +18,5 @@ export const createBlogPostController = async (req: RequestWithParamsAndBody<{ b
         return
     }
 
-    const newBlogOutput = await blogsRepository.mapPostBlog(newBlogPost)
-
-    res.status(HTTP_STATUSES.CREATED_201).json(newBlogOutput)
+    res.status(HTTP_STATUSES.CREATED_201).json(newBlogPost)
 }
