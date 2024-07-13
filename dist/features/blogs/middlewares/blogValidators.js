@@ -38,7 +38,7 @@ exports.findBlogValidator = findBlogValidator;
 const findBlogPostValidator = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     (0, express_validator_1.body)('blogId').isString().withMessage('not id');
     const errors = (0, express_validator_1.validationResult)(req);
-    const findExistedBlog = yield blogsRepository_1.blogsRepository.findBlogPost(req.params.blogId);
+    const findExistedBlog = yield blogsRepository_1.blogsRepository.find(req.params.blogId);
     if (!req.params.blogId || !findExistedBlog) {
         res.status(utils_1.HTTP_STATUSES.NOT_FOUND_404).json({ messages: errors.array() });
         return;
