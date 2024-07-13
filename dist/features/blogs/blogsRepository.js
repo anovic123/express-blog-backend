@@ -101,12 +101,8 @@ exports.blogsRepository = {
                 blogName: blog.name,
                 createdAt: new Date().toISOString()
             };
-            // await blogsCollection.updateOne(
-            //     { id: blog.id },
-            //     { $push: { posts: newPost } }
-            // );
             yield db_1.postsCollection.insertOne(newPost);
-            return newPost;
+            return this.mapPostBlog(newPost);
         });
     },
     getBlogPosts(query, blogId) {
@@ -133,14 +129,16 @@ exports.blogsRepository = {
         });
     },
     mapPostBlog(post) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const blogForOutput = {
-                title: post.title,
-                shortDescription: post.shortDescription,
-                content: post.shortDescription
-            };
-            return blogForOutput;
-        });
+        const blogForOutput = {
+            title: post.title,
+            shortDescription: post.shortDescription,
+            content: post.shortDescription,
+            blogId: post.blogId,
+            blogName: post.blogName,
+            createdAt: post.createdAt,
+            id: post.blogId,
+        };
+        return blogForOutput;
     },
     map(blog) {
         const blogForOutput = {
