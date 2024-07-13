@@ -96,7 +96,13 @@ export const blogsRepository = {
        await postsCollection.insertOne(newPost)
         return this.mapPostBlog(newPost)
     },
-    async getBlogPosts(query: any, blogId: string): Promise<any | null> {
+    async getBlogPosts(query: any, blogId: string): Promise<{
+       pagesCount: number,
+        page: number,
+        pageSize: number,
+        totalCount: number,
+        items: BlogPostViewModel[]
+    } | []> {
 
         const byId = blogId ? { blogId } : {}
         const search = query.searchNameTerm ? { name: { $regex: query.searchNameTerm, $options: "i" } } : {}
