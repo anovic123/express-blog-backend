@@ -52,9 +52,9 @@ exports.findBlogPostValidator = findBlogPostValidator;
 // title: string // max 30
 // shortDescription: string // max 100
 // content: string // max 1000
-const titleValidator = (0, express_validator_1.body)('title').isString().isLength({ min: 3, max: 30 }).withMessage('title');
-const shortDescriptionValidator = (0, express_validator_1.body)('shortDescription').isString().isLength({ min: 3, max: 100 }).withMessage('shortDescription');
-const contentValidator = (0, express_validator_1.body)('content').isString().isLength({ min: 3, max: 1000 }).withMessage('content');
+const titleValidator = (0, express_validator_1.body)('title').isString().trim().isLength({ min: 3, max: 30 }).withMessage('title');
+const shortDescriptionValidator = (0, express_validator_1.body)('shortDescription').isString().trim().isLength({ min: 3, max: 100 }).withMessage('shortDescription');
+const contentValidator = (0, express_validator_1.body)('content').isString().trim().isLength({ min: 3, max: 1000 }).withMessage('content');
 exports.createBlogPostValidator = [
     admin_middleware_1.adminMiddleware,
     titleValidator,

@@ -48,9 +48,9 @@ export const findBlogPostValidator = async (req: RequestWithParams<{ blogId: str
 // shortDescription: string // max 100
 // content: string // max 1000
 
-const titleValidator = body('title').isString().isLength({ min: 3, max: 30 }).withMessage('title')
-const shortDescriptionValidator = body('shortDescription').isString().isLength({ min: 3, max: 100 }).withMessage('shortDescription')
-const contentValidator = body('content').isString().isLength({ min: 3, max: 1000 }).withMessage('content')
+const titleValidator = body('title').isString().trim().isLength({ min: 3, max: 30 }).withMessage('title')
+const shortDescriptionValidator = body('shortDescription').isString().trim().isLength({ min: 3, max: 100 }).withMessage('shortDescription')
+const contentValidator = body('content').isString().trim().isLength({ min: 3, max: 1000 }).withMessage('content')
 
 export const createBlogPostValidator = [
     adminMiddleware,

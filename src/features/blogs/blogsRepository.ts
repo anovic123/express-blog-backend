@@ -44,7 +44,7 @@ export const blogsRepository = {
         }
 
         try {
-            const items: any = await blogsCollection.find(filter).skip((query.pageNumber - 1) * query.pageSize).limit(query.pageSize).toArray()
+            const items: any = await blogsCollection.find(filter).sort(query.sortBy, query.sortDirection).skip((query.pageNumber - 1) * query.pageSize).limit(query.pageSize).toArray()
 
             const totalCount = await blogsCollection.countDocuments(filter)
 
@@ -114,24 +114,48 @@ export const blogsRepository = {
         };
 
         try {
-            const blog: any = await this.findBlogPost(filter.id)
+            const totalCountResult = await blogsCollection.aggregate([
+                { $match: filter },
+                { $unwind: '$posts' },
+                { $count: 'totalCount' }
+            ]).toArray();
 
-            if (!blog) {
-                return null;
+            const totalCount = totalCountResult.length > 0 ? totalCountResult[0].totalCount : 0;
+
+            const result = await blogsCollection.aggregate([
+                { $match: filter },
+                { $unwind: '$posts' },
+                { $sort: { [`posts.${query.sortBy}`]: query.sortDirection === 'asc' ? 1 : -1 } },
+                { $skip: (query.pageNumber - 1) * query.pageSize },
+                { $limit: query.pageSize },
+                { $group: {
+                        _id: '$_id',
+                        posts: { $push: '$posts' }
+                    }},
+                { $project: {
+                        _id: 0,
+                        posts: 1
+                    }}
+            ]).toArray();
+
+            if (!result || result.length === 0) {
+                return {
+                    pagesCount: Math.ceil(totalCount / query.pageSize),
+                    page: query.pageNumber,
+                    pageSize: query.pageSize,
+                    totalCount,
+                    items: 0
+                };
             }
 
-            const postsRes = blog.posts
-
-            const paginatedPosts = postsRes.slice((query.pageNumber - 1) * query.pageSize, query.pageNumber * query.pageSize);
-
-            const totalCount = postsRes.length;
+            const { posts } = result[0];
 
             return {
                 pagesCount: Math.ceil(totalCount / query.pageSize),
                 page: query.pageNumber,
                 pageSize: query.pageSize,
                 totalCount,
-                items: paginatedPosts
+                items: posts
             };
         } catch (error) {
             console.error(error);
