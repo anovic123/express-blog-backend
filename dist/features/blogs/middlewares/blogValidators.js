@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.blogValidators = exports.findBlogValidator = exports.websiteUrlValidator = exports.descriptionValidator = exports.nameValidator = void 0;
+exports.blogValidators = exports.createBlogPostValidator = exports.findBlogValidator = exports.websiteUrlValidator = exports.descriptionValidator = exports.nameValidator = void 0;
 const express_validator_1 = require("express-validator");
 const inputCheckErrorsMiddleware_1 = require("../../../global-middlewares/inputCheckErrorsMiddleware");
 const blogsRepository_1 = require("../blogsRepository");
@@ -35,6 +35,22 @@ const findBlogValidator = (req, res, next) => __awaiter(void 0, void 0, void 0, 
     next();
 });
 exports.findBlogValidator = findBlogValidator;
+/**
+ * create blog post validator
+ * * */
+// title: string // max 30
+// shortDescription: string // max 100
+// content: string // max 1000
+const titleValidator = (0, express_validator_1.body)('title').isString().isLength({ min: 3, max: 30 }).withMessage('title');
+const shortDescriptionValidator = (0, express_validator_1.body)('shortDescription').isString().isLength({ min: 3, max: 100 }).withMessage('shortDescription');
+const contentValidator = (0, express_validator_1.body)('content').isString().isLength({ min: 3, max: 1000 }).withMessage('content');
+exports.createBlogPostValidator = [
+    admin_middleware_1.adminMiddleware,
+    titleValidator,
+    shortDescriptionValidator,
+    contentValidator,
+    inputCheckErrorsMiddleware_1.inputCheckErrorsMiddleware
+];
 exports.blogValidators = [
     admin_middleware_1.adminMiddleware,
     exports.nameValidator,

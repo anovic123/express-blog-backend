@@ -1,6 +1,11 @@
 import {BlogDbType} from '../../db/blog-db-type'
 import {blogsCollection} from '../../db/db'
-import {BlogInputModel, BlogViewModel} from '../../input-output-types/blogs-types'
+import {
+    BlogInputModel,
+    BlogPostInputModel,
+    BlogPostViewModel,
+    BlogViewModel
+} from '../../input-output-types/blogs-types'
 
 export const blogsRepository = {
    async create(blog: BlogInputModel): Promise<string> {
@@ -50,6 +55,48 @@ export const blogsRepository = {
         } else {
             return false
         }
+    },
+    async createPostBlog(id: BlogViewModel['id'], post: BlogPostInputModel): Promise<BlogPostViewModel | null> {
+       const blog = await this.find(id)
+        if (!blog) {
+            return null
+        }
+       const newPost = {
+           id: new Date().toISOString() + Math.random(),
+           title: post.title,
+           shortDescription: post.shortDescription,
+           content: post.content,
+           blogId: blog.id,
+           blogName: blog.name,
+           createdAt: new Date().toISOString()
+       }
+
+        await blogsCollection.updateOne(
+            { id: blog.id },
+            { $push: { posts: newPost } }
+        );
+
+        return newPost
+    },
+    // async findPostBlog(blogId: BlogViewModel['id']): Promise<BlogPostViewModel | null> {
+    //    const blog = await blogsRepository.find({ id: blogId })
+    //     if (!blog) {
+    //         return null
+    //     }
+    //
+    //     const post = blog.posts
+    //     //    const res = await blogsCollection.findOne({ id: id });
+    //     // if (!res) return null
+    //     // return this.map(res)
+    // }
+    async mapPostBlog(post: BlogPostViewModel) {
+       const blogForOutput: BlogPostInputModel = {
+           title: post.title,
+           shortDescription: post.shortDescription,
+           content: post.shortDescription
+       }
+
+       return blogForOutput
     },
     map(blog: BlogDbType) {
         const blogForOutput: BlogViewModel = {

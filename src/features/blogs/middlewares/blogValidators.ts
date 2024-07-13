@@ -1,4 +1,4 @@
-import {body, validationResult} from 'express-validator'
+import {body, validationResult,  query, param} from 'express-validator'
 import {inputCheckErrorsMiddleware} from '../../../global-middlewares/inputCheckErrorsMiddleware'
 import {NextFunction, Request, Response} from 'express'
 import {blogsRepository} from '../blogsRepository'
@@ -28,6 +28,27 @@ export const findBlogValidator = async (req: RequestWithParams<{ id: string }>, 
 
     next()
 }
+
+/**
+ * create blog post validator
+ * * */
+// title: string // max 30
+// shortDescription: string // max 100
+// content: string // max 1000
+
+const titleValidator = body('title').isString().isLength({ min: 3, max: 30 }).withMessage('title')
+const shortDescriptionValidator = body('shortDescription').isString().isLength({ min: 3, max: 100 }).withMessage('shortDescription')
+const contentValidator = body('content').isString().isLength({ min: 3, max: 1000 }).withMessage('content')
+
+export const createBlogPostValidator = [
+    adminMiddleware,
+
+    titleValidator,
+    shortDescriptionValidator,
+    contentValidator,
+
+    inputCheckErrorsMiddleware
+]
 
 export const blogValidators = [
     adminMiddleware,

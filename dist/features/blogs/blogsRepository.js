@@ -68,6 +68,46 @@ exports.blogsRepository = {
             }
         });
     },
+    createPostBlog(id, post) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const blog = yield this.find(id);
+            if (!blog) {
+                return null;
+            }
+            const newPost = {
+                id: new Date().toISOString() + Math.random(),
+                title: post.title,
+                shortDescription: post.shortDescription,
+                content: post.content,
+                blogId: blog.id,
+                blogName: blog.name,
+                createdAt: new Date().toISOString()
+            };
+            yield db_1.blogsCollection.updateOne({ id: blog.id }, { $push: { posts: newPost } });
+            return newPost;
+        });
+    },
+    // async findPostBlog(blogId: BlogViewModel['id']): Promise<BlogPostViewModel | null> {
+    //    const blog = await blogsRepository.find({ id: blogId })
+    //     if (!blog) {
+    //         return null
+    //     }
+    //
+    //     const post = blog.posts
+    //     //    const res = await blogsCollection.findOne({ id: id });
+    //     // if (!res) return null
+    //     // return this.map(res)
+    // }
+    mapPostBlog(post) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const blogForOutput = {
+                title: post.title,
+                shortDescription: post.shortDescription,
+                content: post.shortDescription
+            };
+            return blogForOutput;
+        });
+    },
     map(blog) {
         const blogForOutput = {
             id: blog.id,
