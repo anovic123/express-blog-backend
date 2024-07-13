@@ -109,61 +109,25 @@ exports.blogsRepository = {
             return newPost;
         });
     },
-    findBlogPost(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const blog = yield db_1.postsCollection.findOne({ id });
-            console.log(blog);
-            return blog;
-        });
-    },
     getBlogPosts(query, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log(blogId);
-            const filter = {
-                id: blogId
-            };
+            const byId = blogId ? { blogId } : {};
+            const search = query.searchNameTerm ? { name: { $regex: query.searchNameTerm, $options: "i" } } : {};
+            const filter = Object.assign(Object.assign({}, byId), search);
             try {
-                const totalCountResult = yield db_1.blogsCollection.aggregate([
-                    { $match: filter },
-                    { $unwind: '$posts' },
-                    { $count: 'totalCount' }
-                ]).toArray();
-                const totalCount = totalCountResult.length > 0 ? totalCountResult[0].totalCount : 0;
-                const result = yield db_1.blogsCollection.aggregate([
-                    { $match: filter },
-                    { $unwind: '$posts' },
-                    { $sort: { [`posts.${query.sortBy}`]: query.sortDirection === 'asc' ? 1 : -1 } },
-                    { $skip: (query.pageNumber - 1) * query.pageSize },
-                    { $limit: query.pageSize },
-                    { $group: {
-                            _id: '$_id',
-                            posts: { $push: '$posts' }
-                        } },
-                    { $project: {
-                            _id: 0,
-                            posts: 1
-                        } }
-                ]).toArray();
-                if (!result || result.length === 0) {
-                    return {
-                        pagesCount: Math.ceil(totalCount / query.pageSize),
-                        page: query.pageNumber,
-                        pageSize: query.pageSize,
-                        totalCount,
-                        items: 0
-                    };
-                }
-                const { posts } = result[0];
+                const items = yield db_1.postsCollection.find(filter).sort(query.sortBy, query.sortDirection).skip((query.pageNumber - 1) * query.pageSize).limit(query.pageSize).toArray();
+                const totalCount = yield db_1.postsCollection.countDocuments(filter);
                 return {
                     pagesCount: Math.ceil(totalCount / query.pageSize),
                     page: query.pageNumber,
                     pageSize: query.pageSize,
                     totalCount,
-                    items: posts
+                    items: items.map((b) => this.map(b))
                 };
             }
             catch (error) {
-                console.error(error);
+                console.log(error);
                 return [];
             }
         });
