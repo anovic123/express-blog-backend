@@ -88,6 +88,7 @@ exports.blogsRepository = {
     createPostBlog(id, post) {
         return __awaiter(this, void 0, void 0, function* () {
             const blog = yield this.find(id);
+            console.log(blog);
             if (!blog) {
                 return null;
             }
@@ -100,13 +101,18 @@ exports.blogsRepository = {
                 blogName: blog.name,
                 createdAt: new Date().toISOString()
             };
-            yield db_1.blogsCollection.updateOne({ id: blog.id }, { $push: { posts: newPost } });
+            // await blogsCollection.updateOne(
+            //     { id: blog.id },
+            //     { $push: { posts: newPost } }
+            // );
+            yield db_1.postsCollection.insertOne(newPost);
             return newPost;
         });
     },
     findBlogPost(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const blog = yield db_1.blogsCollection.findOne({ id });
+            const blog = yield db_1.postsCollection.findOne({ id });
+            console.log(blog);
             return blog;
         });
     },
