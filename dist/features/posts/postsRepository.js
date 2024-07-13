@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.postsRepository = void 0;
 const db_1 = require("../../db/db");
 const blogsRepository_1 = require("../blogs/blogsRepository");
+const mongodb_1 = require("mongodb");
 exports.postsRepository = {
     create(post) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -47,10 +48,26 @@ exports.postsRepository = {
             return this.map(post);
         });
     },
-    getAll() {
+    getAll(query, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const posts = yield db_1.postsCollection.find().toArray();
-            return posts.map(post => this.map(post));
+            const byId = blogId ? { blogId: new mongodb_1.ObjectId(blogId) } : {};
+            const search = query.searchNameTerm ? { title: { $regex: query.searchNameTerm, $options: "i" } } : {}; // new RegExp (query.searchNameTerm, 'i')
+            const filter = Object.assign(Object.assign({}, byId), search);
+            try {
+                const items = yield db_1.postsCollection.find(filter).skip((query.pageNumber - 1) * query.pageSize).limit(query.pageSize).toArray();
+                const totalCount = yield db_1.postsCollection.countDocuments(filter);
+                return {
+                    pagesCount: Math.ceil(totalCount / query.pageSize),
+                    page: query.pageNumber,
+                    pageSize: query.pageSize,
+                    totalCount,
+                    items: items.map((i) => this.map(i))
+                };
+            }
+            catch (error) {
+                console.log(error);
+                return [];
+            }
         });
     },
     del(id) {

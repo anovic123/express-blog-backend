@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.blogValidators = exports.createBlogPostValidator = exports.findBlogValidator = exports.websiteUrlValidator = exports.descriptionValidator = exports.nameValidator = void 0;
+exports.blogValidators = exports.createBlogPostValidator = exports.findBlogPostValidator = exports.findBlogValidator = exports.websiteUrlValidator = exports.descriptionValidator = exports.nameValidator = void 0;
 const express_validator_1 = require("express-validator");
 const inputCheckErrorsMiddleware_1 = require("../../../global-middlewares/inputCheckErrorsMiddleware");
 const blogsRepository_1 = require("../blogsRepository");
@@ -35,6 +35,10 @@ const findBlogValidator = (req, res, next) => __awaiter(void 0, void 0, void 0, 
     next();
 });
 exports.findBlogValidator = findBlogValidator;
+const findBlogPostValidator = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    next();
+});
+exports.findBlogPostValidator = findBlogPostValidator;
 /**
  * create blog post validator
  * * */

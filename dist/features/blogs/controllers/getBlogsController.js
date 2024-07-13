@@ -11,16 +11,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getBlogsController = void 0;
 const blogsRepository_1 = require("../blogsRepository");
+const utils_1 = require("../../../utils");
+const helper_1 = require("../helper");
 const getBlogsController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const blogs = yield blogsRepository_1.blogsRepository.getAll();
-    // const byId = blogId ? { blogId: new ObjectId(blogId) }
-    // return res.status(HTTP_STATUSES.OKK_200).json(blogs)
-    // return res.status(HTTP_STATUSES.OKK_200).json({
-    //     pageNumber: req.query.pageNumber ? +req.query.pageNumber : 1,
-    //     pageSize: req.query.pageSize !== undefined ? +req.query.pageSize : 10,
-    //     sortBy: req.query.sortBy ? req.query.sortBy : 'createdAt',
-    //     sortDirection: req.query.sortDirection ? req.query.sortDirection as SortDirection : 'desc',
-    //     searhNameTerm: req.query.searchNameTerm ? req.query.searchNameTerm : null
-    // })
+    const sanitizedQuery = (0, helper_1.getAllBlogsHelper)(req.query);
+    const blogs = yield blogsRepository_1.blogsRepository.getAll(sanitizedQuery, req.params.id);
+    return res.status(utils_1.HTTP_STATUSES.OKK_200).json(blogs);
 });
 exports.getBlogsController = getBlogsController;

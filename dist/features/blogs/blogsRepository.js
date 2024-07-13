@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.blogsRepository = void 0;
 const db_1 = require("../../db/db");
+const mongodb_1 = require("mongodb");
 exports.blogsRepository = {
     create(blog) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -43,10 +44,26 @@ exports.blogsRepository = {
             return this.map(blog);
         });
     },
-    getAll() {
+    getAll(query, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield db_1.blogsCollection.find().toArray();
-            return res.map(blog => this.map(blog));
+            const byId = blogId ? { blogId: new mongodb_1.ObjectId(blogId) } : {};
+            const search = query.searchNameTerm ? { name: { $regex: query.searchNameTerm, $options: "i" } } : {};
+            const filter = Object.assign(Object.assign({}, byId), search);
+            try {
+                const items = yield db_1.blogsCollection.find(filter).skip((query.pageNumber - 1) * query.pageSize).limit(query.pageSize).toArray();
+                const totalCount = yield db_1.blogsCollection.countDocuments(filter);
+                return {
+                    pagesCount: Math.ceil(totalCount / query.pageSize),
+                    page: query.pageNumber,
+                    pageSize: query.pageSize,
+                    totalCount,
+                    items: items.map((b) => this.map(b))
+                };
+            }
+            catch (error) {
+                console.log(error);
+                return [];
+            }
         });
     },
     del(id) {
@@ -87,17 +104,34 @@ exports.blogsRepository = {
             return newPost;
         });
     },
-    // async findPostBlog(blogId: BlogViewModel['id']): Promise<BlogPostViewModel | null> {
-    //    const blog = await blogsRepository.find({ id: blogId })
-    //     if (!blog) {
-    //         return null
-    //     }
-    //
-    //     const post = blog.posts
-    //     //    const res = await blogsCollection.findOne({ id: id });
-    //     // if (!res) return null
-    //     // return this.map(res)
-    // }
+    getBlogPosts(query, blogId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log(blogId);
+            const filter = {
+                id: blogId
+            };
+            try {
+                const blog = yield db_1.blogsCollection.findOne(filter);
+                if (!blog) {
+                    return null;
+                }
+                const postsRes = blog.posts;
+                const paginatedPosts = postsRes.slice((query.pageNumber - 1) * query.pageSize, query.pageNumber * query.pageSize);
+                const totalCount = postsRes.length;
+                return {
+                    pagesCount: Math.ceil(totalCount / query.pageSize),
+                    page: query.pageNumber,
+                    pageSize: query.pageSize,
+                    totalCount,
+                    items: paginatedPosts
+                };
+            }
+            catch (error) {
+                console.error(error);
+                return null;
+            }
+        });
+    },
     mapPostBlog(post) {
         return __awaiter(this, void 0, void 0, function* () {
             const blogForOutput = {

@@ -2,6 +2,7 @@ import {blogsCollection, postsCollection} from '../../db/db'
 import {PostInputModel, PostViewModel} from '../../input-output-types/posts-types'
 import {PostDbType} from '../../db/post-db-type'
 import {blogsRepository} from '../blogs/blogsRepository'
+import {ObjectId} from "mongodb";
 
 export const postsRepository = {
     async create(post: PostInputModel) {
@@ -31,10 +32,32 @@ export const postsRepository = {
         }
         return this.map(post)
     },
-    async getAll(): Promise<PostViewModel[]> {
-        const posts = await postsCollection.find().toArray()
+    async getAll(query: any , blogId: string){
+        const byId = blogId ? { blogId: new ObjectId(blogId) } : {}
+        const search = query.searchNameTerm ? { title: { $regex: query.searchNameTerm, $options: "i" } } : {} // new RegExp (query.searchNameTerm, 'i')
 
-        return posts.map(post => this.map(post))
+        const filter: any = {
+            ...byId,
+            // _id: { $in: [ new ObjectId() ] },
+            ...search
+        }
+
+        try {
+            const items: any = await postsCollection.find(filter).skip((query.pageNumber - 1) * query.pageSize).limit(query.pageSize).toArray()
+
+            const totalCount = await postsCollection.countDocuments(filter)
+
+            return {
+                pagesCount: Math.ceil(totalCount / query.pageSize),
+                page: query.pageNumber,
+                pageSize: query.pageSize,
+                totalCount,
+                items: items.map((i: any) => this.map(i))
+            }
+        } catch (error) {
+            console.log(error)
+            return []
+        }
     },
     async del(id: string) {
         await postsCollection.deleteOne({ id: id })

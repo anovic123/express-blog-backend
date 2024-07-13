@@ -4,8 +4,8 @@ import {BlogPostInputModel} from "../../../input-output-types/blogs-types";
 import {HTTP_STATUSES} from "../../../utils";
 import {blogsRepository} from "../blogsRepository";
 
-export const createBlogPostController = async (req: RequestWithParamsAndBody<{ id: string },BlogPostInputModel>, res: Response<BlogPostInputModel | null>) => {
-    const findBlog = await blogsRepository.find(req.params.id)
+export const createBlogPostController = async (req: RequestWithParamsAndBody<{ blogId: string },BlogPostInputModel>, res: Response<BlogPostInputModel | null>) => {
+    const findBlog = await blogsRepository.find(req.params.blogId)
     if (!findBlog) {
         res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
         return

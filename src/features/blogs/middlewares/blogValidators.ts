@@ -29,6 +29,11 @@ export const findBlogValidator = async (req: RequestWithParams<{ id: string }>, 
     next()
 }
 
+export const findBlogPostValidator = async (req: RequestWithParams<{ blogId: string }>, res: Response, next: NextFunction) => {
+
+    next()
+}
+
 /**
  * create blog post validator
  * * */
