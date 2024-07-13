@@ -54,7 +54,7 @@ exports.postsRepository = {
             const search = query.searchNameTerm ? { title: { $regex: query.searchNameTerm, $options: "i" } } : {}; // new RegExp (query.searchNameTerm, 'i')
             const filter = Object.assign(Object.assign({}, byId), search);
             try {
-                const items = yield db_1.postsCollection.find(filter).skip((query.pageNumber - 1) * query.pageSize).limit(query.pageSize).toArray();
+                const items = yield db_1.postsCollection.find(filter).sort(query.sortBy, query.sortDirection).skip((query.pageNumber - 1) * query.pageSize).limit(query.pageSize).toArray();
                 const totalCount = yield db_1.postsCollection.countDocuments(filter);
                 return {
                     pagesCount: Math.ceil(totalCount / query.pageSize),

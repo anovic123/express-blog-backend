@@ -55,6 +55,7 @@ const contentValidator = body('content').isString().trim().isLength({ min: 3, ma
 export const createBlogPostValidator = [
     adminMiddleware,
 
+    findBlogPostValidator,
     titleValidator,
     shortDescriptionValidator,
     contentValidator,

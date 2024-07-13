@@ -6,7 +6,7 @@ export const getAllBlogsHelper = (query: { [key: string]: string | undefined }) 
         sortBy: query.sortBy ? query.sortBy : 'createdAt',
         sortDirection: query.sortDirection !== undefined ? query.sortDirection as SortDirection : 'desc',
         pageNumber: query.pageNumber ? +query.pageNumber : 1,
-        pageSize: query.pageSize !== undefined ? query.pageSize : 10,
+        pageSize: query.pageSize !== undefined ? +query.pageSize : 10,
     }
 }
 

@@ -99,7 +99,7 @@ export const blogsRepository = {
             { $push: { posts: newPost } }
         );
 
-        return this.mapPostBlog(newPost)
+        return newPost
     },
     async findBlogPost (id: string): Promise<any | null> {
         const blog: any = await blogsCollection.findOne({ id })
