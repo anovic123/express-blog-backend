@@ -10,9 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.runDb = exports.postsCollection = exports.blogsCollection = void 0;
-const settings_1 = require("../settings");
 const mongodb_1 = require("mongodb");
-const url = settings_1.SETTINGS.MONGO_URI;
+const url = 'mongodb+srv://vkanaev220:Q2tgZaS1r9EQIx2i@api-v1.otqbeom.mongodb.net/?retryWrites=true&w=majority&appName=api-v1';
 if (!url) {
     throw new Error("MongoDB URL is missing");
 }

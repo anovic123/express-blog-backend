@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.blogsRepository = void 0;
 const db_1 = require("../../db/db");
+const mongodb_1 = require("mongodb");
 exports.blogsRepository = {
     create(blog) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -43,10 +44,26 @@ exports.blogsRepository = {
             return this.map(blog);
         });
     },
-    getAll() {
+    getAll(query, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield db_1.blogsCollection.find().toArray();
-            return res.map(blog => this.map(blog));
+            const byId = blogId ? { blogId: new mongodb_1.ObjectId(blogId) } : {};
+            const search = query.searchNameTerm ? { name: { $regex: query.searchNameTerm, $options: "i" } } : {};
+            const filter = Object.assign(Object.assign({}, byId), search);
+            try {
+                const items = yield db_1.blogsCollection.find(filter).skip((query.pageNumber - 1) * query.pageSize).limit(query.pageSize).toArray();
+                const totalCount = yield db_1.blogsCollection.countDocuments(filter);
+                return {
+                    pagesCount: Math.ceil(totalCount / query.pageSize),
+                    page: query.pageNumber,
+                    pageSize: query.pageSize,
+                    totalCount,
+                    items: items.map((b) => this.map(b))
+                };
+            }
+            catch (error) {
+                console.log(error);
+                return [];
+            }
         });
     },
     del(id) {
@@ -66,6 +83,63 @@ exports.blogsRepository = {
             else {
                 return false;
             }
+        });
+    },
+    createPostBlog(id, post) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const blog = yield this.find(id);
+            if (!blog) {
+                return null;
+            }
+            const newPost = {
+                id: new Date().toISOString() + Math.random(),
+                title: post.title,
+                shortDescription: post.shortDescription,
+                content: post.content,
+                blogId: blog.id,
+                blogName: blog.name,
+                createdAt: new Date().toISOString()
+            };
+            yield db_1.blogsCollection.updateOne({ id: blog.id }, { $push: { posts: newPost } });
+            return newPost;
+        });
+    },
+    getBlogPosts(query, blogId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log(blogId);
+            const filter = {
+                id: blogId
+            };
+            try {
+                const blog = yield db_1.blogsCollection.findOne(filter);
+                if (!blog) {
+                    return null;
+                }
+                const postsRes = blog.posts;
+                const paginatedPosts = postsRes.slice((query.pageNumber - 1) * query.pageSize, query.pageNumber * query.pageSize);
+                const totalCount = postsRes.length;
+                return {
+                    pagesCount: Math.ceil(totalCount / query.pageSize),
+                    page: query.pageNumber,
+                    pageSize: query.pageSize,
+                    totalCount,
+                    items: paginatedPosts
+                };
+            }
+            catch (error) {
+                console.error(error);
+                return null;
+            }
+        });
+    },
+    mapPostBlog(post) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const blogForOutput = {
+                title: post.title,
+                shortDescription: post.shortDescription,
+                content: post.shortDescription
+            };
+            return blogForOutput;
         });
     },
     map(blog) {

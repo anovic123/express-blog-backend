@@ -12,8 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getBlogsController = void 0;
 const blogsRepository_1 = require("../blogsRepository");
 const utils_1 = require("../../../utils");
+const helper_1 = require("../helper");
 const getBlogsController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const blogs = yield blogsRepository_1.blogsRepository.getAll();
+    const sanitizedQuery = (0, helper_1.getAllBlogsHelper)(req.query);
+    const blogs = yield blogsRepository_1.blogsRepository.getAll(sanitizedQuery, req.params.id);
     return res.status(utils_1.HTTP_STATUSES.OKK_200).json(blogs);
 });
 exports.getBlogsController = getBlogsController;

@@ -1,6 +1,12 @@
 import {BlogDbType} from '../../db/blog-db-type'
 import {blogsCollection} from '../../db/db'
-import {BlogInputModel, BlogViewModel} from '../../input-output-types/blogs-types'
+import {
+    BlogInputModel,
+    BlogPostInputModel,
+    BlogPostViewModel,
+    BlogViewModel
+} from '../../input-output-types/blogs-types'
+import {ObjectId} from "mongodb";
 
 export const blogsRepository = {
    async create(blog: BlogInputModel): Promise<string> {
@@ -28,9 +34,31 @@ export const blogsRepository = {
         }
         return this.map(blog)
     },
-    async getAll(): Promise<BlogViewModel[]> {
-       const res = await blogsCollection.find().toArray()
-        return res.map(blog => this.map(blog));
+    async getAll(query: any, blogId: string) {
+        const byId = blogId ? { blogId: new ObjectId(blogId) } : {}
+        const search = query.searchNameTerm ? { name: { $regex: query.searchNameTerm, $options: "i" } } : {}
+
+        const filter: any = {
+            ...byId,
+            ...search,
+        }
+
+        try {
+            const items: any = await blogsCollection.find(filter).skip((query.pageNumber - 1) * query.pageSize).limit(query.pageSize).toArray()
+
+            const totalCount = await blogsCollection.countDocuments(filter)
+
+            return {
+                pagesCount: Math.ceil(totalCount / query.pageSize),
+                page: query.pageNumber,
+                pageSize: query.pageSize,
+                totalCount,
+                items: items.map((b: any) => this.map(b))
+            }
+        } catch (error) {
+            console.log(error)
+            return []
+        }
     },
     async del(id: string): Promise<boolean> {
        const result = await blogsCollection.deleteOne({ id: id })
@@ -50,6 +78,69 @@ export const blogsRepository = {
         } else {
             return false
         }
+    },
+    async createPostBlog(id: BlogViewModel['id'], post: BlogPostInputModel): Promise<BlogPostViewModel | null> {
+       const blog = await this.find(id)
+        if (!blog) {
+            return null
+        }
+       const newPost = {
+           id: new Date().toISOString() + Math.random(),
+           title: post.title,
+           shortDescription: post.shortDescription,
+           content: post.content,
+           blogId: blog.id,
+           blogName: blog.name,
+           createdAt: new Date().toISOString()
+       }
+
+        await blogsCollection.updateOne(
+            { id: blog.id },
+            { $push: { posts: newPost } }
+        );
+
+        return newPost
+    },
+    async getBlogPosts(query: any, blogId: string): Promise<any | null> {
+        console.log(blogId);
+
+        const filter = {
+            id: blogId
+        };
+
+        try {
+            const blog: any = await blogsCollection.findOne(filter);
+
+            if (!blog) {
+                return null;
+            }
+
+            const postsRes = blog.posts
+
+            const paginatedPosts = postsRes.slice((query.pageNumber - 1) * query.pageSize, query.pageNumber * query.pageSize);
+
+            const totalCount = postsRes.length;
+
+            return {
+                pagesCount: Math.ceil(totalCount / query.pageSize),
+                page: query.pageNumber,
+                pageSize: query.pageSize,
+                totalCount,
+                items: paginatedPosts
+            };
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    },
+    async mapPostBlog(post: BlogPostViewModel) {
+       const blogForOutput: BlogPostInputModel = {
+           title: post.title,
+           shortDescription: post.shortDescription,
+           content: post.shortDescription
+       }
+
+       return blogForOutput
     },
     map(blog: BlogDbType) {
         const blogForOutput: BlogViewModel = {
