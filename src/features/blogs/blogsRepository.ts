@@ -95,14 +95,9 @@ export const blogsRepository = {
            createdAt: new Date().toISOString()
        }
 
-        // await blogsCollection.updateOne(
-        //     { id: blog.id },
-        //     { $push: { posts: newPost } }
-        // );
-
         await postsCollection.insertOne(newPost)
 
-        return newPost
+        return this.mapPostBlog(newPost)
     },
     async getBlogPosts(query: any, blogId: string): Promise<any | null> {
         console.log(blogId);
@@ -132,11 +127,15 @@ export const blogsRepository = {
             return []
         }
     },
-    async mapPostBlog(post: BlogPostViewModel) {
-       const blogForOutput: BlogPostInputModel = {
+    mapPostBlog(post: BlogPostViewModel): BlogPostViewModel {
+       const blogForOutput: BlogPostViewModel = {
            title: post.title,
            shortDescription: post.shortDescription,
-           content: post.shortDescription
+           content: post.shortDescription,
+           blogId: post.blogId,
+           blogName: post.blogName,
+           createdAt: post.createdAt,
+           id: post.blogId,
        }
 
        return blogForOutput
