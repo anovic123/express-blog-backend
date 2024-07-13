@@ -159,7 +159,7 @@ export const blogsRepository = {
             };
         } catch (error) {
             console.error(error);
-            return null;
+            return [];
         }
     },
     async mapPostBlog(post: BlogPostViewModel) {
