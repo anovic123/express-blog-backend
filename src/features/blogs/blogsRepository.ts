@@ -81,7 +81,6 @@ export const blogsRepository = {
     },
     async createPostBlog(blogId: BlogViewModel['id'], post: BlogPostInputModel) {
        const blog = await this.find(blogId)
-        console.log(blog)
         if (!blog) {
             return null
         }
@@ -94,12 +93,10 @@ export const blogsRepository = {
            blogName: blog.name,
            createdAt: new Date().toISOString()
        }
-
        await postsCollection.insertOne(newPost)
         return this.mapPostBlog(newPost)
     },
     async getBlogPosts(query: any, blogId: string): Promise<any | null> {
-        console.log(blogId);
 
         const byId = blogId ? { blogId } : {}
         const search = query.searchNameTerm ? { name: { $regex: query.searchNameTerm, $options: "i" } } : {}
@@ -131,7 +128,7 @@ export const blogsRepository = {
            id: post.id,
            title: post.title,
            shortDescription: post.shortDescription,
-           content: post.shortDescription,
+           content: post.content,
            blogId: post.blogId,
            blogName: post.blogName,
            createdAt: post.createdAt,

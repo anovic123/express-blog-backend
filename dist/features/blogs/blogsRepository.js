@@ -88,7 +88,6 @@ exports.blogsRepository = {
     createPostBlog(blogId, post) {
         return __awaiter(this, void 0, void 0, function* () {
             const blog = yield this.find(blogId);
-            console.log(blog);
             if (!blog) {
                 return null;
             }
@@ -107,7 +106,6 @@ exports.blogsRepository = {
     },
     getBlogPosts(query, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(blogId);
             const byId = blogId ? { blogId } : {};
             const search = query.searchNameTerm ? { name: { $regex: query.searchNameTerm, $options: "i" } } : {};
             const filter = Object.assign(Object.assign({}, byId), search);
@@ -133,7 +131,7 @@ exports.blogsRepository = {
             id: post.id,
             title: post.title,
             shortDescription: post.shortDescription,
-            content: post.shortDescription,
+            content: post.content,
             blogId: post.blogId,
             blogName: post.blogName,
             createdAt: post.createdAt,
