@@ -85,9 +85,9 @@ exports.blogsRepository = {
             }
         });
     },
-    createPostBlog(id, post) {
+    createPostBlog(blogId, post) {
         return __awaiter(this, void 0, void 0, function* () {
-            const blog = yield this.find(id);
+            const blog = yield this.find(blogId);
             console.log(blog);
             if (!blog) {
                 return null;
@@ -119,7 +119,7 @@ exports.blogsRepository = {
                     page: query.pageNumber,
                     pageSize: query.pageSize,
                     totalCount,
-                    items: items.map((b) => this.map(b))
+                    items: items.map((b) => this.mapPostBlog(b))
                 };
             }
             catch (error) {
@@ -129,16 +129,15 @@ exports.blogsRepository = {
         });
     },
     mapPostBlog(post) {
-        const blogForOutput = {
+        return {
+            id: post.id,
             title: post.title,
             shortDescription: post.shortDescription,
             content: post.shortDescription,
             blogId: post.blogId,
             blogName: post.blogName,
             createdAt: post.createdAt,
-            id: post.blogId,
         };
-        return blogForOutput;
     },
     map(blog) {
         const blogForOutput = {

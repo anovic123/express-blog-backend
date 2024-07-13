@@ -79,8 +79,8 @@ export const blogsRepository = {
             return false
         }
     },
-    async createPostBlog(id: BlogViewModel['id'], post: BlogPostInputModel) {
-       const blog = await this.find(id)
+    async createPostBlog(blogId: BlogViewModel['id'], post: BlogPostInputModel) {
+       const blog = await this.find(blogId)
         console.log(blog)
         if (!blog) {
             return null
@@ -95,8 +95,7 @@ export const blogsRepository = {
            createdAt: new Date().toISOString()
        }
 
-        await postsCollection.insertOne(newPost)
-
+       await postsCollection.insertOne(newPost)
         return this.mapPostBlog(newPost)
     },
     async getBlogPosts(query: any, blogId: string): Promise<any | null> {
@@ -120,7 +119,7 @@ export const blogsRepository = {
                 page: query.pageNumber,
                 pageSize: query.pageSize,
                 totalCount,
-                items: items.map((b: any) => this.map(b))
+                items: items.map((b: any) => this.mapPostBlog(b))
             }
         } catch (error) {
             console.log(error)
@@ -128,17 +127,15 @@ export const blogsRepository = {
         }
     },
     mapPostBlog(post: BlogPostViewModel): BlogPostViewModel {
-       const blogForOutput: BlogPostViewModel = {
+        return {
+           id: post.id,
            title: post.title,
            shortDescription: post.shortDescription,
            content: post.shortDescription,
            blogId: post.blogId,
            blogName: post.blogName,
            createdAt: post.createdAt,
-           id: post.blogId,
        }
-
-       return blogForOutput
     },
     map(blog: BlogDbType) {
         const blogForOutput: BlogViewModel = {
