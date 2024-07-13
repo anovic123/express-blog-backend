@@ -57,6 +57,7 @@ const shortDescriptionValidator = (0, express_validator_1.body)('shortDescriptio
 const contentValidator = (0, express_validator_1.body)('content').isString().trim().isLength({ min: 3, max: 1000 }).withMessage('content');
 exports.createBlogPostValidator = [
     admin_middleware_1.adminMiddleware,
+    exports.findBlogPostValidator,
     titleValidator,
     shortDescriptionValidator,
     contentValidator,
