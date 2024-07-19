@@ -6,8 +6,10 @@ const dotenv_1 = require("dotenv");
 exports.SETTINGS = {
     PORT: 5000,
     PATH: {
+        AUTH: '/',
         BLOGS: '/blogs',
         POSTS: '/posts',
+        USERS: '/users',
         TESTING: '/testing',
     },
     ADMIN: process.env.ADMIN || 'admin:qwerty',

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.runDb = exports.postsCollection = exports.blogsCollection = void 0;
+exports.runDb = exports.usersCollection = exports.postsCollection = exports.blogsCollection = void 0;
 const mongodb_1 = require("mongodb");
 const url = 'mongodb+srv://vkanaev220:Q2tgZaS1r9EQIx2i@api-v1.otqbeom.mongodb.net/?retryWrites=true&w=majority&appName=api-v1';
 if (!url) {
@@ -19,6 +19,7 @@ const client = new mongodb_1.MongoClient(url);
 const dbApi = client.db('api');
 exports.blogsCollection = dbApi.collection('blogs');
 exports.postsCollection = dbApi.collection('posts');
+exports.usersCollection = dbApi.collection('users');
 const runDb = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield client.connect();
@@ -32,31 +33,3 @@ const runDb = () => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.runDb = runDb;
-// export type DBType = {
-//     blogs: BlogDbType[]
-//     posts: PostDbType[]
-// }
-// export type ReadonlyDBType = {
-//     blogs: Readonly<BlogDbType[]>
-//     posts: Readonly<PostDbType[]>
-//     // some: any[]
-// }
-//
-// export const db: DBType = {
-//     blogs: [],
-//     posts: [],
-//     // some: []
-// }
-//
-//
-// export const setDB = (dataset?: Partial<ReadonlyDBType>) => {
-//     if (!dataset) {
-//         db.blogs = []
-//         db.posts = []
-//         // db.some = []
-//         return
-//     }
-//
-//     db.blogs = dataset.blogs?.map(b => ({...b})) || db.blogs
-//     db.posts = dataset.posts?.map(p => ({...p})) || db.posts
-// }
