@@ -9,4 +9,4 @@ export const usersRouter = Router()
 
 usersRouter.post('/', adminMiddleware, createUserController)
 usersRouter.delete('/:id', adminMiddleware, deleteUserController)
-usersRouter.get('/', getUsersController)
+usersRouter.get('/', adminMiddleware, getUsersController)

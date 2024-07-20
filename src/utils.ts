@@ -7,11 +7,5 @@ export const HTTP_STATUSES = {
   UNAUTHORIZED_401: 401
 }
 
-// get all posts
-// pageNumber, page size, sortBy, sortDirection
-
-// get all blogs
-// searchNameTerm, sortBy, sortDirection, pageNumber, pageSize
-
-// get all posts by blogId
-// pageNumber, pageSize, sortBy, sortDirection, blogId
+type HttpStatusKeys = keyof typeof HTTP_STATUSES
+export type HttpStatusType = (typeof HTTP_STATUSES)[HttpStatusKeys]

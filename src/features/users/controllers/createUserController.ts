@@ -5,10 +5,10 @@ import { UserInputModel } from "../../../input-output-types/users-types";
 
 export const createUserController = async (req: RequestWithBody<UserInputModel>, res: Response) => {
   const newUser = await usersService.createUser(
-    req.body.email,
     req.body.login,
+    req.body.email,
     req.body.password
   )
 
-  return newUser
+  return res.status(201).send(newUser)
 }

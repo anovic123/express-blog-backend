@@ -5,13 +5,14 @@ import { HTTP_STATUSES } from "../../../utils";
 
 export const deleteUserController = async (req: Request, res: Response) => {
   const userId = req.params.id
+
   const user = await usersService.findUserById(new ObjectId(userId))
 
   if (!user) {
-    return res.status(HTTP_STATUSES.NOT_FOUND_404)
+    return res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
   }
 
   await usersService.deleteUser(new ObjectId(userId))
 
-  return res.status(HTTP_STATUSES.NO_CONTENT_204)
+  return res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
 }

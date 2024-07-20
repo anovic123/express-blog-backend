@@ -37,7 +37,7 @@ exports.blogsRepository = {
     },
     findAndMap(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const blog = yield this.find(id); // ! используем этот метод если проверили существование
+            const blog = yield this.find(id);
             if (!blog) {
                 return null;
             }

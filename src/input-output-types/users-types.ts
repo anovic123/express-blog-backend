@@ -8,3 +8,10 @@ export type UserInputModel = {
   password: string
   email: string
 }
+
+export type UserOutputType = {
+  id: string
+  login: string
+  email: string
+  createdAt: Date
+}

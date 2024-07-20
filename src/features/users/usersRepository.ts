@@ -1,11 +1,11 @@
 import { usersCollection } from "../../db/db";
 import { UserDBType } from "../../db/user-db-type";
-import { AuthInputModel, UserInputModel } from "../../input-output-types/users-types";
+import { AuthInputModel, UserInputModel, UserOutputType } from "../../input-output-types/users-types";
 
 export const usersRepository = {
-  async createUser(user: UserDBType): Promise<UserDBType> {
+  async createUser(user: UserDBType): Promise<UserOutputType> {
     const result = await usersCollection.insertOne(user)
-    return user
+    return this._outputModelUser(user)
   },
   async findUserById(id: UserDBType['id']): Promise<UserDBType | null> {
     const user = await usersCollection.findOne({ id })
@@ -40,19 +40,29 @@ export const usersRepository = {
         page: query.pageNumber,
         pageSize: query.pageSize,
         totalCount: totalUsersCount,
-        items: users
+        items: users.map(user => this._outputModelUser(user))
       }
     } catch (error) {
       console.log(error)
       return []
     }
   },
-  async findUserByLoginOrEmail (loginOrEmail: Pick<AuthInputModel, 'loginOrEmail'>) {
+  async findUserByLoginOrEmail (loginOrEmail: string): Promise<UserDBType | null> {
     const user = await usersCollection.findOne({ $or: [ { login: loginOrEmail }, { email: loginOrEmail  } ] })
 
     return user
   },
-  async _mapOutUser() {
+  async deleteAll(): Promise<boolean> {
+    await usersCollection.deleteMany()
 
+    return true
+  },
+  _outputModelUser(user: UserDBType): UserOutputType {
+    return {
+      id: user.id.toString(),
+      createdAt: user.createdAt,
+      email: user.email,
+      login: user.login
+    }
   }
 }
