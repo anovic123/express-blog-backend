@@ -8,7 +8,7 @@ export const deleteUserController = async (req: Request, res: Response) => {
 
   const user = await usersService.findUserById(new ObjectId(userId))
 
-  if (!user) {
+  if (!user || !userId) {
     return res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
   }
 
