@@ -22,7 +22,7 @@ export const usersService = {
 
     return await usersRepository.createUser(newUser)
   },
-  async findUserById(id: UserDBType['id']) {
+  async findUserById(id: UserDBType['id']): Promise<UserDBType | null> {
     const userResult = await usersRepository.findUserById(id)
 
     return userResult
@@ -33,6 +33,11 @@ export const usersService = {
   async allUsers(query: any) {
     return await usersRepository.allUsers(query)
   },
+  async checkUnique (login: string, password: string): Promise<boolean> {
+    const res = await usersRepository.checkUnique(login, password)
+
+    return res
+  },
   async checkCredentials(loginOrEmail: string, password: string): Promise<boolean> {
     const user = await usersRepository.findUserByLoginOrEmail(loginOrEmail)
     if (!user) return false
@@ -42,7 +47,7 @@ export const usersService = {
     }
     return true
   },
-  async _generateHash(password: string, salt: string) {
+  async _generateHash(password: string, salt: string): Promise<string> {
     const hash = await bcrypt.hash(password, salt)
     return hash
   },

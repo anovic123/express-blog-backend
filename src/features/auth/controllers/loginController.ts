@@ -13,6 +13,7 @@ export const loginController = async (req: RequestWithBody<AuthInputModel>, res:
 
   if (!checkResult) {
     res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401)
+    return
   }
 
   res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)

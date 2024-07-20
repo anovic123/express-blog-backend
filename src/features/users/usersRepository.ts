@@ -1,6 +1,6 @@
 import { usersCollection } from "../../db/db";
 import { UserDBType } from "../../db/user-db-type";
-import { AuthInputModel, UserInputModel, UserOutputType } from "../../input-output-types/users-types";
+import { UserOutputType } from "../../input-output-types/users-types";
 
 export const usersRepository = {
   async createUser(user: UserDBType): Promise<UserOutputType> {
@@ -20,6 +20,15 @@ export const usersRepository = {
     const user = await usersCollection.deleteOne({ id })
 
     return true
+  },
+  async checkUnique(login: string, password: string): Promise<boolean> {
+    const res = await usersCollection.findOne({
+      $or: [
+        { login: login },
+        { password: password }
+      ]
+    });
+    return res === null;
   },
   async allUsers(query: any) {
     const searchLoginTerm = query.searchLoginTerm
@@ -48,7 +57,12 @@ export const usersRepository = {
     }
   },
   async findUserByLoginOrEmail (loginOrEmail: string): Promise<UserDBType | null> {
-    const user = await usersCollection.findOne({ $or: [ { login: loginOrEmail }, { email: loginOrEmail  } ] })
+    const user = await usersCollection.findOne({
+      $or: [
+        { login: loginOrEmail },
+        { password: loginOrEmail }
+      ]
+    })
 
     return user
   },

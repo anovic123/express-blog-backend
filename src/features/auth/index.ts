@@ -3,4 +3,4 @@ import { loginController } from './controllers/loginController'
 
 export const authRouter = Router()
 
-authRouter.post('/', loginController)
+authRouter.post('/login', loginController)

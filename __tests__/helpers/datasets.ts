@@ -17,12 +17,36 @@ export const blog1 = {
     websiteUrl: 'https://youtube.com',
 } as const
 
+export const blog2 = {
+    name: 'length_201',
+    description: 'dqweqweqweqweescription',
+    websiteUrl: 'https://youtube.com',
+} as const
 
 export const userCreate = {
     login: 'user',
     password: 'asdadsd',
     email: 'vkanaev220@gmail.com'
 } as const
+
+export const userCreate2 = {
+    login: 'user2',
+    password: 'asdadsd',
+    email: 'vkanaev2202@gmail.com'
+} as const
+
+export const userCreate3 = {
+    login: 'user3',
+    password: 'asdadsd',
+    email: 'vkanaev2203@gmail.com'
+} as const
+
+export const postCreate = {
+    title: 'Title',
+    content: 'Content',
+    shortDescription: 'Short Description',
+} as const 
+
 
 //========================================================================================================================================================
 
