@@ -1,224 +1,65 @@
-import {req} from './helpers/test-helpers'
-import {db, setDB} from '../src/db/db'
-import {SETTINGS} from '../src/settings'
-import {BlogInputModel} from '../src/input-output-types/blogs-types'
-import {codedAuth, createString, dataset1} from './helpers/datasets'
+import { BlogInputModel, BlogViewModel } from "../src/input-output-types/blogs-types"
+import { SETTINGS } from "../src/settings"
+import { HTTP_STATUSES } from "../src/utils"
+import { blog1, codedAuth } from "./helpers/datasets"
+import { req } from "./helpers/test-helpers"
+import { blogsTestManager } from "./utils/blogsTestManager"
 
-describe('/blogs', () => {
-    // beforeAll(async () => { // очистка базы данных перед началом тестирования
-    //     setDB()
-    // })
+// TEST DONE:
+// GET ALL
+// GET BY ID
+// SHOULDN'T FIND
+// SHOULD DELETE
+// SHOULDN'T DELETE
 
-    it('should create', async () => {
-        setDB()
-        const newBlog: BlogInputModel = {
-            name: 'n1',
-            description: 'd1',
-            websiteUrl: 'http://some.com',
-        }
+describe('blogs endpoint', () => {
+  beforeAll(async () => {
+    await req.delete(`${SETTINGS.PATH.TESTING}/all-data`)
+  })
 
-        const res = await req
-            .post(SETTINGS.PATH.BLOGS)
-            .set({'Authorization': 'Basic ' + codedAuth})
-            .send(newBlog) // отправка данных
-            .expect(201)
+  let createdBlog1: BlogViewModel | null = null
 
-        // console.log(res.body)
+  it ('should create blog with correct input data', async () => {
+      const createdBlogBody: BlogInputModel = blog1
 
-        expect(res.body.name).toEqual(newBlog.name)
-        expect(res.body.description).toEqual(newBlog.description)
-        expect(res.body.websiteUrl).toEqual(newBlog.websiteUrl)
-        expect(typeof res.body.id).toEqual('string')
+      const result = await blogsTestManager.createBlog(createdBlogBody, HTTP_STATUSES.CREATED_201)
 
-        expect(res.body).toEqual(db.blogs[0])
-    })
-    it('shouldn\'t create 401', async () => {
-        setDB()
-        const newBlog: BlogInputModel = {
-            name: 'n1',
-            description: 'd1',
-            websiteUrl: 'http://some.com',
-        }
+      createdBlog1 = result.createdEntity
 
-        const res = await req
-            .post(SETTINGS.PATH.BLOGS)
-            .send(newBlog) // отправка данных
-            .expect(401)
+      const resBlogs = await blogsTestManager.getAllBlogs(HTTP_STATUSES.OKK_200)
 
-        // console.log(res.body)
+      expect(resBlogs.allBlogsRes.body.items).toEqual([createdBlog1])
+  })
 
-        expect(db.blogs.length).toEqual(0)
-    })
-    it('shouldn\'t create', async () => {
-        setDB()
-        const newBlog: BlogInputModel = {
-            name: createString(16),
-            description: createString(501),
-            websiteUrl: createString(101),
-        }
+  it ('should get blog by id', async () => {
+    await req.get(`${SETTINGS.PATH.BLOGS}/${createdBlog1!.id}`).expect(HTTP_STATUSES.OKK_200, createdBlog1)
+  })
 
-        const res = await req
-            .post(SETTINGS.PATH.BLOGS)
-            .set({'Authorization': 'Basic ' + codedAuth})
-            .send(newBlog) // отправка данных
-            .expect(400)
+  it ('shouldn\'t find', async () => {
+    await req.get(`${SETTINGS.PATH.BLOGS}/999999`).expect(HTTP_STATUSES.NOT_FOUND_404)
+  })
 
-        // console.log(res.body)
+  it ('should del', async () => {
+    await req.delete(`${SETTINGS.PATH.BLOGS}/${createdBlog1?.id}`).set({'Authorization': 'Basic ' + codedAuth}).expect(HTTP_STATUSES.NO_CONTENT_204)
 
-        expect(res.body.errorsMessages.length).toEqual(3)
-        expect(res.body.errorsMessages[0].field).toEqual('name')
-        expect(res.body.errorsMessages[1].field).toEqual('description')
-        expect(res.body.errorsMessages[2].field).toEqual('websiteUrl')
+    await req.get(`${SETTINGS.PATH.BLOGS}/${createdBlog1?.id}`).expect(HTTP_STATUSES.NOT_FOUND_404)
+  })
 
-        expect(db.blogs.length).toEqual(0)
-    })
-    it('should get empty array', async () => {
-        setDB() // очистка базы данных если нужно
+  let createdBlog2: BlogViewModel | null = null
 
-        const res = await req
-            .get(SETTINGS.PATH.BLOGS)
-            .expect(200) // проверяем наличие эндпоинта
+  it ('should create blog 2 with correct input data', async () => {
+      const createdBlogBody: BlogInputModel = blog1
 
-        // console.log(res.body) // можно посмотреть ответ эндпоинта
+      const result = await blogsTestManager.createBlog(createdBlogBody, HTTP_STATUSES.CREATED_201)
 
-        expect(res.body.length).toEqual(0) // проверяем ответ эндпоинта
-    })
-    it('should get not empty array', async () => {
-        setDB(dataset1) // заполнение базы данных начальными данными если нужно
+      createdBlog2 = result.createdEntity
 
-        const res = await req
-            .get(SETTINGS.PATH.BLOGS)
-            .expect(200)
+      const resBlogs = await blogsTestManager.getAllBlogs(HTTP_STATUSES.OKK_200)
 
-        // console.log(res.body)
+      expect(resBlogs.allBlogsRes.body.items).toEqual([createdBlog2])
+  })
 
-        expect(res.body.length).toEqual(1)
-        expect(res.body[0]).toEqual(dataset1.blogs[0])
-    })
-    it('shouldn\'t find', async () => {
-        setDB(dataset1)
-
-        const res = await req
-            .get(SETTINGS.PATH.BLOGS + '/1')
-            .expect(404) // проверка на ошибку
-
-        // console.log(res.body)
-    })
-    it('should find', async () => {
-        setDB(dataset1)
-
-        const res = await req
-            .get(SETTINGS.PATH.BLOGS + '/' + dataset1.blogs[0].id)
-            .expect(200) // проверка на ошибку
-
-        // console.log(res.body)
-
-        expect(res.body).toEqual(dataset1.blogs[0])
-    })
-    it('should del', async () => {
-        setDB(dataset1)
-
-        const res = await req
-            .delete(SETTINGS.PATH.BLOGS + '/' + dataset1.blogs[0].id)
-            .set({'Authorization': 'Basic ' + codedAuth})
-            .expect(204) // проверка на ошибку
-
-        // console.log(res.body)
-
-        expect(db.blogs.length).toEqual(0)
-    })
-    it('shouldn\'t del', async () => {
-        setDB()
-
-        const res = await req
-            .delete(SETTINGS.PATH.BLOGS + '/1')
-            .set({'Authorization': 'Basic ' + codedAuth})
-            .expect(404) // проверка на ошибку
-
-        // console.log(res.body)
-    })
-    it('shouldn\'t del 401', async () => {
-        setDB()
-
-        const res = await req
-            .delete(SETTINGS.PATH.BLOGS + '/1')
-            .set({'Authorization': 'Basic' + codedAuth}) // no ' '
-            .expect(401) // проверка на ошибку
-
-        // console.log(res.body)
-    })
-    it('should update', async () => {
-        setDB(dataset1)
-        const blog: BlogInputModel = {
-            name: 'n2',
-            description: 'd2',
-            websiteUrl: 'http://some2.com',
-        }
-
-        const res = await req
-            .put(SETTINGS.PATH.BLOGS + '/' + dataset1.blogs[0].id)
-            .set({'Authorization': 'Basic ' + codedAuth})
-            .send(blog)
-            .expect(204) // проверка на ошибку
-
-        // console.log(res.body)
-
-        expect(db.blogs[0]).toEqual({...db.blogs[0], ...blog})
-    })
-    it('shouldn\'t update 404', async () => {
-        setDB()
-        const blog: BlogInputModel = {
-            name: 'n1',
-            description: 'd1',
-            websiteUrl: 'http://some.com',
-        }
-
-        const res = await req
-            .put(SETTINGS.PATH.BLOGS + '/1')
-            .set({'Authorization': 'Basic ' + codedAuth})
-            .send(blog)
-            .expect(404) // проверка на ошибку
-
-        // console.log(res.body)
-    })
-    it('shouldn\'t update2', async () => {
-        setDB(dataset1)
-        const blog: BlogInputModel = {
-            name: createString(16),
-            description: createString(501),
-            websiteUrl: createString(101),
-        }
-
-        const res = await req
-            .put(SETTINGS.PATH.BLOGS + '/' + dataset1.blogs[0].id)
-            .set({'Authorization': 'Basic ' + codedAuth})
-            .send(blog)
-            .expect(400) // проверка на ошибку
-
-        // console.log(res.body)
-
-        expect(db).toEqual(dataset1)
-        expect(res.body.errorsMessages.length).toEqual(3)
-        expect(res.body.errorsMessages[0].field).toEqual('name')
-        expect(res.body.errorsMessages[1].field).toEqual('description')
-        expect(res.body.errorsMessages[2].field).toEqual('websiteUrl')
-    })
-    it('shouldn\'t update 401', async () => {
-        setDB(dataset1)
-        const blog: BlogInputModel = {
-            name: createString(16),
-            description: createString(501),
-            websiteUrl: createString(101),
-        }
-
-        const res = await req
-            .put(SETTINGS.PATH.BLOGS + '/' + dataset1.blogs[0].id)
-            .set({'Authorization': 'Basic ' + codedAuth + 'error'})
-            .send(blog)
-            .expect(401) // проверка на ошибку
-
-        // console.log(res.body)
-
-        expect(db).toEqual(dataset1)
-    })
+  it ('shouldn\'t delete. Expected 401', async () => {
+    await req.delete(`${SETTINGS.PATH.BLOGS}/${createdBlog2!.id}`).expect(HTTP_STATUSES.UNAUTHORIZED_401)
+  })
 })

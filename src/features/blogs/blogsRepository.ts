@@ -28,7 +28,7 @@ export const blogsRepository = {
         return this.map(res)
     },
     async findAndMap(id: string): Promise<BlogViewModel | null> {
-        const blog = await this.find(id)! // ! используем этот метод если проверили существование
+        const blog = await this.find(id)!
         if (!blog) {
             return null
         }
