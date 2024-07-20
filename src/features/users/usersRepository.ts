@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import { usersCollection } from "../../db/db";
 import { UserDBType } from "../../db/user-db-type";
 import { UserOutputType } from "../../input-output-types/users-types";
@@ -7,8 +8,12 @@ export const usersRepository = {
     const result = await usersCollection.insertOne(user)
     return this._outputModelUser(user)
   },
-  async findUserById(id: UserDBType['id']): Promise<UserDBType | null> {
-    const user = await usersCollection.findOne({ id })
+  async findUserById(id: string): Promise<UserDBType | null> {
+    if (!ObjectId.isValid(id)) {
+      return null
+    }
+    const userId = new ObjectId(id)
+    const user = await usersCollection.findOne({ id: userId })
 
     if (!user) {
       return null

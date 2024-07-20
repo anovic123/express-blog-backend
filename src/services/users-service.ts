@@ -22,7 +22,7 @@ export const usersService = {
 
     return await usersRepository.createUser(newUser)
   },
-  async findUserById(id: UserDBType['id']): Promise<UserDBType | null> {
+  async findUserById(id: string): Promise<UserDBType | null> {
     const userResult = await usersRepository.findUserById(id)
 
     return userResult
