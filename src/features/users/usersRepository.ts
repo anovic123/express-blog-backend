@@ -31,29 +31,43 @@ export const usersRepository = {
     return res === null;
   },
   async allUsers(query: any) {
-    const searchLoginTerm = query.searchLoginTerm
-    const searchEmailTerm = query.searchEmailTerm
+    const { searchLoginTerm, searchEmailTerm, sortBy, sortDirection, pageNumber, pageSize } = query;
 
     const filter: any = {
-      ...searchLoginTerm,
-      ...searchEmailTerm
+      $or: []
+    }
+
+    if (searchLoginTerm) {
+      filter.$or.push({ login: { $regex: searchLoginTerm, $options: 'i' } });
+    }
+
+    if (searchEmailTerm) {
+      filter.$or.push({ email: { $regex: searchEmailTerm, $options: 'i' } });
+    }
+
+    if (filter.$or.length === 0) {
+      delete filter.$or;
     }
 
     try {
-      const users = await usersCollection.find(filter).sort(query.sortBy, query.sortDirection).skip((query.pageNumber - 1) * query.pageSize).limit(query.pageSize).toArray()
-
-      const totalUsersCount = await usersCollection.countDocuments(filter)
-
+      const users = await usersCollection.find(filter)
+        .sort({ [sortBy]: sortDirection === 'asc' ? 1 : -1 })
+        .skip((pageNumber - 1) * pageSize)
+        .limit(pageSize)
+        .toArray();
+  
+      const totalUsersCount = await usersCollection.countDocuments(filter);
+  
       return {
-        pagesCount: Math.ceil(totalUsersCount / query.pageSize),
-        page: query.pageNumber,
-        pageSize: query.pageSize,
+        pagesCount: Math.ceil(totalUsersCount / pageSize),
+        page: pageNumber,
+        pageSize: pageSize,
         totalCount: totalUsersCount,
         items: users.map(user => this._outputModelUser(user))
-      }
+      };
     } catch (error) {
-      console.log(error)
-      return []
+      console.log(error);
+      return [];
     }
   },
   async findUserByLoginOrEmail (loginOrEmail: string): Promise<UserDBType | null> {
