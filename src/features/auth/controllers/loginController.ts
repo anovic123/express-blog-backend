@@ -4,7 +4,7 @@ import { RequestWithBody } from "../../../types"
 
 import { AuthInputModel } from "../../../input-output-types/users-types"
 
-import { usersService } from "../../../services/users-service"
+import { usersService } from "../../users/services/users-service"
 
 import { HTTP_STATUSES } from "../../../utils"
 
