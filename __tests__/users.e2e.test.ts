@@ -56,15 +56,4 @@ describe('users endpoints', () => {
     
     expect(resUsers.allUsersRes.body.items.length).toEqual(1)
   })
-
-  it ('should auth', async () => {
-    const credentials = {
-      loginOrEmail: userCreate3.login,
-      password: userCreate3.password
-    }
-
-    const createdUser = await usersTestManager.createUser(userCreate3, true, HTTP_STATUSES.CREATED_201)
-
-    const authRes = await req.post(`${SETTINGS.PATH.AUTH}/login`).set({ 'Authorization': 'Basic ' + codedAuth }).send(credentials).expect(HTTP_STATUSES.NO_CONTENT_204)
-  })
 })

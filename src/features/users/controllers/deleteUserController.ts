@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import { Request, Response } from 'express'
 
-import { usersService } from "../services/users-service";
+import { usersService } from "../domain/users-service";
 
 import { HTTP_STATUSES } from "../../../utils";
 

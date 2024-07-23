@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { usersService } from "../services/users-service";
+import { usersService } from "../domain/users-service";
 
 import { getUsersHelper } from "../helper";
 
