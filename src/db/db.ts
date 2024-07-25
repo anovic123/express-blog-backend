@@ -1,9 +1,8 @@
+import {MongoClient} from "mongodb";
+
 import {BlogDbType} from './blog-db-type'
 import {PostDbType} from './post-db-type'
-import {SETTINGS} from "../settings";
-import {MongoClient, ServerApiVersion} from "mongodb";
 import { UserDBType } from './user-db-type';
-import {CommentViewModel} from "../input-output-types/comment-types";
 import {CommentDBType} from "./comment-db-type";
 
 const url = 'mongodb+srv://vkanaev220:Q2tgZaS1r9EQIx2i@api-v1.otqbeom.mongodb.net/?retryWrites=true&w=majority&appName=api-v1'

@@ -5,8 +5,7 @@ import {HTTP_STATUSES} from "../../../utils";
 
 export const getCommentsByIdController = async (req: RequestAuthModel, res: Response) => {
     const commentsRes = await commentsQueryRepository.getCommentsById(req.params.id)
-
-    if (!commentsRes) {
+    if (!commentsRes || commentsRes.length < 1) {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
         return
     }

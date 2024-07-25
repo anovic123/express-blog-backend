@@ -1,6 +1,9 @@
 import { ObjectId } from "mongodb";
+
 import { usersCollection } from "../../db/db";
+
 import { UserDBType } from "../../db/user-db-type";
+
 import { UserOutputType } from "../../input-output-types/users-types";
 
 export const usersRepository = {
@@ -12,6 +15,7 @@ export const usersRepository = {
     if (!ObjectId.isValid(id)) {
       return null
     }
+    console.log(id)
     const userId = new ObjectId(id)
     const user = await usersCollection.findOne({ id: userId })
 

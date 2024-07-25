@@ -10,15 +10,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createPostController = void 0;
-const postsRepository_1 = require("../postsRepository");
+const posts_service_1 = require("../domain/posts-service");
+const postsQueryRepository_1 = require("../postsQueryRepository");
 const utils_1 = require("../../../utils");
 const createPostController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const newPostId = yield postsRepository_1.postsRepository.create(req.body);
+    const newPostId = yield posts_service_1.postsService.createPost(req.body);
     if (!newPostId) {
         res.sendStatus(utils_1.HTTP_STATUSES.BAD_REQUEST_400);
         return;
     }
-    const newPost = yield postsRepository_1.postsRepository.findAndMap(newPostId);
+    const newPost = yield postsQueryRepository_1.postsQueryRepository.getMappedPostById(newPostId);
     if (!newPost) {
         res.sendStatus(utils_1.HTTP_STATUSES.BAD_REQUEST_400);
         return;

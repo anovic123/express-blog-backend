@@ -1,9 +1,11 @@
 import { ObjectId } from "mongodb";
 import bcrypt from 'bcrypt'
-import { usersRepository } from "../usersRepository";
-import { UserDBType } from "../../../db/user-db-type";
-import { UserOutputType } from "../../../input-output-types/users-types";
 
+import { usersRepository } from "../usersRepository";
+
+import { UserDBType } from "../../../db/user-db-type";
+
+import { UserOutputType } from "../../../input-output-types/users-types";
 
 export const usersService = {
   async createUser(login: string, email: string, password: string): Promise<UserOutputType> {

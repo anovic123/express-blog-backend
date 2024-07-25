@@ -12,5 +12,5 @@ export const commentsQueryRepository = {
         }
 
         return commentsRes
-    }
+    },
 }

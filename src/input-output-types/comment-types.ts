@@ -1,4 +1,4 @@
-import {CommentDBType, CommentOutputCommentatorInfoModel} from "../db/comment-db-type";
+import { CommentOutputCommentatorInfoModel } from "../db/comment-db-type";
 
 export interface CommentViewModel {
     id: string

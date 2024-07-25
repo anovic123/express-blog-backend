@@ -10,27 +10,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.postsRepository = void 0;
-const db_1 = require("../../db/db");
 const blogsRepository_1 = require("../blogs/blogsRepository");
-const mongodb_1 = require("mongodb");
+const db_1 = require("../../db/db");
 exports.postsRepository = {
-    create(post) {
+    createPost(post) {
         return __awaiter(this, void 0, void 0, function* () {
-            const blogName = yield blogsRepository_1.blogsRepository.find(post.blogId);
-            if (!blogName)
-                return null;
-            const newPost = {
-                id: new Date().toISOString() + Math.random(),
-                title: post.title,
-                content: post.content,
-                shortDescription: post.shortDescription,
-                blogId: post.blogId,
-                blogName: blogName.name,
-                createdAt: new Date().toISOString(),
-                isMembership: false
-            };
-            yield db_1.postsCollection.insertOne(newPost);
-            return newPost.id;
+            yield db_1.postsCollection.insertOne(post);
+            return post.id;
+        });
+    },
+    createPostComment(comment) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield db_1.commentsCollection.insertOne(comment);
+            return comment;
         });
     },
     find(id) {
@@ -39,65 +31,23 @@ exports.postsRepository = {
             return res;
         });
     },
-    findAndMap(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const post = yield this.find(id); // ! используем этот метод если проверили существование
-            if (!post) {
-                return null;
-            }
-            return this.map(post);
-        });
-    },
-    getAll(query, blogId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const byId = blogId ? { blogId: new mongodb_1.ObjectId(blogId) } : {};
-            const search = query.searchNameTerm ? { title: { $regex: query.searchNameTerm, $options: "i" } } : {}; // new RegExp (query.searchNameTerm, 'i')
-            const filter = Object.assign(Object.assign({}, byId), search);
-            try {
-                const items = yield db_1.postsCollection.find(filter).sort(query.sortBy, query.sortDirection).skip((query.pageNumber - 1) * query.pageSize).limit(query.pageSize).toArray();
-                const totalCount = yield db_1.postsCollection.countDocuments(filter);
-                return {
-                    pagesCount: Math.ceil(totalCount / query.pageSize),
-                    page: query.pageNumber,
-                    pageSize: query.pageSize,
-                    totalCount,
-                    items: items.map((i) => this.map(i))
-                };
-            }
-            catch (error) {
-                console.log(error);
-                return [];
-            }
-        });
-    },
     del(id) {
         return __awaiter(this, void 0, void 0, function* () {
             yield db_1.postsCollection.deleteOne({ id: id });
+            return true;
         });
     },
     put(post, id) {
         return __awaiter(this, void 0, void 0, function* () {
             const blog = yield blogsRepository_1.blogsRepository.find(post.blogId);
             if (!blog) {
-                return null;
+                return false;
             }
             const result = yield db_1.postsCollection.updateOne({ id: id }, {
                 $set: Object.assign(Object.assign({}, post), { blogName: blog.name })
             });
             return result.matchedCount === 1;
         });
-    },
-    map(post) {
-        const postForOutput = {
-            id: post.id,
-            title: post.title,
-            shortDescription: post.shortDescription,
-            content: post.content,
-            blogId: post.blogId,
-            blogName: post.blogName,
-            createdAt: post.createdAt
-        };
-        return postForOutput;
     },
     deleteAll() {
         return __awaiter(this, void 0, void 0, function* () {

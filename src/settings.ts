@@ -1,4 +1,4 @@
-import {config} from 'dotenv'
+import { config } from 'dotenv'
 config()
 
 export const SETTINGS = {
@@ -15,4 +15,3 @@ export const SETTINGS = {
     JWT_SECRET: process.env.JWT_SECRET || '123',
     MONGO_URI: process.env.MONGO_URI
 }
-

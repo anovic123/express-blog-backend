@@ -1,9 +1,14 @@
-import {body} from 'express-validator'
-import {inputCheckErrorsMiddleware} from '../../../global-middlewares/inputCheckErrorsMiddleware'
-import {blogsRepository} from '../../blogs/blogsRepository'
 import {NextFunction, Response} from 'express'
+import {body} from 'express-validator'
+
+import {inputCheckErrorsMiddleware} from '../../../global-middlewares/inputCheckErrorsMiddleware'
+
+import {blogsRepository} from '../../blogs/blogsRepository'
 import {postsRepository} from '../postsRepository'
+
 import {adminMiddleware} from '../../../global-middlewares/admin-middleware'
+import {authMiddleware} from "../../../global-middlewares/auth-middleware";
+
 import { RequestWithParams } from '../../../types'
 
 // title: string // max 30

@@ -1,9 +1,8 @@
-import {codedAuth, userCreate3} from "./helpers/datasets";
+import { userCreate3 } from "./helpers/datasets";
 import {usersTestManager} from "./utils/usersTestManager";
 import {HTTP_STATUSES} from "../src/utils";
 import {req} from "./helpers/test-helpers";
 import {SETTINGS} from "../src/settings";
-import {before} from "node:test";
 
 describe('auth endpoint', () => {
     beforeAll(async () => {

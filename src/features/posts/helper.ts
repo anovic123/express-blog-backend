@@ -1,7 +1,14 @@
-import {query} from "express-validator";
 import {SortDirection} from "mongodb";
 
-export const getAllPostsHelper = (query: { [key: string]: string | undefined }) => {
+export interface GetAllPostsHelperResult {
+    pageNumber?: number;
+    pageSize?: number;
+    sortBy?: string;
+    sortDirection?: SortDirection;
+    searchNameTerm?: string;
+}
+
+export const getAllPostsHelper = (query: GetAllPostsHelperResult) => {
     return {
         pageNumber: query.pageNumber ? +query.pageNumber : 1,
         pageSize: query.pageSize !== undefined ? +query.pageSize : 10,

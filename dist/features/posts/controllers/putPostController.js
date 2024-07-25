@@ -10,10 +10,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.putPostController = void 0;
-const postsRepository_1 = require("../postsRepository");
+const posts_service_1 = require("../domain/posts-service");
 const utils_1 = require("../../../utils");
 const putPostController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    yield postsRepository_1.postsRepository.put(req.body, req.params.id);
+    const putRes = yield posts_service_1.postsService.putPostById(req.body, req.params.id);
+    if (!putRes) {
+        res.sendStatus(utils_1.HTTP_STATUSES.BAD_REQUEST_400);
+        return;
+    }
     res.sendStatus(utils_1.HTTP_STATUSES.NO_CONTENT_204);
 });
 exports.putPostController = putPostController;

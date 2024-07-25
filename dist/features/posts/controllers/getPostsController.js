@@ -10,12 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getPostsController = void 0;
-const postsRepository_1 = require("../postsRepository");
+const postsQueryRepository_1 = require("../postsQueryRepository");
 const utils_1 = require("../../../utils");
-const helper_1 = require("../helper");
 const getPostsController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const sanitizedQuery = (0, helper_1.getAllPostsHelper)(req.query);
-    const posts = yield postsRepository_1.postsRepository.getAll(sanitizedQuery, req.params.id);
+    const posts = yield postsQueryRepository_1.postsQueryRepository.getAllPosts(req.query, req.params.id);
     return res.status(utils_1.HTTP_STATUSES.OKK_200).json(posts);
 });
 exports.getPostsController = getPostsController;
