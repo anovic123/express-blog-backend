@@ -6,6 +6,7 @@ import {PostDbType} from "../../db/post-db-type";
 import {PostViewModel} from "../../input-output-types/posts-types";
 
 import {getAllPostsHelper, GetAllPostsHelperResult} from "./helper";
+import {CommentDBType} from "../../db/comment-db-type";
 
 export const postsQueryRepository = {
     async getMappedPostById(id: PostDbType['id']): Promise<PostViewModel | null> {
@@ -47,8 +48,8 @@ export const postsQueryRepository = {
     async getPostsComments (query: GetAllPostsHelperResult, postId: string) {
         const sanitizedQuery = getAllPostsHelper(query)
 
-        const byId = postId ? { id: postId } : {}
-        const search = sanitizedQuery.searchNameTerm ? { title: { $reges: sanitizedQuery.searchNameTerm, $options: "i" } } : {}
+        const byId = postId ? { id: new ObjectId(postId) } : {}
+        const search = sanitizedQuery.searchNameTerm ? { title: { $regex: sanitizedQuery.searchNameTerm, $options: "i" } } : {}
 
         const filter: any = {
             ...byId,
@@ -65,7 +66,7 @@ export const postsQueryRepository = {
                 page: sanitizedQuery.pageNumber,
                 pageSize: sanitizedQuery.pageSize,
                 totalCount,
-                items: items.map((i: any) => this.mapPostOutput(i))
+                items: items.map((i: any) => this.mapPostCommentsOutput(i))
             }
         } catch(error) {
             console.log(error)
@@ -95,4 +96,16 @@ export const postsQueryRepository = {
         }
         return postForOutput
     },
+    mapPostCommentsOutput(comment: CommentDBType) {
+        const commentForOutput = {
+            id: comment.id,
+            content: comment.content,
+            commentatorInfo: {
+                userId: comment.commentatorInfo.userId,
+                userLogin: comment.commentatorInfo.userLogin
+            },
+            createdAt: comment.createdAt
+        }
+        return commentForOutput
+    }
 }

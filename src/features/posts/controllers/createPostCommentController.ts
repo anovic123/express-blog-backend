@@ -16,9 +16,7 @@ export const createPostCommentController = async (req: RequestAuthModelWithParam
         return
     }
 
-    console.log(req.user)
-    return res.sendStatus(200)
-    // const newComment = await postsService.createPostComment(req.params.postId, req.body.content, req.user!)
-    //
-    // return res.sendStatus(HTTP_STATUSES.CREATED_201).json(newComment)
+    const newComment = await postsService.createPostComment(req.params.postId, req.body.content, req.user!)
+
+    return res.sendStatus(HTTP_STATUSES.CREATED_201).json(newComment)
 }
