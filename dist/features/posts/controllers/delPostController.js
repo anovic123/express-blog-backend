@@ -10,10 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.delPostController = void 0;
-const postsRepository_1 = require("../postsRepository");
+const posts_service_1 = require("../domain/posts-service");
 const utils_1 = require("../../../utils");
 const delPostController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    yield postsRepository_1.postsRepository.del(req.params.id);
+    yield posts_service_1.postsService.delPostById(req.params.id);
     res.sendStatus(utils_1.HTTP_STATUSES.NO_CONTENT_204);
 });
 exports.delPostController = delPostController;

@@ -1,8 +1,12 @@
 import { Response } from "express";
-import { usersService } from "../../../services/users-service";
+
 import { RequestWithBody } from "../../../types";
+
 import { UserInputModel } from "../../../input-output-types/users-types";
+
 import { HTTP_STATUSES } from "../../../utils";
+
+import { usersService } from "../domain/users-service";
 
 export const createUserController = async (req: RequestWithBody<UserInputModel>, res: Response) => {
   const findUser = await usersService.checkUnique(req.body.login, req.body.password)

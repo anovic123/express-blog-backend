@@ -10,10 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.findPostController = void 0;
-const postsRepository_1 = require("../postsRepository");
 const utils_1 = require("../../../utils");
+const postsQueryRepository_1 = require("../postsQueryRepository");
 const findPostController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const blogById = yield postsRepository_1.postsRepository.findAndMap(req.params.id);
+    const blogById = yield postsQueryRepository_1.postsQueryRepository.getMappedPostById(req.params.id);
     if (!blogById) {
         res.sendStatus(utils_1.HTTP_STATUSES.NOT_FOUND_404);
         return;

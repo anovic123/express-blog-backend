@@ -10,8 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const app_1 = require("./app");
-const settings_1 = require("./settings");
 const db_1 = require("./db/db");
+const settings_1 = require("./settings");
 const startApp = () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, db_1.runDb)();
     app_1.app.listen(settings_1.SETTINGS.PORT, () => {

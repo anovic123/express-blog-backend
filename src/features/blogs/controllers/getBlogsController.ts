@@ -1,7 +1,4 @@
 import {Request, Response} from 'express'
-import { body, validationResult, query, param } from "express-validator";
-
-import {BlogViewModel} from '../../../input-output-types/blogs-types'
 
 import {blogsRepository} from '../blogsRepository'
 

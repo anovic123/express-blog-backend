@@ -15,10 +15,12 @@ const utils_1 = require("../../utils");
 const blogsRepository_1 = require("../blogs/blogsRepository");
 const postsRepository_1 = require("../posts/postsRepository");
 const usersRepository_1 = require("../users/usersRepository");
+const commentsRepository_1 = require("../comments/commentsRepository");
 exports.testingRouter = (0, express_1.Router)();
 exports.testingRouter.delete('/all-data', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield blogsRepository_1.blogsRepository.deleteAll();
     yield postsRepository_1.postsRepository.deleteAll();
     yield usersRepository_1.usersRepository.deleteAll();
+    yield commentsRepository_1.commentsRepository.deleteAll();
     res.status(utils_1.HTTP_STATUSES.NO_CONTENT_204).json({});
 }));

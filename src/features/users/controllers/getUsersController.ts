@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 
+import { usersService } from "../domain/users-service";
+
 import { getUsersHelper } from "../helper";
 
-import { usersService } from "../../../services/users-service";
 
 export const getUsersController = async (req: Request, res: Response) => {
   const sanitizedQuery = getUsersHelper(req.query as { [key: string]: string | undefined })

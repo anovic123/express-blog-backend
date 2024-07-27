@@ -1,11 +1,15 @@
-import {Request, Response} from 'express'
+import { Response } from 'express'
+
 import {PostViewModel} from '../../../input-output-types/posts-types'
-import {postsRepository} from '../postsRepository'
+
 import { HTTP_STATUSES } from '../../../utils'
+
 import { RequestWithParams } from '../../../types'
 
+import {postsQueryRepository} from "../postsQueryRepository";
+
 export const findPostController = async (req: RequestWithParams<{id: string}>, res: Response<PostViewModel | {}>) => {
-    const blogById = await postsRepository.findAndMap(req.params.id)
+    const blogById = await postsQueryRepository.getMappedPostById(req.params.id)
 
     if (!blogById) {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)

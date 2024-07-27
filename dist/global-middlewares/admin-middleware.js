@@ -1,14 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.adminMiddleware = exports.fromUTF8ToBase64 = exports.fromBase64ToUTF8 = void 0;
+exports.adminMiddleware = exports.fromUTF8ToBase64 = void 0;
 const settings_1 = require("../settings");
 const utils_1 = require("../utils");
-const fromBase64ToUTF8 = (code) => {
-    const buff = Buffer.from(code, 'base64');
-    const decodedAuth = buff.toString('utf8');
-    return decodedAuth;
-};
-exports.fromBase64ToUTF8 = fromBase64ToUTF8;
+// export const fromBase64ToUTF8 = (code: string) => {
+//     const buff = Buffer.from(code, 'base64')
+//     const decodedAuth = buff.toString('utf8')
+//     return decodedAuth
+// }
 const fromUTF8ToBase64 = (code) => {
     const buff2 = Buffer.from(code, 'utf8');
     const codedAuth = buff2.toString('base64');
