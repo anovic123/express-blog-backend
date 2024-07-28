@@ -5,6 +5,8 @@ import {RequestWithParams} from "../../../types";
 import {NextFunction, Response} from "express";
 import {postsRepository} from "../../posts/postsRepository";
 import {HTTP_STATUSES} from "../../../utils";
+import {commentsRepository} from "../commentsRepository";
+import {commentsQueryRepository} from "../commentsQueryRepository";
 
 const contentValidator = body('content').isString().trim().isLength({ min: 20, max: 300 })
 
@@ -32,7 +34,7 @@ export const findCommentsValidator = async (req: RequestWithParams<{ commentId: 
         return
     }
 
-    const comment = await postsRepository.find(req.params.commentId)
+    const comment = await commentsQueryRepository.getCommentsById(req.params.commentId)
 
     if (!comment) {
         res.status(HTTP_STATUSES.NOT_FOUND_404)
