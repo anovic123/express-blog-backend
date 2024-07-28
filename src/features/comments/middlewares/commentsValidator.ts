@@ -11,6 +11,7 @@ const contentValidator = body('content').isString().trim().isLength({ min: 20, m
 export const findPostsValidator = async (req: RequestWithParams<{ commentId: string }>, res: Response, next: NextFunction) => {
     if (!req.params.commentId) {
         res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
+        return
     }
 
     const post = await postsRepository.find(req.params.commentId)
@@ -19,6 +20,22 @@ export const findPostsValidator = async (req: RequestWithParams<{ commentId: str
         res
             .status(HTTP_STATUSES.NOT_FOUND_404)
             .json({})
+        return
+    }
+
+    next()
+}
+
+export const findCommentsValidator = async (req: RequestWithParams<{ commentId: string }>, res: Response, next: NextFunction) => {
+    if (!req.params.commentId) {
+        res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
+        return
+    }
+
+    const comment = await postsRepository.find(req.params.commentId)
+
+    if (!comment) {
+        res.status(HTTP_STATUSES.NOT_FOUND_404)
         return
     }
 
@@ -38,5 +55,6 @@ export const deleteCommentValidator = [
     authMiddleware,
     commentIdValidator,
     findPostsValidator,
+    findCommentsValidator,
     inputCheckErrorsMiddleware
 ]
