@@ -20,7 +20,7 @@ export const postsRouter = Router()
 
 postsRouter.post('/', ...postValidators, createPostController)
 postsRouter.get('/', getPostsController)
-postsRouter.get('/:id', findPostValidator, findPostController)
+postsRouter.get('/:id', findPostController)
 postsRouter.delete('/:id', adminMiddleware, findPostValidator, delPostController)
 postsRouter.put('/:id', ...putValidators, putPostController)
 postsRouter.post('/:postId/comments', ...postCommentValidator, createPostCommentController)
