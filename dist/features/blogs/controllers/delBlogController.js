@@ -11,10 +11,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.delBlogController = void 0;
 const blogsRepository_1 = require("../blogsRepository");
+const blogsQueryRepository_1 = require("../blogsQueryRepository");
 const utils_1 = require("../../../utils");
 const delBlogController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const blogId = req.params.id;
-    const blog = yield blogsRepository_1.blogsRepository.find(blogId);
+    const blog = yield blogsQueryRepository_1.blogsQueryRepository.findBlog(blogId);
     if (!blog) {
         return res.status(utils_1.HTTP_STATUSES.NOT_FOUND_404).json({ message: 'Blog not found' });
     }

@@ -26,7 +26,7 @@ export const postsRepository = {
     },
     async put(post: PostInputModel, id: string): Promise<boolean> {
 
-        const blog = await blogsRepository.find(post.blogId)
+        const blog = await blogsRepository.findBlog(post.blogId)
 
         if (!blog) {
             return false

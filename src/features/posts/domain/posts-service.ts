@@ -8,7 +8,7 @@ import {CommentDBType} from "../../../db/comment-db-type";
 
 export const postsService = {
     async createPost(post: PostInputModel): Promise<PostDbType['id'] | null> {
-        const blogName = await blogsRepository.find(post.blogId)
+        const blogName = await blogsRepository.findBlog(post.blogId)
         if (!blogName) return null
         const newPost: PostDbType = {
             id: new ObjectId().toString(),

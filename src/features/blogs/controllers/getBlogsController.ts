@@ -1,15 +1,15 @@
-import {Request, Response} from 'express'
+import { Response } from 'express'
 
-import {blogsRepository} from '../blogsRepository'
+import {blogsQueryRepository} from "../blogsQueryRepository";
 
 import { HTTP_STATUSES } from '../../../utils'
 
-import {getAllBlogsHelper} from "../helper";
+import { getAllBlogsHelperResult } from "../helper";
 
+import { RequestWithQueryAndParams } from "../../../types";
 
-export const getBlogsController = async (req: Request, res: Response<any>) => {
-    const sanitizedQuery = getAllBlogsHelper(req.query as { [key: string]: string | undefined })
-    const blogs = await blogsRepository.getAll(sanitizedQuery, req.params.id)
+export const getBlogsController = async (req: RequestWithQueryAndParams<getAllBlogsHelperResult, { id: string }>, res: Response<any>) => {
+    const blogs = await blogsQueryRepository.getAlLBlogs(req.query, req.params.id)
 
     return res.status(HTTP_STATUSES.OKK_200).json(blogs)
 }

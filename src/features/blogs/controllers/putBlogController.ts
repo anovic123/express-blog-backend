@@ -6,7 +6,7 @@ import { RequestWithParamsAndBody } from '../../../types'
 
 export const putBlogController = async (req: RequestWithParamsAndBody<{id: string}, BlogInputModel>, res: Response) => {
 
-    const updateBlog = await blogsRepository.put(req.body, req.params.id)
+    const updateBlog = await blogsRepository.updateBlog(req.body, req.params.id)
 
     if (!updateBlog) {
         return res.status(HTTP_STATUSES.NOT_FOUND_404).json({

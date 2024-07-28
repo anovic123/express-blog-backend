@@ -39,7 +39,7 @@ exports.postsRepository = {
     },
     put(post, id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const blog = yield blogsRepository_1.blogsRepository.find(post.blogId);
+            const blog = yield blogsRepository_1.blogsRepository.findBlog(post.blogId);
             if (!blog) {
                 return false;
             }

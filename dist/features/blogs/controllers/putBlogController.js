@@ -13,7 +13,7 @@ exports.putBlogController = void 0;
 const blogsRepository_1 = require("../blogsRepository");
 const utils_1 = require("../../../utils");
 const putBlogController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const updateBlog = yield blogsRepository_1.blogsRepository.put(req.body, req.params.id);
+    const updateBlog = yield blogsRepository_1.blogsRepository.updateBlog(req.body, req.params.id);
     if (!updateBlog) {
         return res.status(utils_1.HTTP_STATUSES.NOT_FOUND_404).json({
             errorsMessages: [
