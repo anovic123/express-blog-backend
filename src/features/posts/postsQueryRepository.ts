@@ -6,7 +6,9 @@ import {PostDbType} from "../../db/post-db-type";
 import {PostViewModel} from "../../input-output-types/posts-types";
 
 import {getAllPostsHelper, GetAllPostsHelperResult} from "./helper";
+
 import {CommentDBType} from "../../db/comment-db-type";
+import {BlogDbType} from "../../db/blog-db-type";
 
 export const postsQueryRepository = {
     async getMappedPostById(id: PostDbType['id']): Promise<PostViewModel | null> {
@@ -17,7 +19,7 @@ export const postsQueryRepository = {
 
         return commentsRes.length
     },
-    async getAllPosts(query: GetAllPostsHelperResult, blogId: PostDbType['id']) {
+    async getAllPosts(query: GetAllPostsHelperResult, blogId: BlogDbType['id']) {
         const sanitizedQuery = getAllPostsHelper(query)
 
         const byId = blogId ? { blogId: new ObjectId(blogId) } : {}

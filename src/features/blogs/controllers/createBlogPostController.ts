@@ -1,11 +1,16 @@
 import { Response } from 'express'
+
 import {RequestWithParamsAndBody} from "../../../types";
+
 import {BlogPostInputModel} from "../../../input-output-types/blogs-types";
+
 import {HTTP_STATUSES} from "../../../utils";
+
 import {blogsRepository} from "../blogsRepository";
+import {blogsQueryRepository} from "../blogsQueryRepository";
 
 export const createBlogPostController = async (req: RequestWithParamsAndBody<{ blogId: string },BlogPostInputModel>, res: Response<BlogPostInputModel | null>) => {
-    const findBlog = await blogsRepository.find(req.params.blogId)
+    const findBlog = await blogsQueryRepository.findBlog(req.params.blogId)
     if (!findBlog) {
         res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
         return

@@ -1,5 +1,20 @@
 import { SortDirection } from "mongodb";
 
+export interface getAllBlogsHelperResult {
+    pageNumber?: number;
+    pageSize?: number;
+    sortBy?: string;
+    sortDirection?: SortDirection;
+    searchNameTerm?: string;
+}
+
+export interface GetBlogPostsHelperResult {
+    pageNumber?: number
+    pageSize?: number
+    sortBy?: string
+    sortDirection?: SortDirection
+}
+
 export const getAllBlogsHelper = (query: { [key: string]: string | undefined }) => {
     return {
         searchNameTerm: query.searchNameTerm ? query.searchNameTerm : undefined,

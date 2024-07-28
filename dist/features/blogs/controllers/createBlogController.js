@@ -11,10 +11,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createBlogController = void 0;
 const blogsRepository_1 = require("../blogsRepository");
+const blogsQueryRepository_1 = require("../blogsQueryRepository");
 const utils_1 = require("../../../utils");
 const createBlogController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const newBlogId = yield blogsRepository_1.blogsRepository.create(req.body);
-    const newBlog = yield blogsRepository_1.blogsRepository.findAndMap(newBlogId);
+    const newBlog = yield blogsQueryRepository_1.blogsQueryRepository.findAndMap(newBlogId);
     res
         .status(utils_1.HTTP_STATUSES.CREATED_201)
         .json(newBlog);

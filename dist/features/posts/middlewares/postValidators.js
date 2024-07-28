@@ -25,7 +25,7 @@ exports.contentValidator = (0, express_validator_1.body)('content').trim().isStr
     .trim().isLength({ min: 1, max: 1000 }).withMessage('more then 1000 or 0');
 exports.blogIdValidator = (0, express_validator_1.body)('blogId').isString().withMessage('not string')
     .trim().custom((blogId) => __awaiter(void 0, void 0, void 0, function* () {
-    const blog = yield blogsRepository_1.blogsRepository.find(blogId);
+    const blog = yield blogsRepository_1.blogsRepository.findBlog(blogId);
     if (!blog) {
         return Promise.reject();
     }
