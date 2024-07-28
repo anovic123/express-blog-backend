@@ -1,17 +1,32 @@
-import { PostInputModel } from "../src/input-output-types/posts-types"
+import {PostInputModel, PostViewModel} from "../src/input-output-types/posts-types"
 import { SETTINGS } from "../src/settings"
 import { HTTP_STATUSES } from "../src/utils"
 import { blog1, blog2, createString, postCreate } from "./helpers/datasets"
 import { req } from "./helpers/test-helpers"
 import { blogsTestManager } from "./utils/blogsTestManager"
 import { postsTestManager } from "./utils/postsTestManager"
+import {BlogViewModel} from "../src/input-output-types/blogs-types";
+
+// TEST DONE
+
+// Create new post /posts/{postId}/comments
+// SHOULD CREATE POST
+// SHOULDN'T CREATE POST 401
+// SHOULDN'T CREATE POST VALIDATION
+
+// Returns all posts /posts
+// Should get not empty array
+
+// Return post by id /posts/{id}
+
 
 describe('posts endpoint', () => {
-  beforeAll(async() => {
-    await req.delete(`${SETTINGS.PATH.TESTING}/all-data`)
-  })
+    beforeAll(async() => {
+      await req.delete(`${SETTINGS.PATH.TESTING}/all-data`)
+    })
+    let createdPost: BlogViewModel
     it ('should create post', async () => {
-      const newBlog = await blogsTestManager.createBlog(blog1)
+     const newBlog = await blogsTestManager.createBlog(blog1)
 
       const newPost: PostInputModel = {
         ...postCreate,
@@ -19,7 +34,7 @@ describe('posts endpoint', () => {
       }
 
       const newPostRes = await postsTestManager.createPost(newPost, newBlog.createdEntity, true)
-
+      createdPost = newPostRes.createdEntity
       expect(newPostRes.createdEntity.title).toEqual(newPost.title)
       expect(newPostRes.createdEntity.shortDescription).toEqual(newPost.shortDescription)
       expect(newPostRes.createdEntity.content).toEqual(newPost.content)
@@ -56,5 +71,9 @@ describe('posts endpoint', () => {
       const res = await postsTestManager.getAllPosts()
 
       expect(res.body.items.length).toEqual(1)
+    })
+    it ('should get post by id', async () => {
+      console.log(createdPost.id)
+      await postsTestManager.getPostById(createdPost.id, HTTP_STATUSES.OKK_200, createdPost)
     })
 })

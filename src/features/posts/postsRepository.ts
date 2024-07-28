@@ -16,7 +16,7 @@ export const postsRepository = {
         return comment
     },
     async find(id: string): Promise<PostDbType | null> {
-        const res =  await postsCollection.findOne({ id: id })
+        const res =  await postsCollection.findOne({ $id: id })
         return res
     },
     async del(id: string): Promise<boolean> {

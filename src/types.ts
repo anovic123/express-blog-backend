@@ -13,3 +13,5 @@ export interface RequestAuthModel extends Request {
 }
 
 export type RequestAuthModelWithParamsAndBody<T, B> = RequestAuthModel & RequestWithParamsAndBody<T, B>;
+export type RequestAuthModelWithParams<T> = RequestAuthModel & RequestWithParams<T>
+export type RequestAuthModelWithBody<T> = RequestAuthModel & RequestWithBody<T>
