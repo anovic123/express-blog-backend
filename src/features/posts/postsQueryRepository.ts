@@ -15,7 +15,7 @@ export const postsQueryRepository = {
         return await this.findAndMap(id)
     },
     async getPostsCommentsLength(id: string): Promise<number> {
-        const commentsRes = await commentsCollection.find({ id: new ObjectId(id) }).toArray()
+        const commentsRes = await commentsCollection.find({ id: new ObjectId(id).toString() }).toArray()
 
         return commentsRes.length
     },
@@ -50,7 +50,7 @@ export const postsQueryRepository = {
     async getPostsComments (query: GetAllPostsHelperResult, postId: string) {
         const sanitizedQuery = getAllPostsHelper(query)
 
-        const byId = postId ? { id: new ObjectId(postId) } : {}
+        const byId = postId ? { id: postId} : {}
         const search = sanitizedQuery.searchNameTerm ? { title: { $regex: sanitizedQuery.searchNameTerm, $options: "i" } } : {}
 
         const filter: any = {

@@ -1,3 +1,5 @@
+import { ObjectId } from "mongodb";
+
 import {blogsCollection, postsCollection} from '../../db/db'
 
 import {BlogDbType} from '../../db/blog-db-type'
@@ -12,7 +14,7 @@ import {
 export const blogsRepository = {
     async create(blog: BlogInputModel): Promise<string> {
         const newBlog: BlogDbType = {
-            id: new Date().toISOString() + Math.random(),
+            id: new ObjectId().toString(),
             name: blog.name,
             description: blog.description,
             websiteUrl: blog.websiteUrl,
@@ -53,7 +55,7 @@ export const blogsRepository = {
             return null
         }
         const newPost: any = {
-            id: new Date().toISOString() + Math.random(),
+            id: new ObjectId().toString(),
             title: post.title,
             shortDescription: post.shortDescription,
             content: post.content,

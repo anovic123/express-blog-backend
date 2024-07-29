@@ -5,6 +5,7 @@ import {ObjectId} from "mongodb";
 import {postsRepository} from "../postsRepository";
 import {UserDBType} from "../../../db/user-db-type";
 import {CommentDBType} from "../../../db/comment-db-type";
+import {CommentViewModel} from "../../../input-output-types/comment-types";
 
 export const postsService = {
     async createPost(post: PostInputModel): Promise<PostDbType['id'] | null> {
@@ -24,19 +25,19 @@ export const postsService = {
 
         return newPost.id
     },
-    async createPostComment(postId: string, content: string, user: UserDBType): Promise<CommentDBType> {
+    async createPostComment(content: string, user: UserDBType): Promise<CommentViewModel> {
         const newComment = {
-            id: new ObjectId(postId),
-            content,
+            id: new ObjectId().toString(),
+            content: content,
             commentatorInfo: {
                 userId: new ObjectId(user.id).toString(),
                 userLogin: user.login
             },
             createdAt: new Date().toISOString()
         }
-
+        console.log('1', newComment)
         const createdComment = await postsRepository.createPostComment(newComment)
-
+        console.log(newComment)
         return newComment
     },
     async delPostById (id: PostDbType['id']): Promise<boolean> {

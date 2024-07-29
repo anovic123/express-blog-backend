@@ -10,12 +10,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.blogsRepository = void 0;
+const mongodb_1 = require("mongodb");
 const db_1 = require("../../db/db");
 exports.blogsRepository = {
     create(blog) {
         return __awaiter(this, void 0, void 0, function* () {
             const newBlog = {
-                id: new Date().toISOString() + Math.random(),
+                id: new mongodb_1.ObjectId().toString(),
                 name: blog.name,
                 description: blog.description,
                 websiteUrl: blog.websiteUrl,
@@ -60,7 +61,7 @@ exports.blogsRepository = {
                 return null;
             }
             const newPost = {
-                id: new Date().toISOString() + Math.random(),
+                id: new mongodb_1.ObjectId().toString(),
                 title: post.title,
                 shortDescription: post.shortDescription,
                 content: post.content,
