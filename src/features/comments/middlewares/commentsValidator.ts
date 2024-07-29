@@ -19,7 +19,7 @@ export const findCommentsValidator = async (req: RequestWithParams<{ commentId: 
     const comment = await commentsQueryRepository.getCommentById(req.params.commentId)
 
     if (!comment) {
-        res.status(HTTP_STATUSES.NOT_FOUND_404)
+        res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
         return
     }
 
