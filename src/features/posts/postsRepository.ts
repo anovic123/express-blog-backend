@@ -5,14 +5,16 @@ import {commentsCollection, postsCollection} from '../../db/db'
 import {CommentDBType} from "../../db/comment-db-type";
 
 import { PostInputModel } from '../../input-output-types/posts-types'
+import {CommentViewModel} from "../../input-output-types/comment-types";
 
 export const postsRepository = {
     async createPost(post: PostDbType) {
         await postsCollection.insertOne(post)
         return post.id
     },
-    async createPostComment(comment: CommentDBType): Promise<CommentDBType> {
+    async createPostComment(comment: CommentDBType): Promise<CommentViewModel> {
         await commentsCollection.insertOne(comment)
+        delete comment._id;
         return comment
     },
     async find(id: string): Promise<PostDbType | null> {
