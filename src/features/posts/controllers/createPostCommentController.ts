@@ -23,7 +23,7 @@ export const createPostCommentController = async (req: RequestAuthModelWithParam
         return
     }
 
-    const newComment = await postsService.createPostComment(req.body.content, req.user!)
+    const newComment = await postsService.createPostComment(req.params.postId, req.body.content, req.user!)
 
     return res.status(HTTP_STATUSES.CREATED_201).json(newComment)
 }

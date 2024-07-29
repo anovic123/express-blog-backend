@@ -5,6 +5,7 @@ export type CommentDBType = {
     content: string
     commentatorInfo: CommentOutputCommentatorInfoModel
     createdAt: string
+    postId?: string
     _id?: ObjectId
 }
 

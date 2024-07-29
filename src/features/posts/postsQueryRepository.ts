@@ -50,7 +50,7 @@ export const postsQueryRepository = {
     async getPostsComments (query: GetAllPostsHelperResult, postId: string) {
         const sanitizedQuery = getAllPostsHelper(query)
 
-        const byId = postId ? { id: postId} : {}
+        const byId = postId ? { postId} : {}
         const search = sanitizedQuery.searchNameTerm ? { title: { $regex: sanitizedQuery.searchNameTerm, $options: "i" } } : {}
 
         const filter: any = {
