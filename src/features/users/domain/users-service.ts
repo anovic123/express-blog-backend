@@ -6,6 +6,7 @@ import { usersRepository } from "../usersRepository";
 import { UserDBType } from "../../../db/user-db-type";
 
 import { UserOutputType } from "../../../input-output-types/users-types";
+import {usersQueryRepository} from "../usersQueryRepository";
 
 export const usersService = {
   async createUser(login: string, email: string, password: string): Promise<UserOutputType> {
@@ -24,7 +25,7 @@ export const usersService = {
     return await usersRepository.createUser(newUser)
   },
   async findUserById(id: string): Promise<UserDBType | null> {
-    const userResult = await usersRepository.findUserById(id)
+    const userResult = await usersQueryRepository.findUserById(id)
 
     return userResult
   },
@@ -32,15 +33,15 @@ export const usersService = {
     return await usersRepository.deleteUser(id)
   },
   async allUsers(query: any) {
-    return await usersRepository.allUsers(query)
+    return await usersQueryRepository.allUsers(query)
   },
   async checkUnique (login: string, password: string): Promise<boolean> {
-    const res = await usersRepository.checkUnique(login, password)
+    const res = await usersQueryRepository.checkUnique(login, password)
 
     return res
   },
   async checkCredentials(loginOrEmail: string, password: string): Promise<UserDBType | null> {
-    const user = await usersRepository.findUserByLoginOrEmail(loginOrEmail)
+    const user = await usersQueryRepository.findUserByLoginOrEmail(loginOrEmail)
     if (!user) return null
     const passwordHash = await this._generateHash(password, user.passwordSalt)
     if (user.passwordHash !== passwordHash) {
