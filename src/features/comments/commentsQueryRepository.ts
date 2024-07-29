@@ -2,7 +2,7 @@ import {CommentViewModel} from "../../types/comment-types";
 import {commentsCollection} from "../../db/db";
 import {ObjectId} from "mongodb";
 import {CommentDBType} from "../../db/comment-db-type";
-import {UserDBType} from "../../db/user-db-type";
+import {UserAccountDBType, UserDBType} from "../../db/user-db-type";
 
 export const commentsQueryRepository = {
     async getCommentById(id: string): Promise<CommentViewModel | null> {
@@ -12,14 +12,14 @@ export const commentsQueryRepository = {
         const comment = await commentsCollection.findOne({ id: new ObjectId(id).toString() });
         return comment ? this.mapPostCommentsOutput(comment) : null;
     },
-    async checkIsOwn (commentId: string, user: UserDBType): Promise<boolean> {
+    async checkIsOwn (commentId: string, user: UserAccountDBType): Promise<boolean> {
         const commentsRes = await commentsCollection.findOne({ id: new ObjectId(commentId).toString() })
 
         if (!commentsRes) {
             return false
         }
 
-        return commentsRes.commentatorInfo.userId === new ObjectId(user.id).toString()
+        return commentsRes.commentatorInfo.userId === new ObjectId(user._id).toString()
     },
     mapPostCommentsOutput(comment: CommentDBType): CommentViewModel {
         const commentForOutput = {

@@ -1,6 +1,6 @@
-import { BlogInputModel } from "../../src/types/blogs-types";
-import { SETTINGS } from "../../src/settings";
-import { HTTP_STATUSES, HttpStatusType } from "../../src/utils";
+import { BlogInputModel } from "../../../src/types/blogs-types";
+import { SETTINGS } from "../../../src/settings";
+import { HTTP_STATUSES, HttpStatusType } from "../../../src/utils";
 import {codedAuth, postCreate} from "../helpers/datasets";
 import { req } from "../helpers/test-helpers";
 

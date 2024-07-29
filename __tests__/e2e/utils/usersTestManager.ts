@@ -1,6 +1,6 @@
-import { UserInputModel } from "../../src/types/users-types";
-import { SETTINGS } from "../../src/settings";
-import { HTTP_STATUSES, HttpStatusType } from "../../src/utils";
+import { UserInputModel } from "../../../src/types/users-types";
+import { SETTINGS } from "../../../src/settings";
+import { HTTP_STATUSES, HttpStatusType } from "../../../src/utils";
 import { codedAuth } from "../helpers/datasets";
 import { req } from "../helpers/test-helpers";
 

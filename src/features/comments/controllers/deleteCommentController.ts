@@ -12,7 +12,7 @@ export const deleteCommentController = async (req: RequestAuthModelWithParams<{ 
     const isOwn = await commentsQueryRepository.checkIsOwn(req.params.commentId, req.user!)
 
     if (!isOwn) {
-        res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+        res.sendStatus(HTTP_STATUSES.FORBIDDEN)
         return
     }
 
