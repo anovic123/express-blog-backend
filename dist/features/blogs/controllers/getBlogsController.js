@@ -13,7 +13,7 @@ exports.getBlogsController = void 0;
 const blogsQueryRepository_1 = require("../blogsQueryRepository");
 const utils_1 = require("../../../utils");
 const getBlogsController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const blogs = yield blogsQueryRepository_1.blogsQueryRepository.getAllBlogs(req.query, req.params.id);
+    const blogs = yield blogsQueryRepository_1.blogsQueryRepository.getAlLBlogs(req.query, req.params.id);
     return res.status(utils_1.HTTP_STATUSES.OKK_200).json(blogs);
 });
 exports.getBlogsController = getBlogsController;
