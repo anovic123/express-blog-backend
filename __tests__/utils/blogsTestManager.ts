@@ -1,4 +1,4 @@
-import { BlogInputModel } from "../../src/input-output-types/blogs-types";
+import { BlogInputModel } from "../../src/types/blogs-types";
 import { SETTINGS } from "../../src/settings";
 import { HTTP_STATUSES, HttpStatusType } from "../../src/utils";
 import {codedAuth, postCreate} from "../helpers/datasets";

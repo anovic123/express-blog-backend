@@ -1,5 +1,5 @@
 import {body} from "express-validator";
-import {RequestWithParams} from "../../../types";
+import {RequestWithParams} from "../../../types/common";
 import {NextFunction, Response} from "express";
 import {postsRepository} from "../postsRepository";
 import {authMiddleware} from "../../../global-middlewares/auth-middleware";

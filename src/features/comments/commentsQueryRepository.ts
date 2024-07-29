@@ -1,17 +1,18 @@
-import {CommentViewModel} from "../../input-output-types/comment-types";
+import {CommentViewModel} from "../../types/comment-types";
 import {commentsCollection} from "../../db/db";
 import {ObjectId} from "mongodb";
 import {CommentDBType} from "../../db/comment-db-type";
 import {UserDBType} from "../../db/user-db-type";
 
 export const commentsQueryRepository = {
-    async getCommentsById (id: string): Promise<CommentViewModel[]> {
-        const commentsRes = await commentsCollection.find({ id: new ObjectId(id).toString() }).toArray()
-
-        return commentsRes.map((c: any) => this.mapPostCommentsOutput(c))
+    async getCommentById(id: string): Promise<CommentViewModel | null> {
+        if (!ObjectId.isValid(id)) {
+            return null
+        }
+        const comment = await commentsCollection.findOne({ id: new ObjectId(id).toString() });
+        return comment ? this.mapPostCommentsOutput(comment) : null;
     },
     async checkIsOwn (commentId: string, user: UserDBType): Promise<boolean> {
-        console.log(commentId)
         const commentsRes = await commentsCollection.findOne({ id: new ObjectId(commentId).toString() })
 
         if (!commentsRes) {

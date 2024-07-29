@@ -1,5 +1,5 @@
 import { UserDBType } from "../src/db/user-db-type"
-import { UserInputModel, UserOutputType } from "../src/input-output-types/users-types"
+import { UserInputModel, UserOutputType } from "../src/types/users-types"
 import { SETTINGS } from "../src/settings"
 import { HTTP_STATUSES } from "../src/utils"
 import { codedAuth, userCreate, userCreate2, userCreate3 } from "./helpers/datasets"

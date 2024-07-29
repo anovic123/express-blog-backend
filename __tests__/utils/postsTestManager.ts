@@ -1,10 +1,10 @@
 import { BlogDbType } from "../../src/db/blog-db-type";
-import { PostInputModel } from "../../src/input-output-types/posts-types";
+import { PostInputModel } from "../../src/types/posts-types";
 import { SETTINGS } from "../../src/settings";
 import { HTTP_STATUSES, HttpStatusType } from "../../src/utils";
 import { codedAuth } from "../helpers/datasets";
 import { req } from "../helpers/test-helpers";
-import {BlogViewModel} from "../../src/input-output-types/blogs-types";
+import {BlogViewModel} from "../../src/types/blogs-types";
 import {PostDbType} from "../../src/db/post-db-type";
 
 export const postsTestManager = {

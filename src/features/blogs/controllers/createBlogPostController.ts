@@ -1,8 +1,8 @@
 import { Response } from 'express'
 
-import {RequestWithParamsAndBody} from "../../../types";
+import {RequestWithParamsAndBody} from "../../../types/common";
 
-import {BlogPostInputModel} from "../../../input-output-types/blogs-types";
+import {BlogPostInputModel} from "../../../types/blogs-types";
 
 import {HTTP_STATUSES} from "../../../utils";
 

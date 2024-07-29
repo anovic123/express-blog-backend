@@ -7,7 +7,7 @@ import {blogsRepository} from '../../blogs/blogsRepository'
 
 import {adminMiddleware} from '../../../global-middlewares/admin-middleware'
 
-import { RequestWithParams } from '../../../types'
+import { RequestWithParams } from '../../../types/common'
 import {postsQueryRepository} from "../postsQueryRepository";
 
 // title: string // max 30

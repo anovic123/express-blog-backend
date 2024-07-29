@@ -4,7 +4,7 @@ import {NextFunction, Request, Response} from 'express'
 import {blogsRepository} from '../blogsRepository'
 import {adminMiddleware} from '../../../global-middlewares/admin-middleware'
 import { HTTP_STATUSES } from '../../../utils'
-import { RequestWithParams } from '../../../types'
+import { RequestWithParams } from '../../../types/common'
 import {blogsQueryRepository} from "../blogsQueryRepository";
 
 // name: string // max 15

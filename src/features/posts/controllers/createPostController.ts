@@ -1,6 +1,6 @@
 import {Response} from 'express'
 
-import {PostInputModel, PostViewModel} from '../../../input-output-types/posts-types'
+import {PostInputModel, PostViewModel} from '../../../types/posts-types'
 
 import {postsService} from "../domain/posts-service";
 
@@ -8,7 +8,7 @@ import {postsQueryRepository} from "../postsQueryRepository";
 
 import { HTTP_STATUSES } from '../../../utils'
 
-import { RequestWithBody } from '../../../types'
+import { RequestWithBody } from '../../../types/common'
 
 export const createPostController = async (req: RequestWithBody<PostInputModel>, res: Response<PostViewModel>) => {
     const newPostId = await postsService.createPost(req.body)

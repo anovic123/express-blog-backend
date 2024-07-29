@@ -5,7 +5,7 @@ import { usersRepository } from "../usersRepository";
 
 import { UserDBType } from "../../../db/user-db-type";
 
-import { UserOutputType } from "../../../input-output-types/users-types";
+import { UserOutputType } from "../../../types/users-types";
 import {usersQueryRepository} from "../usersQueryRepository";
 
 export const usersService = {

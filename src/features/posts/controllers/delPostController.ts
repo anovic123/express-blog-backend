@@ -4,7 +4,7 @@ import {postsService} from "../domain/posts-service";
 
 import { HTTP_STATUSES } from '../../../utils'
 
-import { RequestWithParams } from '../../../types'
+import { RequestWithParams } from '../../../types/common'
 
 export const delPostController = async (req: RequestWithParams<{id: string}>, res: Response) => {
     await postsService.delPostById(req.params.id)

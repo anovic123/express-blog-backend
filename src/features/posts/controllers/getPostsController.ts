@@ -6,7 +6,7 @@ import { HTTP_STATUSES } from '../../../utils'
 
 import { GetAllPostsHelperResult } from "../helper";
 
-import { RequestWithQueryAndParams } from "../../../types";
+import { RequestWithQueryAndParams } from "../../../types/common";
 
 import { PostDbType } from "../../../db/post-db-type";
 

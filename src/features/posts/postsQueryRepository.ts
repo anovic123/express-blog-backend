@@ -3,7 +3,7 @@ import {ObjectId} from "mongodb";
 import {commentsCollection, postsCollection} from "../../db/db";
 import {PostDbType} from "../../db/post-db-type";
 
-import {PostViewModel} from "../../input-output-types/posts-types";
+import {PostViewModel} from "../../types/posts-types";
 
 import {getAllPostsHelper, GetAllPostsHelperResult} from "./helper";
 

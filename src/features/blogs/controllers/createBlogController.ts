@@ -1,6 +1,6 @@
 import {Response} from 'express'
 
-import {BlogInputModel, BlogViewModel} from '../../../input-output-types/blogs-types'
+import {BlogInputModel, BlogViewModel} from '../../../types/blogs-types'
 
 import {blogsRepository} from '../blogsRepository'
 
@@ -8,7 +8,7 @@ import {blogsQueryRepository} from "../blogsQueryRepository";
 
 import { HTTP_STATUSES } from '../../../utils'
 
-import { RequestWithBody } from '../../../types'
+import { RequestWithBody } from '../../../types/common'
 
 export const createBlogController = async (req: RequestWithBody<BlogInputModel>, res: Response<BlogViewModel>) => {
     const newBlogId = await blogsRepository.create(req.body)

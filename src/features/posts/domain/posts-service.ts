@@ -1,11 +1,11 @@
-import {PostInputModel, PostViewModel} from "../../../input-output-types/posts-types";
+import {PostInputModel, PostViewModel} from "../../../types/posts-types";
 import {blogsRepository} from "../../blogs/blogsRepository";
 import {PostDbType} from "../../../db/post-db-type";
 import {ObjectId} from "mongodb";
 import {postsRepository} from "../postsRepository";
 import {UserDBType} from "../../../db/user-db-type";
 import {CommentDBType} from "../../../db/comment-db-type";
-import {CommentViewModel} from "../../../input-output-types/comment-types";
+import {CommentViewModel} from "../../../types/comment-types";
 import {commentsQueryRepository} from "../../comments/commentsQueryRepository";
 
 export const postsService = {

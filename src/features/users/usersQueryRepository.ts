@@ -1,6 +1,6 @@
 import {usersCollection} from "../../db/db";
 import {UserDBType} from "../../db/user-db-type";
-import {UserOutputType} from "../../input-output-types/users-types";
+import {UserOutputType} from "../../types/users-types";
 import {ObjectId} from "mongodb";
 
 

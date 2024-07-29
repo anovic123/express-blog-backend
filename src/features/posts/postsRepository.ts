@@ -4,8 +4,8 @@ import {PostDbType} from '../../db/post-db-type'
 import {commentsCollection, postsCollection} from '../../db/db'
 import {CommentDBType} from "../../db/comment-db-type";
 
-import { PostInputModel } from '../../input-output-types/posts-types'
-import {CommentViewModel} from "../../input-output-types/comment-types";
+import { PostInputModel } from '../../types/posts-types'
+import {CommentViewModel} from "../../types/comment-types";
 
 export const postsRepository = {
     async createPost(post: PostDbType) {

@@ -1,6 +1,6 @@
 import { Request } from "express";
 
-import {UserDBType} from "./db/user-db-type";
+import {UserDBType} from "../db/user-db-type";
 
 export type RequestWithBody<T> = Request<{}, {}, T>
 export type RequestWithQuery<T> = Request<{}, {}, {}, T>

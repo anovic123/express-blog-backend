@@ -5,7 +5,7 @@ import {blogsQueryRepository} from "../blogsQueryRepository";
 
 import { HTTP_STATUSES } from '../../../utils';
 
-import { RequestWithParams } from '../../../types';
+import { RequestWithParams } from '../../../types/common';
 
 export const delBlogController = async (req: RequestWithParams<{id: string}>, res: Response) => {
     const blogId = req.params.id;

@@ -1,6 +1,6 @@
 import { Response } from 'express';
 
-import { RequestAuthModelWithParamsAndBody} from "../../../types";
+import { RequestAuthModelWithParamsAndBody} from "../../../types/common";
 
 import {commentsQueryRepository} from "../commentsQueryRepository";
 

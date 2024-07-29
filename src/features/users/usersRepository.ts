@@ -4,7 +4,7 @@ import { usersCollection } from "../../db/db";
 
 import { UserDBType } from "../../db/user-db-type";
 
-import { UserOutputType } from "../../input-output-types/users-types";
+import { UserOutputType } from "../../types/users-types";
 
 export const usersRepository = {
   async createUser(user: UserDBType): Promise<UserOutputType> {

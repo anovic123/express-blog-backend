@@ -2,11 +2,11 @@ import { Response} from 'express'
 
 import {postsService} from "../domain/posts-service";
 
-import { PostInputModel } from '../../../input-output-types/posts-types'
+import { PostInputModel } from '../../../types/posts-types'
 
 import { HTTP_STATUSES } from '../../../utils'
 
-import { RequestWithParamsAndBody } from '../../../types'
+import { RequestWithParamsAndBody } from '../../../types/common'
 
 export const putPostController = async (req: RequestWithParamsAndBody<{id: string}, PostInputModel>, res: Response) => {
     const putRes =  await postsService.putPostById(req.body, req.params.id)

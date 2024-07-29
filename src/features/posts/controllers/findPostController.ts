@@ -1,10 +1,10 @@
 import { Response } from 'express'
 
-import {PostViewModel} from '../../../input-output-types/posts-types'
+import {PostViewModel} from '../../../types/posts-types'
 
 import { HTTP_STATUSES } from '../../../utils'
 
-import { RequestWithParams } from '../../../types'
+import { RequestWithParams } from '../../../types/common'
 
 import {postsQueryRepository} from "../postsQueryRepository";
 
