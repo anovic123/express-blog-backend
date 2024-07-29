@@ -10,7 +10,7 @@ import {
 } from '../../input-output-types/blogs-types'
 
 export const blogsRepository = {
-   async create(blog: BlogInputModel): Promise<string> {
+    async create(blog: BlogInputModel): Promise<string> {
         const newBlog: BlogDbType = {
             id: new Date().toISOString() + Math.random(),
             name: blog.name,
@@ -20,8 +20,8 @@ export const blogsRepository = {
             isMembership: false
         }
 
-       await blogsCollection.insertOne(newBlog)
-       return newBlog.id
+        await blogsCollection.insertOne(newBlog)
+        return newBlog.id
     },
     async findBlog(id: string): Promise<BlogViewModel | null> {
         const res = await blogsCollection.findOne({ id: id });
@@ -29,7 +29,7 @@ export const blogsRepository = {
         return this.map(res)
     },
     async del(id: string): Promise<boolean> {
-       const result = await blogsCollection.deleteOne({ id: id })
+        const result = await blogsCollection.deleteOne({ id: id })
         return result.deletedCount === 1
     },
     async updateBlog(blog: BlogInputModel, id: string): Promise<boolean> {
@@ -48,32 +48,32 @@ export const blogsRepository = {
         }
     },
     async createPostBlog(blogId: BlogViewModel['id'], post: BlogPostInputModel) {
-       const blog = await this.findBlog(blogId)
+        const blog = await this.findBlog(blogId)
         if (!blog) {
             return null
         }
-       const newPost: any = {
-           id: new Date().toISOString() + Math.random(),
-           title: post.title,
-           shortDescription: post.shortDescription,
-           content: post.content,
-           blogId: blog.id,
-           blogName: blog.name,
-           createdAt: new Date().toISOString()
-       }
-       await postsCollection.insertOne(newPost)
+        const newPost: any = {
+            id: new Date().toISOString() + Math.random(),
+            title: post.title,
+            shortDescription: post.shortDescription,
+            content: post.content,
+            blogId: blog.id,
+            blogName: blog.name,
+            createdAt: new Date().toISOString()
+        }
+        await postsCollection.insertOne(newPost)
         return this.mapPostBlog(newPost)
     },
     mapPostBlog(post: BlogPostViewModel): BlogPostViewModel {
         return {
-           id: post.id,
-           title: post.title,
-           shortDescription: post.shortDescription,
-           content: post.content,
-           blogId: post.blogId,
-           blogName: post.blogName,
-           createdAt: post.createdAt,
-       }
+            id: post.id,
+            title: post.title,
+            shortDescription: post.shortDescription,
+            content: post.content,
+            blogId: post.blogId,
+            blogName: post.blogName,
+            createdAt: post.createdAt,
+        }
     },
     map(blog: BlogDbType) {
         const blogForOutput: BlogViewModel = {
@@ -87,7 +87,7 @@ export const blogsRepository = {
         return blogForOutput
     },
     async deleteAll(): Promise<boolean> {
-       await blogsCollection.deleteMany()
+        await blogsCollection.deleteMany()
 
         return true
     }
