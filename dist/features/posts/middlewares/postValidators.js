@@ -13,8 +13,8 @@ exports.postValidators = exports.putValidators = exports.findPostValidator = exp
 const express_validator_1 = require("express-validator");
 const inputCheckErrorsMiddleware_1 = require("../../../global-middlewares/inputCheckErrorsMiddleware");
 const blogsRepository_1 = require("../../blogs/blogsRepository");
-const postsRepository_1 = require("../postsRepository");
 const admin_middleware_1 = require("../../../global-middlewares/admin-middleware");
+const postsQueryRepository_1 = require("../postsQueryRepository");
 // title: string // max 30
 // shortDescription: string // max 100
 // content: string // max 1000
@@ -31,7 +31,7 @@ exports.blogIdValidator = (0, express_validator_1.body)('blogId').isString().wit
     }
 })).withMessage('no blog');
 const findPostValidator = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const post = yield postsRepository_1.postsRepository.find(req.params.id);
+    const post = yield postsQueryRepository_1.postsQueryRepository.find(req.params.id);
     console.log(post);
     if (!post) {
         res

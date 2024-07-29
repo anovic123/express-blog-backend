@@ -5,6 +5,7 @@ import { HTTP_STATUSES, HttpStatusType } from "../../src/utils";
 import { codedAuth } from "../helpers/datasets";
 import { req } from "../helpers/test-helpers";
 import {BlogViewModel} from "../../src/input-output-types/blogs-types";
+import {PostDbType} from "../../src/db/post-db-type";
 
 export const postsTestManager = {
   async createPost(data: PostInputModel, blog: BlogDbType, withCredentials?: boolean, expectedStatusCode: HttpStatusType = HTTP_STATUSES.CREATED_201) {
@@ -39,18 +40,19 @@ export const postsTestManager = {
     
     return allPostsRes
   },
-  async getPostById(id: BlogViewModel['id'], expectedStatusCode: HttpStatusType = HTTP_STATUSES.OKK_200, expectResponse?: BlogViewModel) {
+  async getPostById(id: string, expectedStatusCode: HttpStatusType = HTTP_STATUSES.OKK_200) {
     const postById = await req.get(`${SETTINGS.PATH.POSTS}/${id}`).expect(expectedStatusCode)
-
     if (expectedStatusCode === HTTP_STATUSES.OKK_200) {
       expect(postById.body).toEqual({
-        id: expectResponse?.id,
-        name: expectResponse?.name,
-        description: expectResponse?.description,
-        websiteUrl: expectResponse?.websiteUrl,
-        createdAll: expectResponse?.createdAt,
-        isMembership: expectResponse?.isMembership,
+        id: postById.body?.id,
+        title: postById.body.title,
+        shortDescription: postById.body.shortDescription,
+        content: postById.body.content,
+        blogId: postById.body.blogId,
+        blogName: postById.body.blogName,
+        createdAt: postById.body.createdAt,
       })
     }
+    return postById
   }
 }

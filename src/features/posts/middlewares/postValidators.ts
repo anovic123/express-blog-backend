@@ -4,12 +4,11 @@ import {body} from 'express-validator'
 import {inputCheckErrorsMiddleware} from '../../../global-middlewares/inputCheckErrorsMiddleware'
 
 import {blogsRepository} from '../../blogs/blogsRepository'
-import {postsRepository} from '../postsRepository'
 
 import {adminMiddleware} from '../../../global-middlewares/admin-middleware'
-import {authMiddleware} from "../../../global-middlewares/auth-middleware";
 
 import { RequestWithParams } from '../../../types'
+import {postsQueryRepository} from "../postsQueryRepository";
 
 // title: string // max 30
 // shortDescription: string // max 100
@@ -28,7 +27,7 @@ export const blogIdValidator = body('blogId').isString().withMessage('not string
         }
     }).withMessage('no blog')
 export const findPostValidator = async (req: RequestWithParams<{ id: string }>, res: Response, next: NextFunction) => {
-    const post = await postsRepository.find(req.params.id)
+    const post = await postsQueryRepository.find(req.params.id)
     console.log(post)
     if (!post) {
         res

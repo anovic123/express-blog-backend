@@ -2,7 +2,7 @@ import { config } from 'dotenv'
 config()
 
 export const SETTINGS = {
-    PORT: 5000,
+    PORT: 5005,
     PATH: {
         AUTH: '/auth',
         BLOGS: '/blogs',

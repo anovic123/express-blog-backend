@@ -77,6 +77,7 @@ export const postsQueryRepository = {
     },
     async findAndMap(id: string): Promise<PostViewModel | null> {
         const post = await this.find(id)! // ! используем этот метод если проверили существование
+        console.log(post)
         if (!post) {
             return null
         }

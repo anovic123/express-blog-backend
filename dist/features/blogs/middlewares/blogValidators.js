@@ -12,9 +12,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.blogValidators = exports.createBlogPostValidator = exports.findBlogPostValidator = exports.findBlogValidator = exports.websiteUrlValidator = exports.descriptionValidator = exports.nameValidator = void 0;
 const express_validator_1 = require("express-validator");
 const inputCheckErrorsMiddleware_1 = require("../../../global-middlewares/inputCheckErrorsMiddleware");
-const blogsRepository_1 = require("../blogsRepository");
 const admin_middleware_1 = require("../../../global-middlewares/admin-middleware");
 const utils_1 = require("../../../utils");
+const blogsQueryRepository_1 = require("../blogsQueryRepository");
 // name: string // max 15
 // description: string // max 500
 // websiteUrl: string // max 100 ^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$
@@ -27,7 +27,7 @@ exports.websiteUrlValidator = (0, express_validator_1.body)('websiteUrl').isStri
 const findBlogValidator = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     (0, express_validator_1.body)('id').isString().withMessage('not id');
     const errors = (0, express_validator_1.validationResult)(req);
-    const findExistedBlog = yield blogsRepository_1.blogsRepository.findBlog(req.params.id);
+    const findExistedBlog = yield blogsQueryRepository_1.blogsQueryRepository.findBlog(req.params.id);
     if (!req.params.id || !findExistedBlog) {
         res.status(utils_1.HTTP_STATUSES.NOT_FOUND_404).json({ messages: errors.array() });
         return;
@@ -38,7 +38,7 @@ exports.findBlogValidator = findBlogValidator;
 const findBlogPostValidator = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     (0, express_validator_1.body)('blogId').isString().withMessage('not id');
     const errors = (0, express_validator_1.validationResult)(req);
-    const findExistedBlog = yield blogsRepository_1.blogsRepository.findBlog(req.params.blogId);
+    const findExistedBlog = yield blogsQueryRepository_1.blogsQueryRepository.findBlog(req.params.blogId);
     if (!req.params.blogId || !findExistedBlog) {
         res.status(utils_1.HTTP_STATUSES.NOT_FOUND_404).json({ messages: errors.array() });
         return;

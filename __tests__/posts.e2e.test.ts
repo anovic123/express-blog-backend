@@ -1,30 +1,31 @@
-import {PostInputModel, PostViewModel} from "../src/input-output-types/posts-types"
+import {PostInputModel} from "../src/input-output-types/posts-types"
 import { SETTINGS } from "../src/settings"
 import { HTTP_STATUSES } from "../src/utils"
-import { blog1, blog2, createString, postCreate } from "./helpers/datasets"
+import {blog1, blog2, codedAuth, createString, postCreate} from "./helpers/datasets"
 import { req } from "./helpers/test-helpers"
 import { blogsTestManager } from "./utils/blogsTestManager"
 import { postsTestManager } from "./utils/postsTestManager"
-import {BlogViewModel} from "../src/input-output-types/blogs-types";
+import {PostDbType} from "../src/db/post-db-type";
 
 // TEST DONE
 
-// Create new post /posts/{postId}/comments
-// SHOULD CREATE POST
-// SHOULDN'T CREATE POST 401
-// SHOULDN'T CREATE POST VALIDATION
+// SKIPPED
+// RETURNS COMMENTS FOR SPECIFIED POST. /api/posts/{postId}/comments
+// CREATE NEW COMMENT. /api/posts/{postId}/comments
+
+// Create new post. api/posts
+// Return all posts for specified blog. /api/posts/{id}
+// UPDATE EXISTING POST BY ID WITH INPUT_MODEL. /api/posts/{id}
+// DELETE POST SPECIFIED BY ID. /api/posts/{id}
 
 // Returns all posts /posts
 // Should get not empty array
-
-// Return post by id /posts/{id}
-
 
 describe('posts endpoint', () => {
     beforeAll(async() => {
       await req.delete(`${SETTINGS.PATH.TESTING}/all-data`)
     })
-    let createdPost: BlogViewModel
+    let createdPost: PostDbType
     it ('should create post', async () => {
      const newBlog = await blogsTestManager.createBlog(blog1)
 
@@ -72,8 +73,34 @@ describe('posts endpoint', () => {
 
       expect(res.body.items.length).toEqual(1)
     })
-    // it ('should get post by id', async () => {
-    //   console.log(createdPost.id)
-    //   await postsTestManager.getPostById(createdPost.id, HTTP_STATUSES.OKK_200, createdPost)
-    // })
+    it ('should get post by id', async () => {
+      await postsTestManager.getPostById(createdPost.id, HTTP_STATUSES.OKK_200)
+    })
+    it ('update existing post by id with input model', async () => {
+        const updatePost = await req.put(`${SETTINGS.PATH.POSTS}/${createdPost.id}`).set({ 'Authorization': 'Basic ' + codedAuth}).send({
+            title: 'update title',
+            shortDescription: createdPost.shortDescription,
+            content: createdPost.content,
+            blogId: createdPost.blogId
+        }).expect(HTTP_STATUSES.NO_CONTENT_204)
+
+        const updatedPostByIdRes = await postsTestManager.getPostById(createdPost.id)
+
+        expect(updatedPostByIdRes.body).toEqual({
+            id: updatedPostByIdRes.body?.id,
+            title: 'update title',
+            shortDescription: updatedPostByIdRes.body.shortDescription,
+            content: updatedPostByIdRes.body.content,
+            blogId: updatedPostByIdRes.body.blogId,
+            blogName: updatedPostByIdRes.body.blogName,
+            createdAt: updatedPostByIdRes.body.createdAt,
+        })
+    })
+    it ('delete post specified by id', async () => {
+        const deletedRes = await req.delete(`${SETTINGS.PATH.POSTS}/${createdPost.id}`).set({ 'Authorization': 'Basic ' + codedAuth }).expect(HTTP_STATUSES.NO_CONTENT_204)
+
+        const allPostsRes = await postsTestManager.getAllPosts()
+
+        expect(allPostsRes.body.items.length).toEqual(0)
+    })
 })
