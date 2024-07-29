@@ -1,8 +1,13 @@
+import {ObjectId} from "mongodb";
+
 import {req} from "./helpers/test-helpers";
+
 import {SETTINGS} from "../src/settings";
+
 import {commentsTestManager} from "./utils/commentsTestManager";
 import {HTTP_STATUSES} from "../src/utils";
-import {ObjectId} from "mongodb";
+
+// TEST DONE
 
 describe('comments endpoint', () => {
     beforeAll(async () => {

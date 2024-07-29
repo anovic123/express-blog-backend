@@ -17,7 +17,6 @@ export const findPostsValidator = async (req: RequestWithParams<{ commentId: str
     }
 
     const post = await postsRepository.find(req.params.commentId)
-    console.log(post)
     if (!post) {
         res
             .status(HTTP_STATUSES.NOT_FOUND_404)

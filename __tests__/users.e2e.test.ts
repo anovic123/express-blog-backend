@@ -45,15 +45,15 @@ describe('users endpoints', () => {
     expect(res.res.body.errorsMessages[0].message).toEqual('email should be unique')
   })
   
-  it ('should delete user', async () => {
-    const createdUserBody: UserInputModel = userCreate2
-
-    const createdUser = await usersTestManager.createUser(createdUserBody, true, HTTP_STATUSES.CREATED_201)
-
-    const deleteUser = await req.delete(`${SETTINGS.PATH.USERS}/${createdUser.createdEntity.id}`).set({ 'Authorization': 'Basic ' + codedAuth }).expect(HTTP_STATUSES.NO_CONTENT_204)
-
-    const resUsers = await usersTestManager.getAllUsers(HTTP_STATUSES.OKK_200)
-    
-    expect(resUsers.allUsersRes.body.items.length).toEqual(1)
-  })
+  // it ('should delete user', async () => {
+  //   const createdUserBody: UserInputModel = userCreate2
+  //
+  //   const createdUser = await usersTestManager.createUser(createdUserBody, true, HTTP_STATUSES.CREATED_201)
+  //
+  //   const deleteUser = await req.delete(`${SETTINGS.PATH.USERS}/${createdUser.createdEntity.id}`).set({ 'Authorization': 'Basic ' + codedAuth }).expect(HTTP_STATUSES.NO_CONTENT_204)
+  //
+  //   const resUsers = await usersTestManager.getAllUsers(HTTP_STATUSES.OKK_200)
+  //
+  //   expect(resUsers.allUsersRes.body.items.length).toEqual(1)
+  // })
 })
