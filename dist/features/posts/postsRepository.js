@@ -22,7 +22,6 @@ exports.postsRepository = {
     createPostComment(comment) {
         return __awaiter(this, void 0, void 0, function* () {
             yield db_1.commentsCollection.insertOne(comment);
-            delete comment._id;
             return comment;
         });
     },

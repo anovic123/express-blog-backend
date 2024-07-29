@@ -6,6 +6,7 @@ import {postsRepository} from "../postsRepository";
 import {UserDBType} from "../../../db/user-db-type";
 import {CommentDBType} from "../../../db/comment-db-type";
 import {CommentViewModel} from "../../../input-output-types/comment-types";
+import {commentsQueryRepository} from "../../comments/commentsQueryRepository";
 
 export const postsService = {
     async createPost(post: PostInputModel): Promise<PostDbType['id'] | null> {
@@ -25,7 +26,7 @@ export const postsService = {
 
         return newPost.id
     },
-    async createPostComment(content: string, user: UserDBType): Promise<CommentViewModel> {
+    async createPostComment(postId: string, content: string, user: UserDBType): Promise<CommentViewModel> {
         const newComment = {
             id: new ObjectId().toString(),
             content: content,
@@ -33,12 +34,11 @@ export const postsService = {
                 userId: new ObjectId(user.id).toString(),
                 userLogin: user.login
             },
+            postId,
             createdAt: new Date().toISOString()
         }
-        console.log('1', newComment)
         const createdComment = await postsRepository.createPostComment(newComment)
-        console.log(newComment)
-        return newComment
+        return commentsQueryRepository.mapPostCommentsOutput(newComment)
     },
     async delPostById (id: PostDbType['id']): Promise<boolean> {
         return await postsRepository.del(id)

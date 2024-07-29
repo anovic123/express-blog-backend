@@ -10,23 +10,6 @@ import {commentsQueryRepository} from "../commentsQueryRepository";
 
 const contentValidator = body('content').isString().trim().isLength({ min: 20, max: 300 })
 
-export const findPostsValidator = async (req: RequestWithParams<{ commentId: string }>, res: Response, next: NextFunction) => {
-    if (!req.params.commentId) {
-        res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
-        return
-    }
-
-    const post = await postsRepository.find(req.params.commentId)
-    if (!post) {
-        res
-            .status(HTTP_STATUSES.NOT_FOUND_404)
-            .json({})
-        return
-    }
-
-    next()
-}
-
 export const findCommentsValidator = async (req: RequestWithParams<{ commentId: string }>, res: Response, next: NextFunction) => {
     if (!req.params.commentId) {
         res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
@@ -45,7 +28,7 @@ export const findCommentsValidator = async (req: RequestWithParams<{ commentId: 
 
 export const putCommentValidator = [
     authMiddleware,
-    findPostsValidator,
+    findCommentsValidator,
     contentValidator,
     inputCheckErrorsMiddleware
 ]
@@ -55,7 +38,6 @@ const commentIdValidator = param('commentId').isString().trim()
 export const deleteCommentValidator = [
     authMiddleware,
     commentIdValidator,
-    findPostsValidator,
     findCommentsValidator,
     inputCheckErrorsMiddleware
 ]

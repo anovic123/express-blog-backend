@@ -14,7 +14,6 @@ export const postsRepository = {
     },
     async createPostComment(comment: CommentDBType): Promise<CommentViewModel> {
         await commentsCollection.insertOne(comment)
-        delete comment._id;
         return comment
     },
     async find(id: string): Promise<PostDbType | null> {
