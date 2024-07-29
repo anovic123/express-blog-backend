@@ -1,16 +1,25 @@
-import { BlogInputModel, BlogViewModel } from "../src/input-output-types/blogs-types"
+import {BlogInputModel, BlogPostViewModel, BlogViewModel} from "../src/input-output-types/blogs-types"
+
 import { SETTINGS } from "../src/settings"
+
 import { HTTP_STATUSES } from "../src/utils"
+
 import { blog1, codedAuth } from "./helpers/datasets"
+
 import { req } from "./helpers/test-helpers"
+
 import { blogsTestManager } from "./utils/blogsTestManager"
 
 // TEST DONE:
-// GET ALL
-// GET BY ID
-// SHOULDN'T FIND
-// SHOULD DELETE
-// SHOULDN'T DELETE
+// RETURN BLOGS WITH PAGING. api/blogs
+// CREATE NEW BLOG. api/blogs
+
+// RETURNS ALL POSTS FOR SPECIFIED BLOG. blogs/{blogId}/posts
+// CREATE NEW POST FOR SPECIFIC BLOG. /blogs/{blogId}/posts
+
+// RETURNS BLOG BY ID. api/blogs/{id}
+// UPDATE EXISTING BLOG BY ID WITH INPUT MODEL. api/blogs/{id}
+// SHOULD DELETE BLOG BY ID. api/blogs/{id}
 
 describe('blogs endpoint', () => {
   beforeAll(async () => {
@@ -61,5 +70,44 @@ describe('blogs endpoint', () => {
 
   it ('shouldn\'t delete. Expected 401', async () => {
     await req.delete(`${SETTINGS.PATH.BLOGS}/${createdBlog2!.id}`).expect(HTTP_STATUSES.UNAUTHORIZED_401)
+  })
+
+  it ('should returns 404 posts for specified blog', async () => {
+      const res = await blogsTestManager.getAllPostByBlogsId(createdBlog1!.id, HTTP_STATUSES.NOT_FOUND_404)
+  })
+
+  let newPost: BlogPostViewModel | null
+
+  it ('should create new post for specific blog', async () => {
+     const createPostRes = await blogsTestManager.createPostByBlogsId(createdBlog2!.id)
+
+      newPost = createPostRes.createdEntity
+
+      const postsByBlogsIdRes = await blogsTestManager.getAllPostByBlogsId(createdBlog2!.id)
+
+      expect(postsByBlogsIdRes.body.items.length).toEqual(1)
+  })
+
+  it ('should get blog by id', async () => {
+    await blogsTestManager.getBlogById(createdBlog2!.id)
+  })
+
+  it ('should update blog', async () => {
+      const updatedBlogRes = await req.put(`${SETTINGS.PATH.BLOGS}/${createdBlog2!.id}`).set('Authorization', 'Basic ' + codedAuth).send({
+          name: createdBlog2!.name,
+          description: 'updated description',
+          websiteUrl: createdBlog2!.websiteUrl,
+      }).expect(HTTP_STATUSES.NO_CONTENT_204)
+
+      const updatedBlogByIdRes = await blogsTestManager.getBlogById(createdBlog2!.id)
+
+      expect(updatedBlogByIdRes.body).toEqual({
+          id: expect.any(String),
+          name: updatedBlogByIdRes.body.name,
+          description: 'updated description',
+          websiteUrl: updatedBlogByIdRes.body.websiteUrl,
+          createdAt: expect.any(String),
+          isMembership: false
+      })
   })
 })

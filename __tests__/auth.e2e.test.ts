@@ -25,6 +25,13 @@ describe('auth endpoint', () => {
         expect(userToken).toEqual(expect.any(String))
     })
 
+    it ('shouldn auth', async () => {
+        const authRes = await req.post(`${SETTINGS.PATH.AUTH}/login`).send({
+            loginOrEmail: userCreate3.login,
+            password: 'Wrong password'
+        }).expect(HTTP_STATUSES.UNAUTHORIZED_401)
+    })
+
     it ('should get user', async () => {
         console.log("userToken:", userToken)
         const user = await req.get(`${SETTINGS.PATH.AUTH}/me`).set({ 'Authorization': `Bearer ${userToken}` }).expect(HTTP_STATUSES.OKK_200)
