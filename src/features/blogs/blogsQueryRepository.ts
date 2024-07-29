@@ -9,32 +9,42 @@ import {blogsCollection, postsCollection} from "../../db/db";
 import {BlogDbType} from "../../db/blog-db-type";
 
 export const blogsQueryRepository = {
-    async getAlLBlogs(query: getAllBlogsHelperResult, blogId:  BlogDbType['id']) {
-        const sanitizedQuery = getAllBlogsHelper(query as { [key: string]: string | undefined })
+    async getAllBlogs(query: getAllBlogsHelperResult, blogId: BlogDbType['id']) {
+        const sanitizedQuery = getAllBlogsHelper(query as { [key: string]: string | undefined });
 
-        const byId = blogId ? { blogId: new ObjectId(blogId) } : {}
-        const search = sanitizedQuery.searchNameTerm ? { name: { $regex: sanitizedQuery.searchNameTerm, $options: "i" } } : {}
+        const byId = blogId ? { blogId: new ObjectId(blogId) } : {};
+        const search = sanitizedQuery.searchNameTerm ? { name: { $regex: sanitizedQuery.searchNameTerm, $options: "i" } } : {};
 
         const filter: any = {
             ...byId,
             ...search,
-        }
+        };
+
+        const sortBy = sanitizedQuery.sortBy || 'createdAt';
+        const sortDirection = sanitizedQuery.sortDirection === 'asc' ? 1 : -1;
+        const pageNumber = sanitizedQuery.pageNumber || 1;
+        const pageSize = sanitizedQuery.pageSize || 10;
 
         try {
-            const items: any = await blogsCollection.find(filter).sort(sanitizedQuery.sortBy, query.sortDirection).skip((sanitizedQuery.pageNumber - 1) * sanitizedQuery.pageSize).limit(sanitizedQuery.pageSize).toArray()
+            const items: any = await blogsCollection
+                .find(filter)
+                .sort({ [sortBy]: sortDirection })
+                .skip((pageNumber - 1) * pageSize)
+                .limit(pageSize)
+                .toArray();
 
-            const totalCount = await blogsCollection.countDocuments(filter)
+            const totalCount = await blogsCollection.countDocuments(filter);
 
             return {
-                pagesCount: Math.ceil(totalCount / (sanitizedQuery.pageSize ?? 19)),
-                page: sanitizedQuery.pageNumber,
-                pageSize: sanitizedQuery.pageSize,
+                pagesCount: Math.ceil(totalCount / pageSize),
+                page: pageNumber,
+                pageSize: pageSize,
                 totalCount,
-                items: items.map((b: any) => this.map(b))
-            }
+                items: items.map((b: any) => this.map(b)),
+            };
         } catch (error) {
-            console.log(error)
-            return []
+            console.log(error);
+            return [];
         }
     },
     async findAndMap(id: string): Promise<BlogViewModel | null> {

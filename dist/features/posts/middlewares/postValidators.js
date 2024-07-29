@@ -32,7 +32,6 @@ exports.blogIdValidator = (0, express_validator_1.body)('blogId').isString().wit
 })).withMessage('no blog');
 const findPostValidator = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const post = yield postsQueryRepository_1.postsQueryRepository.find(req.params.id);
-    console.log(post);
     if (!post) {
         res
             .status(404)

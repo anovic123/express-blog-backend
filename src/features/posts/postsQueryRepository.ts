@@ -84,7 +84,7 @@ export const postsQueryRepository = {
         return this.mapPostOutput(post)
     },
     async find(id: string): Promise<PostDbType | null> {
-        const res =  await postsCollection.findOne({ id: id })
+        const res =  await postsCollection.findOne({ $id: id })
         return res
     },
     mapPostOutput(post: PostDbType) {

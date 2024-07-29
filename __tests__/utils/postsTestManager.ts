@@ -54,5 +54,35 @@ export const postsTestManager = {
       })
     }
     return postById
+  },
+
+
+
+  async createPostComment (postId: string, inputData: { content: string }, userToken: string | null, expectedStatusCode: HttpStatusType = HTTP_STATUSES.CREATED_201) {
+    let request = req.post(`${SETTINGS.PATH.POSTS}/${postId}${SETTINGS.PATH.COMMENTS}`).send(inputData).expect(expectedStatusCode)
+
+    if (userToken) {
+      request = request.set({ 'Authorization': 'Bearer ' + userToken });
+    }
+
+    const res = await request
+
+    let createdEntity
+
+    if (expectedStatusCode === HTTP_STATUSES.CREATED_201) {
+      createdEntity = res.body
+
+      expect(createdEntity).toEqual({
+        id: expect.any(String),
+        content: inputData.content,
+        commentatorInfo: {
+          userId: createdEntity.commentatorInfo.userId,
+          userLogin: createdEntity.commentatorInfo.userLogin
+        },
+        createdEntity: expect.any(String)
+      })
+    }
+
+    return { res, createdEntity }
   }
 }

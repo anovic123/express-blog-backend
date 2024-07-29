@@ -47,7 +47,11 @@ export const postCreate = {
     shortDescription: 'Short Description',
 } as const
 
+export const postComment = {
+    content: 'long input data'
+}
 
+export const BearerToken = ''
 
 
 //========================================================================================================================================================
