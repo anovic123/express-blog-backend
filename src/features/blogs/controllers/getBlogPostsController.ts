@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 
-import {RequestWithParams, RequestWithQueryAndParams} from "../../../types";
+import {RequestWithParams, RequestWithQueryAndParams} from "../../../types/common";
 
 import {getBlogPostsHelper, GetBlogPostsHelperResult} from "../helper";
 

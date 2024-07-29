@@ -7,7 +7,7 @@ import {postsQueryRepository} from "../postsQueryRepository";
 
 import {HTTP_STATUSES} from "../../../utils";
 
-import { RequestAuthModelWithParamsAndBody} from "../../../types";
+import { RequestAuthModelWithParamsAndBody} from "../../../types/common";
 
 export const createPostCommentController = async (req: RequestAuthModelWithParamsAndBody<{ postId: string }, { content: string }>, res: Response) => {
     const postId = new ObjectId(req.params.postId);

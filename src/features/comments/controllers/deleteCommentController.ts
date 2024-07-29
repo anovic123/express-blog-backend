@@ -4,7 +4,7 @@ import {commentsService} from "../domain/comments-service";
 
 import {commentsQueryRepository} from "../commentsQueryRepository";
 
-import {RequestAuthModelWithParams} from "../../../types";
+import {RequestAuthModelWithParams} from "../../../types/common";
 
 import {HTTP_STATUSES} from "../../../utils";
 
@@ -12,7 +12,7 @@ export const deleteCommentController = async (req: RequestAuthModelWithParams<{ 
     const isOwn = await commentsQueryRepository.checkIsOwn(req.params.commentId, req.user!)
 
     if (!isOwn) {
-        res.sendStatus(HTTP_STATUSES.FORBIDDEN)
+        res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
         return
     }
 

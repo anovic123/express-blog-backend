@@ -4,7 +4,7 @@ import {postsQueryRepository} from "../postsQueryRepository";
 
 import {GetAllPostsHelperResult} from "../helper";
 
-import {RequestWithQueryAndParams} from "../../../types";
+import {RequestWithQueryAndParams} from "../../../types/common";
 
 import {HTTP_STATUSES} from "../../../utils";
 

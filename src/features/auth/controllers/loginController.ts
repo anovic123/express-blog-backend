@@ -1,8 +1,8 @@
 import { Response } from "express"
 
-import { RequestWithBody } from "../../../types"
+import { RequestWithBody } from "../../../types/common"
 
-import { AuthInputModel } from "../../../input-output-types/users-types"
+import { AuthInputModel } from "../../../types/users-types"
 
 import { usersService } from "../../users/domain/users-service"
 

@@ -9,7 +9,7 @@ import {
     BlogPostInputModel,
     BlogPostViewModel,
     BlogViewModel
-} from '../../input-output-types/blogs-types'
+} from '../../types/blogs-types'
 
 export const blogsRepository = {
     async create(blog: BlogInputModel): Promise<string> {

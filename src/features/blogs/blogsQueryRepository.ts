@@ -1,6 +1,6 @@
 import {ObjectId} from "mongodb";
 
-import {BlogPostViewModel, BlogViewModel} from "../../input-output-types/blogs-types";
+import {BlogPostViewModel, BlogViewModel} from "../../types/blogs-types";
 
 import {getAllBlogsHelper, getAllBlogsHelperResult, getBlogPostsHelper, GetBlogPostsHelperResult} from "./helper";
 
@@ -9,11 +9,9 @@ import {blogsCollection, postsCollection} from "../../db/db";
 import {BlogDbType} from "../../db/blog-db-type";
 
 export const blogsQueryRepository = {
-    async getAlLBlogs(query: getAllBlogsHelperResult, blogId:  BlogDbType['id']) {
-        const sanitizedQuery = getAllBlogsHelper(query as { [key: string]: string | undefined })
-
+    async getAllBlogs(query: any, blogId: string) {
         const byId = blogId ? { blogId: new ObjectId(blogId) } : {}
-        const search = sanitizedQuery.searchNameTerm ? { name: { $regex: sanitizedQuery.searchNameTerm, $options: "i" } } : {}
+        const search = query.searchNameTerm ? { name: { $regex: query.searchNameTerm, $options: "i" } } : {}
 
         const filter: any = {
             ...byId,
@@ -21,14 +19,14 @@ export const blogsQueryRepository = {
         }
 
         try {
-            const items: any = await blogsCollection.find(filter).sort(sanitizedQuery.sortBy, query.sortDirection).skip((sanitizedQuery.pageNumber - 1) * sanitizedQuery.pageSize).limit(sanitizedQuery.pageSize).toArray()
+            const items: any = await blogsCollection.find(filter).sort(query.sortBy, query.sortDirection).skip((query.pageNumber - 1) * query.pageSize).limit(query.pageSize).toArray()
 
             const totalCount = await blogsCollection.countDocuments(filter)
 
             return {
-                pagesCount: Math.ceil(totalCount / (sanitizedQuery.pageSize ?? 19)),
-                page: sanitizedQuery.pageNumber,
-                pageSize: sanitizedQuery.pageSize,
+                pagesCount: Math.ceil(totalCount / query.pageSize),
+                page: query.pageNumber,
+                pageSize: query.pageSize,
                 totalCount,
                 items: items.map((b: any) => this.map(b))
             }

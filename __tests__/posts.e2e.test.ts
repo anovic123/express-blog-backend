@@ -1,4 +1,4 @@
-import {PostInputModel} from "../src/input-output-types/posts-types"
+import {PostInputModel} from "../src/types/posts-types"
 import { SETTINGS } from "../src/settings"
 import { HTTP_STATUSES } from "../src/utils"
 import {blog1, blog2, codedAuth, createString, postComment, postCreate, userCreate3} from "./helpers/datasets"

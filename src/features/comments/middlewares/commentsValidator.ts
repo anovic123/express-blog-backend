@@ -1,7 +1,7 @@
 import {body, param} from "express-validator";
 import {authMiddleware} from "../../../global-middlewares/auth-middleware";
 import {inputCheckErrorsMiddleware} from "../../../global-middlewares/inputCheckErrorsMiddleware";
-import {RequestWithParams} from "../../../types";
+import {RequestWithParams} from "../../../types/common";
 import {NextFunction, Response} from "express";
 import {postsRepository} from "../../posts/postsRepository";
 import {HTTP_STATUSES} from "../../../utils";
@@ -16,7 +16,7 @@ export const findCommentsValidator = async (req: RequestWithParams<{ commentId: 
         return
     }
 
-    const comment = await commentsQueryRepository.getCommentsById(req.params.commentId)
+    const comment = await commentsQueryRepository.getCommentById(req.params.commentId)
 
     if (!comment) {
         res.status(HTTP_STATUSES.NOT_FOUND_404)

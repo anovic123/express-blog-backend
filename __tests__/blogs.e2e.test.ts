@@ -1,4 +1,4 @@
-import {BlogInputModel, BlogPostViewModel, BlogViewModel} from "../src/input-output-types/blogs-types"
+import {BlogInputModel, BlogPostViewModel, BlogViewModel} from "../src/types/blogs-types"
 
 import { SETTINGS } from "../src/settings"
 

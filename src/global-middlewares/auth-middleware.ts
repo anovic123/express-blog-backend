@@ -1,7 +1,7 @@
 import { NextFunction, Response } from "express";
 import { ObjectId } from 'mongodb';
 
-import { RequestAuthModel } from "../types";
+import { RequestAuthModel } from "../types/common";
 
 import { jwtService } from "../application/jwtService";
 

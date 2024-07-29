@@ -1,8 +1,8 @@
 import { Response} from 'express'
-import { BlogInputModel } from '../../../input-output-types/blogs-types'
+import { BlogInputModel } from '../../../types/blogs-types'
 import { blogsRepository } from '../blogsRepository'
 import { HTTP_STATUSES } from '../../../utils'
-import { RequestWithParamsAndBody } from '../../../types'
+import { RequestWithParamsAndBody } from '../../../types/common'
 
 export const putBlogController = async (req: RequestWithParamsAndBody<{id: string}, BlogInputModel>, res: Response) => {
 

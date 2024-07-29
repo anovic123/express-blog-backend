@@ -1,8 +1,8 @@
 import { Response } from "express";
 
-import { RequestWithBody } from "../../../types";
+import { RequestWithBody } from "../../../types/common";
 
-import { UserInputModel } from "../../../input-output-types/users-types";
+import { UserInputModel } from "../../../types/users-types";
 
 import { HTTP_STATUSES } from "../../../utils";
 
