@@ -40,9 +40,9 @@ export const postsService = {
         return newComment
     },
     async delPostById (id: PostDbType['id']): Promise<boolean> {
-        return await postsRepository.del(id)
+        return await postsRepository.deletePost(id)
     },
     async putPostById( body: PostInputModel, id: PostDbType['id']): Promise<boolean | null> {
-        return await postsRepository.put(body, id)
+        return await postsRepository.updatePost(body, id)
     }
 }
