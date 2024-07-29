@@ -12,47 +12,96 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.postsRepository = void 0;
 const blogsRepository_1 = require("../blogs/blogsRepository");
 const db_1 = require("../../db/db");
+const mongodb_1 = require("mongodb");
 exports.postsRepository = {
     createPost(post) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield db_1.postsCollection.insertOne(post);
-            return post.id;
+            try {
+                const result = yield db_1.postsCollection.insertOne(post);
+                return result.insertedId.toString();
+            }
+            catch (error) {
+                console.error("Error creating post:", error);
+                throw new Error("Failed to create post");
+            }
         });
     },
     createPostComment(comment) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield db_1.commentsCollection.insertOne(comment);
-            return comment;
+            try {
+                yield db_1.commentsCollection.insertOne(comment);
+                return comment;
+            }
+            catch (error) {
+                console.error("Error creating post comment:", error);
+                throw new Error("Failed to create post comment");
+            }
         });
     },
     find(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield db_1.postsCollection.findOne({ $id: id });
-            return res;
+            try {
+                if (!mongodb_1.ObjectId.isValid(id)) {
+                    return null;
+                }
+                const postId = new mongodb_1.ObjectId(id);
+                const post = yield db_1.postsCollection.findOne({ _id: postId });
+                return post || null;
+            }
+            catch (error) {
+                console.error("Error finding post:", error);
+                return null;
+            }
         });
     },
-    del(id) {
+    deletePost(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield db_1.postsCollection.deleteOne({ id: id });
-            return true;
-        });
-    },
-    put(post, id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const blog = yield blogsRepository_1.blogsRepository.findBlog(post.blogId);
-            if (!blog) {
+            try {
+                if (!mongodb_1.ObjectId.isValid(id)) {
+                    return false;
+                }
+                const postId = new mongodb_1.ObjectId(id);
+                const result = yield db_1.postsCollection.deleteOne({ _id: postId });
+                return result.deletedCount === 1;
+            }
+            catch (error) {
+                console.error("Error deleting post:", error);
                 return false;
             }
-            const result = yield db_1.postsCollection.updateOne({ id: id }, {
-                $set: Object.assign(Object.assign({}, post), { blogName: blog.name })
-            });
-            return result.matchedCount === 1;
+        });
+    },
+    updatePost(post, id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const blog = yield blogsRepository_1.blogsRepository.findBlog(post.blogId);
+                if (!blog) {
+                    return false;
+                }
+                if (!mongodb_1.ObjectId.isValid(id)) {
+                    return false;
+                }
+                const postId = new mongodb_1.ObjectId(id);
+                const result = yield db_1.postsCollection.updateOne({ _id: postId }, {
+                    $set: Object.assign(Object.assign({}, post), { blogName: blog.name }),
+                });
+                return result.matchedCount === 1;
+            }
+            catch (error) {
+                console.error("Error updating post:", error);
+                return false;
+            }
         });
     },
     deleteAll() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield db_1.postsCollection.deleteMany();
-            return true;
+            try {
+                yield db_1.postsCollection.deleteMany();
+                return true;
+            }
+            catch (error) {
+                console.error("Error deleting all posts:", error);
+                return false;
+            }
         });
-    }
+    },
 };

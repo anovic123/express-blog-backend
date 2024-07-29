@@ -40,7 +40,7 @@ export const postsRepository = {
         }
     },
 
-    async delete(id: string): Promise<boolean> {
+    async deletePost(id: string): Promise<boolean> {
         try {
             if (!ObjectId.isValid(id)) {
                 return false;
@@ -54,7 +54,7 @@ export const postsRepository = {
         }
     },
 
-    async update(post: PostInputModel, id: string): Promise<boolean> {
+    async updatePost(post: PostInputModel, id: string): Promise<boolean> {
         try {
             const blog = await blogsRepository.findBlog(post.blogId);
             if (!blog) {
