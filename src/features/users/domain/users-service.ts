@@ -9,22 +9,22 @@ import { UserOutputType } from "../../../types/users-types";
 import {usersQueryRepository} from "../usersQueryRepository";
 
 export const usersService = {
-  async createUser(login: string, email: string, password: string): Promise<UserOutputType> {
-    const passwordSalt = await bcrypt.genSalt(10)
-    const passwordHash = await this._generateHash(password, passwordSalt)
-
-    const newUser: UserDBType = {
-      id: new ObjectId(),
-      login,
-      email,
-      passwordHash,
-      passwordSalt,
-      createdAt: new Date()
-    }
-
-    const res =  await usersRepository.createUser(newUser)
-    return usersRepository._outputModelUser(res)
-  },
+  // async createUser(login: string, email: string, password: string): Promise<UserOutputType> {
+  //   const passwordSalt = await bcrypt.genSalt(10)
+  //   const passwordHash = await this._generateHash(password, passwordSalt)
+  //
+  //   const newUser: UserDBType = {
+  //     id: new ObjectId(),
+  //     login,
+  //     email,
+  //     passwordHash,
+  //     passwordSalt,
+  //     createdAt: new Date()
+  //   }
+  //
+  //   const res =  await usersRepository.createUser(newUser)
+  //   return usersRepository._outputModelUser(res)
+  // },
   async findUserById(id: ObjectId): Promise<UserAccountDBType | null> {
     const userResult = await usersQueryRepository.findUserById(id)
 
@@ -43,10 +43,11 @@ export const usersService = {
   },
   async checkCredentials(loginOrEmail: string, password: string): Promise<UserAccountDBType | null> {
     const user = await usersQueryRepository.findUserByLoginOrEmail(loginOrEmail)
+    console.log(user)
     if (!user) return null
-    if (!user.emailConfirmation.isConfirmed) {
-      return null
-    }
+    // if (!user.emailConfirmation.isConfirmed) {
+     //  return null
+    // }
     const passwordHash = await this._generateHash(password, user.accountData.passwordHash)
     if (user.accountData.passwordHash !== passwordHash) {
       return null

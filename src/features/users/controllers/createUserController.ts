@@ -7,6 +7,7 @@ import { UserInputModel } from "../../../types/users-types";
 import { HTTP_STATUSES } from "../../../utils";
 
 import { usersService } from "../domain/users-service";
+import {authService} from "../../auth/domain/auth-service";
 
 export const createUserController = async (req: RequestWithBody<UserInputModel>, res: Response) => {
   const findUser = await usersService.checkUnique(req.body.login, req.body.password)
@@ -18,7 +19,7 @@ export const createUserController = async (req: RequestWithBody<UserInputModel>,
     return
   }
 
-  const newUser = await usersService.createUser(
+  const newUser = await authService.createUser(
     req.body.login,
     req.body.email,
     req.body.password
