@@ -35,12 +35,12 @@ const findExistedUserByEmailAndConfirmedValidator = async (req: RequestWithBody<
     const existingUser = await usersQueryRepository.findUserByLoginOrEmail(email)
 
     if (!existingUser) {
-        res.status(HTTP_STATUSES.BAD_REQUEST_400).json({ errorsMessages: [{ message: "user not found" }] });
+        res.status(HTTP_STATUSES.BAD_REQUEST_400).json({ errorsMessages: [{ message: 'Wrong email', field: "email" }] })
         return
     }
 
     if (existingUser.emailConfirmation.isConfirmed) {
-        res.status(HTTP_STATUSES.BAD_REQUEST_400).json({ errorsMessages: [{ message: "user is confirmed" }] });
+        res.status(HTTP_STATUSES.BAD_REQUEST_400).json({ errorsMessages: [{ message: 'Wrong email', field: "email" }] });
         return
     }
 

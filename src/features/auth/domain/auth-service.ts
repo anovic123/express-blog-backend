@@ -66,9 +66,22 @@ export const authService = {
         let user = await usersQueryRepository.findUserByLoginOrEmail(email)
 
         if (!user) return false
-
+        user
         try {
-            await emailsManager.sendConfirmationMessage(user)
+            await emailsManager.sendConfirmationMessage({
+                _id: user._id,
+                accountData: {
+                    login: user.accountData.login,
+                    passwordHash: user.accountData.passwordHash,
+                    email: user.accountData.email,
+                    createdAt: user.accountData.createdAt
+                },
+                emailConfirmation: {
+                    confirmationCode: uuidv4(),
+                    expirationDate: user.emailConfirmation.expirationDate,
+                    isConfirmed: user.emailConfirmation.isConfirmed
+                }
+            })
         } catch (error) {
             console.log(error)
             return false

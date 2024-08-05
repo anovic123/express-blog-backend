@@ -25,7 +25,7 @@ export const usersService = {
     const res =  await usersRepository.createUser(newUser)
     return usersRepository._outputModelUser(res)
   },
-  async findUserById(id: string): Promise<UserAccountDBType | null> {
+  async findUserById(id: ObjectId): Promise<UserAccountDBType | null> {
     const userResult = await usersQueryRepository.findUserById(id)
 
     return userResult
@@ -44,6 +44,9 @@ export const usersService = {
   async checkCredentials(loginOrEmail: string, password: string): Promise<UserAccountDBType | null> {
     const user = await usersQueryRepository.findUserByLoginOrEmail(loginOrEmail)
     if (!user) return null
+    if (!user.emailConfirmation.isConfirmed) {
+      return null
+    }
     const passwordHash = await this._generateHash(password, user.accountData.passwordHash)
     if (user.accountData.passwordHash !== passwordHash) {
       return null

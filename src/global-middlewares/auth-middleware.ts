@@ -31,7 +31,7 @@ export const authMiddleware = async (req: RequestAuthModel, res: Response, next:
             return;
         }
 
-        const findedUser = await usersService.findUserById(new ObjectId(userId).toString());
+        const findedUser = await usersService.findUserById(userId);
         if (!findedUser) {
             res.status(HTTP_STATUSES.UNAUTHORIZED_401).send('User not found');
             return;
