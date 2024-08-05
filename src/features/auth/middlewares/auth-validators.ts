@@ -11,18 +11,36 @@ const emailValidator = body('email').trim().isEmail()
 
 const codeValidator = body('code').trim().isString()
 
-const findExistedUserValidator = async (req: RequestWithBody<{ email: string }>, res: Response, next: NextFunction) => {
-    const user = await usersQueryRepository.findUserByLoginOrEmail(req.body.email)
+const findExistedUserValidator = async (req: RequestWithBody<{ email: string, login: string }>, res: Response, next: NextFunction) => {
+    const { email, login } = req.body;
 
-    if (user) {
-        res.status(HTTP_STATUSES.BAD_REQUEST_400).json({
-            errorsMessages: [
-                {
-                    message: "email already exists",
-                    field: "email"
-                }
-            ]
-        })
+    const existingUser = await usersQueryRepository.findUserByLoginOrEmail(email);
+    if (existingUser) {
+         res.status(HTTP_STATUSES.BAD_REQUEST_400).json({ errorsMessages: [{ message: "Email already exists", field: "email" }] });
+         return
+    }
+
+    const existingLogin = await usersQueryRepository.findUserByLoginOrEmail(login);
+    if (existingLogin) {
+        res.status(HTTP_STATUSES.BAD_REQUEST_400).json({ errorsMessages: [{ message: "Login already exists", field: "login" }] });
+        return
+    }
+
+    next()
+}
+
+const findExistedUserByEmailAndConfirmedValidator = async (req: RequestWithBody<{ email: string }>, res: Response, next: NextFunction) => {
+    const { email } = req.body
+
+    const existingUser = await usersQueryRepository.findUserByLoginOrEmail(email)
+
+    if (!existingUser) {
+        res.status(HTTP_STATUSES.BAD_REQUEST_400).json({ errorsMessages: [{ message: "user not found" }] });
+        return
+    }
+
+    if (existingUser.emailConfirmation.isConfirmed) {
+        res.status(HTTP_STATUSES.BAD_REQUEST_400).json({ errorsMessages: [{ message: "user is confirmed" }] });
         return
     }
 
@@ -40,4 +58,10 @@ export const createUserValidator = [
   emailValidator,
   findExistedUserValidator,
   inputCheckErrorsMiddleware
+]
+
+export const registrationResendingValidator = [
+    emailValidator,
+    findExistedUserByEmailAndConfirmedValidator,
+    inputCheckErrorsMiddleware
 ]

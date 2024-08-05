@@ -62,6 +62,20 @@ export const authService = {
         const result = await usersRepository.updateConfirmation(user._id)
         return result
     },
+    async resendCode (email: string): Promise<boolean> {
+        let user = await usersQueryRepository.findUserByLoginOrEmail(email)
+
+        if (!user) return false
+
+        try {
+            await emailsManager.sendConfirmationMessage(user)
+        } catch (error) {
+            console.log(error)
+            return false
+        }
+
+        return true
+    },
     async _isPasswordCorrect (password: string, hash: string) {
         const isEqual = await bcrypt.compare(password, hash)
         return isEqual
