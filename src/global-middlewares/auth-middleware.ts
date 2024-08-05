@@ -40,7 +40,7 @@ export const authMiddleware = async (req: RequestAuthModel, res: Response, next:
         req.user = findedUser;
         next();
     } catch (error) {
-        console.error('Error in authMiddleware:', error);
+        console.log('Error in authMiddleware:', error);
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
         return;
     }

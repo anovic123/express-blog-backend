@@ -25,12 +25,16 @@ export const usersRepository = {
     let result = await usersCollection.updateOne({ _id }, { $set: { 'emailConfirmation.isConfirmed': true } })
     return result.modifiedCount === 1
   },
+  async updateUserConfirmationCode(_id: ObjectId, newCode: string) {
+    let result = await usersCollection.updateOne({ _id }, { $set: { 'emailConfirmation.confirmationCode': newCode } })
+    return result.modifiedCount === 1
+  },
   _outputModelUser(user: UserAccountDBType): UserOutputType {
     return {
       id: new ObjectId(user._id).toString(),
-      createdAt: user.accountData.createdAt,
-      email: user.accountData.email,
-      login: user.accountData.login
+      createdAt: user?.accountData?.createdAt,
+      email: user?.accountData?.email,
+      login: user?.accountData?.login
     }
   }
 }
