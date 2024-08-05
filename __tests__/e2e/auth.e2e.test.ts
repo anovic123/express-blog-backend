@@ -1,8 +1,8 @@
 import { userCreate3 } from "./helpers/datasets";
 import {usersTestManager} from "./utils/usersTestManager";
-import {HTTP_STATUSES} from "../src/utils";
+import {HTTP_STATUSES} from "../../src/utils";
 import {req} from "./helpers/test-helpers";
-import {SETTINGS} from "../src/settings";
+import {SETTINGS} from "../../src/settings";
 
 describe('auth endpoint', () => {
     beforeAll(async () => {

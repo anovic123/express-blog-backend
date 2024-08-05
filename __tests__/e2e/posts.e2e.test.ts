@@ -1,11 +1,11 @@
-import {PostInputModel} from "../src/types/posts-types"
-import { SETTINGS } from "../src/settings"
-import { HTTP_STATUSES } from "../src/utils"
+import {PostInputModel} from "../../src/types/posts-types"
+import { SETTINGS } from "../../src/settings"
+import { HTTP_STATUSES } from "../../src/utils"
 import {blog1, blog2, codedAuth, createString, postComment, postCreate, userCreate3} from "./helpers/datasets"
 import { req } from "./helpers/test-helpers"
 import { blogsTestManager } from "./utils/blogsTestManager"
 import { postsTestManager } from "./utils/postsTestManager"
-import {PostDbType} from "../src/db/post-db-type";
+import {PostDbType} from "../../src/db/post-db-type";
 import {usersTestManager} from "./utils/usersTestManager";
 
 // TEST DONE

@@ -1,6 +1,6 @@
 import { Request } from "express";
 
-import {UserDBType} from "../db/user-db-type";
+import {UserAccountDBType} from "../db/user-db-type";
 
 export type RequestWithBody<T> = Request<{}, {}, T>
 export type RequestWithQuery<T> = Request<{}, {}, {}, T>
@@ -9,7 +9,7 @@ export type RequestWithParamsAndBody<T, B> = Request<T, {}, B>
 export type RequestWithQueryAndParams<T, B> = Request<B, {}, {}, T>
 
 export interface RequestAuthModel extends Request {
-    user?: UserDBType | null
+    user?: UserAccountDBType | null
 }
 
 export type RequestAuthModelWithParamsAndBody<T, B> = RequestAuthModel & RequestWithParamsAndBody<T, B>;

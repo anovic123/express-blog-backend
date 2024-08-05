@@ -1,7 +1,7 @@
-import {CommentDBType} from "../../src/db/comment-db-type";
-import {HTTP_STATUSES, HttpStatusType} from "../../src/utils";
+import {CommentDBType} from "../../../src/db/comment-db-type";
+import {HTTP_STATUSES, HttpStatusType} from "../../../src/utils";
 import {req} from "../helpers/test-helpers";
-import {SETTINGS} from "../../src/settings";
+import {SETTINGS} from "../../../src/settings";
 import {ObjectId} from "mongodb";
 
 

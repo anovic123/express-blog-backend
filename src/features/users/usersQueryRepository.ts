@@ -1,5 +1,5 @@
 import {usersCollection} from "../../db/db";
-import {UserDBType} from "../../db/user-db-type";
+import {UserAccountDBType, UserDBType} from "../../db/user-db-type";
 import {UserOutputType} from "../../types/users-types";
 import {ObjectId} from "mongodb";
 
@@ -45,7 +45,7 @@ export const usersQueryRepository = {
             return [];
         }
     },
-    async findUserByLoginOrEmail (loginOrEmail: string): Promise<UserDBType | null> {
+    async findUserByLoginOrEmail (loginOrEmail: string): Promise<UserAccountDBType | null> {
         const user = await usersCollection.findOne({
             $or: [
                 { login: loginOrEmail },
@@ -64,8 +64,7 @@ export const usersQueryRepository = {
         });
         return res === null;
     },
-
-    async findUserById(id: string): Promise<UserDBType | null> {
+    async findUserById(id: string): Promise<UserAccountDBType | null> {
         if (!ObjectId.isValid(id)) {
             return null
         }
@@ -79,12 +78,17 @@ export const usersQueryRepository = {
 
         return user
     },
-    _outputModelUser(user: UserDBType): UserOutputType {
+    async findUserByConfirmationCode (emailConfirmationCode: string) {
+        const user = await usersCollection.findOne({ "emailConfirmation.confirmationCode": emailConfirmationCode })
+
+        return user
+    },
+    _outputModelUser(user: UserAccountDBType): UserOutputType {
         return {
-            id: user.id.toString(),
-            createdAt: user.createdAt,
-            email: user.email,
-            login: user.login
+            id: new ObjectId(user._id).toString(),
+            createdAt: user.accountData.createdAt,
+            email: user.accountData.email,
+            login: user.accountData.login
         }
     }
 }

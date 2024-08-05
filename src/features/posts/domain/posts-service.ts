@@ -3,7 +3,7 @@ import {blogsRepository} from "../../blogs/blogsRepository";
 import {PostDbType} from "../../../db/post-db-type";
 import {ObjectId} from "mongodb";
 import {postsRepository} from "../postsRepository";
-import {UserDBType} from "../../../db/user-db-type";
+import {UserAccountDBType, UserDBType} from "../../../db/user-db-type";
 import {CommentDBType} from "../../../db/comment-db-type";
 import {CommentViewModel} from "../../../types/comment-types";
 import {commentsQueryRepository} from "../../comments/commentsQueryRepository";
@@ -26,13 +26,13 @@ export const postsService = {
 
         return newPost.id
     },
-    async createPostComment(postId: string, content: string, user: UserDBType): Promise<CommentViewModel> {
+    async createPostComment(postId: string, content: string, user: UserAccountDBType): Promise<CommentViewModel> {
         const newComment = {
             id: new ObjectId().toString(),
             content: content,
             commentatorInfo: {
-                userId: new ObjectId(user.id).toString(),
-                userLogin: user.login
+                userId: new ObjectId(user._id).toString(),
+                userLogin: user.accountData.login
             },
             postId,
             createdAt: new Date().toISOString()

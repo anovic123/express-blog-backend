@@ -1,8 +1,8 @@
-import {BlogInputModel, BlogPostViewModel, BlogViewModel} from "../src/types/blogs-types"
+import {BlogInputModel, BlogPostViewModel, BlogViewModel} from "../../src/types/blogs-types"
 
-import { SETTINGS } from "../src/settings"
+import { SETTINGS } from "../../src/settings"
 
-import { HTTP_STATUSES } from "../src/utils"
+import { HTTP_STATUSES } from "../../src/utils"
 
 import { blog1, codedAuth } from "./helpers/datasets"
 

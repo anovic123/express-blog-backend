@@ -2,14 +2,14 @@ import { ObjectId } from "mongodb";
 
 import { usersCollection } from "../../db/db";
 
-import { UserDBType } from "../../db/user-db-type";
+import {UserAccountDBType, UserDBType} from "../../db/user-db-type";
 
 import { UserOutputType } from "../../types/users-types";
 
 export const usersRepository = {
-  async createUser(user: UserDBType): Promise<UserOutputType> {
+  async createUser(user: any): Promise<UserAccountDBType> {
     const result = await usersCollection.insertOne(user)
-    return this._outputModelUser(user)
+    return user
   },
   async deleteUser(id: UserDBType['id']): Promise<boolean> {
     const user = await usersCollection.deleteOne({ id })
@@ -21,12 +21,16 @@ export const usersRepository = {
 
     return true
   },
-  _outputModelUser(user: UserDBType): UserOutputType {
+  async updateConfirmation(_id: ObjectId) {
+    let result = await usersCollection.updateOne({ _id }, { $set: { 'emailConfirmation.isConfirmed': true } })
+    return result.modifiedCount === 1
+  },
+  _outputModelUser(user: UserAccountDBType): UserOutputType {
     return {
-      id: user.id.toString(),
-      createdAt: user.createdAt,
-      email: user.email,
-      login: user.login
+      id: new ObjectId(user._id).toString(),
+      createdAt: user.accountData.createdAt,
+      email: user.accountData.email,
+      login: user.accountData.login
     }
   }
 }

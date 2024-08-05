@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt'
 
 import { usersRepository } from "../usersRepository";
 
-import { UserDBType } from "../../../db/user-db-type";
+import {UserAccountDBType, UserAccountType, UserDBType} from "../../../db/user-db-type";
 
 import { UserOutputType } from "../../../types/users-types";
 import {usersQueryRepository} from "../usersQueryRepository";
@@ -22,9 +22,10 @@ export const usersService = {
       createdAt: new Date()
     }
 
-    return await usersRepository.createUser(newUser)
+    const res =  await usersRepository.createUser(newUser)
+    return usersRepository._outputModelUser(res)
   },
-  async findUserById(id: string): Promise<UserDBType | null> {
+  async findUserById(id: string): Promise<UserAccountDBType | null> {
     const userResult = await usersQueryRepository.findUserById(id)
 
     return userResult
@@ -40,11 +41,11 @@ export const usersService = {
 
     return res
   },
-  async checkCredentials(loginOrEmail: string, password: string): Promise<UserDBType | null> {
+  async checkCredentials(loginOrEmail: string, password: string): Promise<UserAccountDBType | null> {
     const user = await usersQueryRepository.findUserByLoginOrEmail(loginOrEmail)
     if (!user) return null
-    const passwordHash = await this._generateHash(password, user.passwordSalt)
-    if (user.passwordHash !== passwordHash) {
+    const passwordHash = await this._generateHash(password, user.accountData.passwordHash)
+    if (user.accountData.passwordHash !== passwordHash) {
       return null
     }
     return user
