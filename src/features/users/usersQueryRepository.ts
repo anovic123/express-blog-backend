@@ -63,13 +63,13 @@ export const usersQueryRepository = {
         });
         return res === null;
     },
-    async findUserById(id: string): Promise<UserAccountDBType | null> {
+    async findUserById(id: ObjectId): Promise<UserAccountDBType | null> {
         if (!ObjectId.isValid(id)) {
             return null
         }
         console.log(id)
         const userId = new ObjectId(id)
-        const user = await usersCollection.findOne({ id: userId })
+        const user = await usersCollection.findOne({ _id: userId })
 
         if (!user) {
             return null

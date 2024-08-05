@@ -14,5 +14,5 @@ export const registrationConfirmationController = async (req: RequestWithBody<{ 
         return
     }
 
-    res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401)
+    res.send(HTTP_STATUSES.BAD_REQUEST_400).json({ errorsMessages: [{ message: 'Wrong code', field: "code" }] })
 }
