@@ -8,8 +8,8 @@ export const emailAdapter = {
             port: 587,
             secure: false,
             auth: {
-                user: 'ethanparker@gmail.com',
-                pass: 'ifak ngnj tzhn wajn'
+                user: 'ethanparker1q@gmail.com',
+                pass: 'miok jnte phtf rfwt'
             }
         })
 
