@@ -58,7 +58,7 @@ export const authService = {
         }
         if (user.emailConfirmation.isConfirmed) return false
         if (user.emailConfirmation.confirmationCode !== code) return false
-        if (user.emailConfirmation.confirmationCode === code && user.emailConfirmation.expirationDate > new Date()) return false
+        if (user.emailConfirmation.expirationDate < new Date()) return false
         const result = await usersRepository.updateConfirmation(user._id)
         return result
     },
