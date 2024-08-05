@@ -1,10 +1,9 @@
-import { Request, Response } from 'express'
+import { Response } from 'express'
 
-import {RequestWithParams, RequestWithQueryAndParams} from "../../../types/common";
+import {RequestWithQueryAndParams} from "../../../types/common";
 
-import {getBlogPostsHelper, GetBlogPostsHelperResult} from "../helper";
+import { GetBlogPostsHelperResult} from "../helper";
 
-import {blogsRepository} from "../blogsRepository";
 import {blogsQueryRepository} from "../blogsQueryRepository";
 
 export const getBlogPostsController = async (req: RequestWithQueryAndParams<GetBlogPostsHelperResult, { blogId: string }>, res: Response) => {

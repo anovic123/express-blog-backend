@@ -2,7 +2,7 @@ import {ObjectId} from "mongodb";
 
 import {BlogPostViewModel, BlogViewModel} from "../../types/blogs-types";
 
-import {getAllBlogsHelper, getAllBlogsHelperResult, getBlogPostsHelper, GetBlogPostsHelperResult} from "./helper";
+import { getBlogPostsHelper, GetBlogPostsHelperResult} from "./helper";
 
 import {blogsCollection, postsCollection} from "../../db/db";
 
