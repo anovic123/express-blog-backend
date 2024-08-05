@@ -48,11 +48,10 @@ export const usersQueryRepository = {
     async findUserByLoginOrEmail (loginOrEmail: string): Promise<UserAccountDBType | null> {
         const user = await usersCollection.findOne({
             $or: [
-                { login: loginOrEmail },
-                { password: loginOrEmail }
+                { 'accountData.login': loginOrEmail },
+                { 'accountData.email': loginOrEmail }
             ]
         })
-
         return user
     },
     async checkUnique(login: string, password: string): Promise<boolean> {
