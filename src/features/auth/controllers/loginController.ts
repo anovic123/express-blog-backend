@@ -13,10 +13,8 @@ import { HTTP_STATUSES } from "../../../utils"
 export const loginController = async (req: RequestWithBody<AuthInputModel>, res: Response) => {
   const user = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
   if (user) {
-    const token = await jwtService.createJWT(user)
-    res.status(HTTP_STATUSES.OKK_200).send({
-      accessToken: token
-    })
+    const { accessToken, refreshToken } = jwtService.createJWT(user)
+    res.cookie('refreshToken ', refreshToken, {httpOnly: true, secure: true,}).header('Authorization', accessToken).send({ accessToken })
     return
   }
 
