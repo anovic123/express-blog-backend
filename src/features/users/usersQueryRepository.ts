@@ -38,7 +38,7 @@ export const usersQueryRepository = {
                 page: pageNumber,
                 pageSize: pageSize,
                 totalCount: totalUsersCount,
-                items: users.map(user => this._outputModelUser(user))
+                items: users.map(user => this.outputModelUser(user))
             };
         } catch (error) {
             console.log(error);
@@ -82,7 +82,7 @@ export const usersQueryRepository = {
 
         return user
     },
-    _outputModelUser(user: UserAccountDBType): UserOutputType {
+    outputModelUser(user: UserAccountDBType): UserOutputType {
         return {
             id: new ObjectId(user._id).toString(),
             createdAt: user.accountData.createdAt,
