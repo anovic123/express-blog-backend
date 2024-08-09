@@ -45,7 +45,7 @@ export const jwtService = {
             return null;
         }
     },
-    async logout (refreshToken: string): Promise<boolean> {
+    async addTokensToBlackList (refreshToken: string): Promise<boolean> {
         const res = await authRepository.addTokenToBlackList(refreshToken)
 
         return !!res;

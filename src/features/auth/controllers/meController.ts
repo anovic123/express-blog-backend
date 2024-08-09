@@ -7,6 +7,6 @@ export const meController = async (req: RequestAuthModel, res: Response) => {
   return res.status(HTTP_STATUSES.OKK_200).send({
     email,
     login,
-    id: _id
+    userId: _id
   })
 }
