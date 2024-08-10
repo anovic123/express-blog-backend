@@ -1,6 +1,6 @@
 import { Router } from 'express'
 
-import { loginController } from './controllers/login.controller'
+import { loginController } from './controllers/login.controller';
 import {meController} from "./controllers/me.controller";
 import {registrationEmailResendingController} from "./controllers/registration-email-resending.controller";
 import {registrationController} from "./controllers/registration.controller";

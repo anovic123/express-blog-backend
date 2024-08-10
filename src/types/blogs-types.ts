@@ -1,22 +1,13 @@
 export type BlogInputModel = {
-    name: string // max 15
-    description: string // max 500
-    websiteUrl: string // max 100 ^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$
+    name: string
+    description: string
+    websiteUrl: string
 }
 
 export type BlogPostInputModel = {
-    title: string // max 30
-    shortDescription: string // max 100
-    content: string // max 1000
-}
-
-export type BlogViewModel = {
-    id: string
-    name: string // max 15
-    description: string // max 500
-    websiteUrl: string // max 100 ^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$
-    createdAt: string
-    isMembership: boolean
+    title: string
+    shortDescription: string
+    content: string
 }
 
 export type BlogPostViewModel = {
@@ -27,4 +18,13 @@ export type BlogPostViewModel = {
     blogId: string
     blogName: string
     createdAt: string
+}
+
+export type BlogViewModel = {
+    id: string
+    name: string
+    description: string
+    websiteUrl: string
+    createdAt: string
+    isMembership: boolean
 }

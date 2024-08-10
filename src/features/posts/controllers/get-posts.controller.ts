@@ -8,9 +8,9 @@ import { GetAllPostsHelperResult } from "../helper";
 
 import { RequestWithQueryAndParams } from "../../../types/common";
 
-import { PostDbType } from "../../../db/post-db-type";
+import { PostViewModel } from '../../../types/posts-types';
 
-export const getPostsController = async (req: RequestWithQueryAndParams<GetAllPostsHelperResult, { id: PostDbType['id'] }>, res: Response<any>) => {
+export const getPostsController = async (req: RequestWithQueryAndParams<GetAllPostsHelperResult, { id: PostViewModel['id'] }>, res: Response<any>) => {
     const posts = await postsQueryRepository.getAllPosts(req.query, req.params.id)
     return res.status(HTTP_STATUSES.OKK_200).json(posts)
 }

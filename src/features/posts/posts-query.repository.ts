@@ -1,25 +1,25 @@
-import {ObjectId} from "mongodb";
+import {ObjectId, WithId} from "mongodb";
 
 import {commentsCollection, postsCollection} from "../../db/db";
+
 import {PostDbType} from "../../db/post-db-type";
+import {CommentDBType} from "../../db/comment-db-type";
 
 import {PostViewModel} from "../../types/posts-types";
+import { BlogViewModel } from "../../types/blogs-types";
 
 import {getAllPostsHelper, GetAllPostsHelperResult} from "./helper";
 
-import {CommentDBType} from "../../db/comment-db-type";
-import {BlogDbType} from "../../db/blog-db-type";
-
 export const postsQueryRepository = {
-    async getMappedPostById(id: PostDbType['id']): Promise<PostViewModel | null> {
-        return await this.findAndMap(id)
+    async getMappedPostById(id: PostViewModel['id']): Promise<PostViewModel | null> {
+        return await this.findPostsAndMap(id)
     },
     async getPostsCommentsLength(id: string): Promise<number> {
-        const commentsRes = await commentsCollection.find({ id: new ObjectId(id).toString() }).toArray()
+        const commentsRes = await commentsCollection.find({ _id: new ObjectId(id) }).toArray()
 
         return commentsRes.length
     },
-    async getAllPosts(query: GetAllPostsHelperResult, blogId: BlogDbType['id']) {
+    async getAllPosts(query: GetAllPostsHelperResult, blogId: BlogViewModel['id']) {
         const sanitizedQuery = getAllPostsHelper(query)
 
         const byId = blogId ? { blogId: new ObjectId(blogId) } : {}
@@ -75,21 +75,25 @@ export const postsQueryRepository = {
             return []
         }
     },
-    async findAndMap(id: string): Promise<PostViewModel | null> {
-        const post = await this.find(id)! // ! используем этот метод если проверили существование
-        console.log(post)
+    async findPostsAndMap(id: PostViewModel['id']): Promise<PostViewModel | null> {
+        const post = await this.findPost(id)
         if (!post) {
             return null
         }
         return this.mapPostOutput(post)
     },
-    async find(id: string): Promise<PostDbType | null> {
-        const res =  await postsCollection.findOne({ id: id })
+    async findPost(id: PostViewModel['id']): Promise<WithId<PostDbType> | null> {
+        const res = await postsCollection.findOne({ _id: new ObjectId(id) })
+
+        if (!res) {
+            return null
+        }
+
         return res
     },
-    mapPostOutput(post: PostDbType) {
+    mapPostOutput(post: WithId<PostDbType>) {
         const postForOutput: PostViewModel = {
-            id: post.id,
+            id: new ObjectId(post._id).toString(),
             title: post.title,
             shortDescription: post.shortDescription,
             content: post.content,

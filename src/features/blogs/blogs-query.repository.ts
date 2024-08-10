@@ -1,4 +1,4 @@
-import {ObjectId} from "mongodb";
+import {ObjectId, WithId} from "mongodb";
 
 import {BlogPostViewModel, BlogViewModel} from "../../types/blogs-types";
 
@@ -28,24 +28,21 @@ export const blogsQueryRepository = {
                 page: query.pageNumber,
                 pageSize: query.pageSize,
                 totalCount,
-                items: items.map((b: any) => this.map(b))
+                items: items.map((b: any) => this.mapBlog(b))
             }
         } catch (error) {
             console.log(error)
             return []
         }
     },
-    async findAndMap(id: string): Promise<BlogViewModel | null> {
+    async findAndMap(id: BlogViewModel['id']): Promise<BlogViewModel | null> {
         const blog = await this.findBlog(id)!
-        if (!blog) {
-            return null
-        }
-        return this.map(blog)
+        return blog
     },
-    async findBlog(id: string): Promise<BlogViewModel | null> {
-        const res = await blogsCollection.findOne({ id: id });
+    async findBlog(id: BlogViewModel['id']): Promise<BlogViewModel | null> {
+        const res = await blogsCollection.findOne({ _id: new ObjectId(id) });
         if (!res) return null
-        return this.map(res)
+        return this.mapBlog(res)
     },
     async getBlogPosts(query: GetBlogPostsHelperResult, blogId: string): Promise<{
         pagesCount: number,
@@ -90,9 +87,9 @@ export const blogsQueryRepository = {
             createdAt: post.createdAt,
         }
     },
-    map(blog: BlogDbType) {
+    mapBlog(blog: WithId<BlogDbType>) {
         const blogForOutput: BlogViewModel = {
-            id: blog.id,
+            id: new ObjectId(blog._id).toString(),
             name: blog.name,
             description: blog.description,
             websiteUrl: blog.websiteUrl,

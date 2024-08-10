@@ -17,7 +17,7 @@ export const createPostCommentController = async (req: RequestAuthModelWithParam
         return
     }
 
-    const existedPost = await postsQueryRepository.findAndMap(req.params.postId)
+    const existedPost = await postsQueryRepository.findPostsAndMap(req.params.postId)
     if (!existedPost) {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
         return
