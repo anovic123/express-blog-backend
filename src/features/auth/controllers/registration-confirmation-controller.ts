@@ -1,6 +1,9 @@
 import { Response } from 'express';
+
 import { RequestWithBody } from "../../../types/common";
+
 import { HTTP_STATUSES } from "../../../utils";
+
 import { authService } from "../domain/auth-service";
 
 export const registrationConfirmationController = async (req: RequestWithBody<{ code: string }>, res: Response) => {

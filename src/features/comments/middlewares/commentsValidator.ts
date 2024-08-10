@@ -1,12 +1,15 @@
+import {NextFunction, Response} from "express";
 import {body, param} from "express-validator";
+
 import {authMiddleware} from "../../../global-middlewares/auth-middleware";
 import {inputCheckErrorsMiddleware} from "../../../global-middlewares/inputCheckErrorsMiddleware";
-import {RequestWithParams} from "../../../types/common";
-import {NextFunction, Response} from "express";
-import {postsRepository} from "../../posts/postsRepository";
-import {HTTP_STATUSES} from "../../../utils";
-import {commentsRepository} from "../commentsRepository";
+
 import {commentsQueryRepository} from "../commentsQueryRepository";
+
+import {HTTP_STATUSES} from "../../../utils";
+
+import {RequestWithParams} from "../../../types/common";
+
 
 const contentValidator = body('content').isString().trim().isLength({ min: 20, max: 300 })
 

@@ -1,16 +1,20 @@
 import {Router} from 'express'
+
 import {createBlogController} from './controllers/createBlogController'
 import {getBlogsController} from './controllers/getBlogsController'
 import {findBlogController} from './controllers/findBlogController'
 import {delBlogController} from './controllers/delBlogController'
 import {putBlogController} from './controllers/putBlogController'
+
 import {
     blogValidators,
     createBlogPostValidator,
     findBlogPostValidator,
     findBlogValidator
 } from './middlewares/blogValidators'
+
 import {adminMiddleware} from '../../global-middlewares/admin-middleware'
+
 import {createBlogPostController} from "./controllers/createBlogPostController";
 import {getBlogPostsController} from "./controllers/getBlogPostsController";
 
