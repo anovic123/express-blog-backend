@@ -8,7 +8,7 @@ import {UserAccountDBType} from "../../db/user-db-type";
 import {CommentViewModel} from "../../types/comment-types";
 
 export const commentsQueryRepository = {
-    async getCommentById(id: string): Promise<CommentViewModel | null> {
+    async getCommentById(id: CommentViewModel['id']): Promise<CommentViewModel | null> {
         if (!ObjectId.isValid(id)) {
             return null
         }

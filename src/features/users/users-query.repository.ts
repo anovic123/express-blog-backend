@@ -1,7 +1,10 @@
-import {usersCollection} from "../../db/db";
-import {UserAccountDBType, UserDBType} from "../../db/user-db-type";
-import {UserOutputType} from "../../types/users-types";
 import {ObjectId} from "mongodb";
+
+import {usersCollection} from "../../db/db";
+
+import {UserAccountDBType} from "../../db/user-db-type";
+
+import {UserOutputType} from "../../types/users-types";
 
 
 export const usersQueryRepository = {

@@ -1,9 +1,12 @@
-import jwt, { JwtPayload } from 'jsonwebtoken';
 import { ObjectId } from 'mongodb';
-import { UserAccountDBType } from '../db/user-db-type';
-import { SETTINGS } from '../settings';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+
 import { authQueryRepository } from "../features/auth/auth-query.repository";
 import { authRepository } from "../features/auth/auth.repository";
+
+import { UserAccountDBType } from '../db/user-db-type';
+
+import { SETTINGS } from '../settings';
 
 interface JwtPayloadExtended extends JwtPayload {
     userId: string;

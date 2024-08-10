@@ -7,17 +7,22 @@ import {UserAccountDBType, UserDBType} from "../../db/user-db-type";
 import { UserOutputType } from "../../types/users-types";
 
 export const usersRepository = {
-  async createUser(user: any): Promise<UserAccountDBType> {
+  async createUser(user: any): Promise<UserAccountDBType | null> {
     const result = await usersCollection.insertOne(user)
+
+    if (!result.insertedId) {
+      return null
+    }
+
     return user
   },
   async deleteUser(id: UserDBType['id']): Promise<boolean> {
     const user = await usersCollection.deleteOne({ id })
 
-    return true
+    return user.deletedCount === 1
   },
   async deleteAll(): Promise<boolean> {
-    await usersCollection.deleteMany()
+    const result = await usersCollection.deleteMany()
 
     return true
   },

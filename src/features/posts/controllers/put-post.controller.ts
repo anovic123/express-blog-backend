@@ -9,7 +9,7 @@ import { HTTP_STATUSES } from '../../../utils'
 import { RequestWithParamsAndBody } from '../../../types/common'
 
 export const putPostController = async (req: RequestWithParamsAndBody<{id: string}, PostInputModel>, res: Response) => {
-    const putRes =  await postsService.putPostById(req.body, req.params.id)
+    const putRes = await postsService.putPostById(req.body, req.params.id)
 
     if (!putRes) {
         res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)

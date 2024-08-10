@@ -8,7 +8,7 @@ import { RequestWithParams } from '../../../types/common'
 
 import {postsQueryRepository} from "../posts-query.repository";
 
-export const findPostController = async (req: RequestWithParams<{id: string}>, res: Response<PostViewModel | {}>) => {
+export const findPostController = async (req: RequestWithParams<{id: PostViewModel['id']}>, res: Response<PostViewModel | {}>) => {
     const blogById = await postsQueryRepository.getMappedPostById(req.params.id)
 
     if (!blogById) {

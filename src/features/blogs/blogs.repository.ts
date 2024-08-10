@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import { ObjectId, WithId } from "mongodb";
 
 import {blogsCollection, postsCollection} from '../../db/db'
 
@@ -8,13 +8,13 @@ import {
     BlogInputModel,
     BlogPostInputModel,
     BlogPostViewModel,
-    BlogViewModel
+    BlogViewModel,
 } from '../../types/blogs-types'
 
 export const blogsRepository = {
-    async create(blog: BlogInputModel): Promise<string> {
-        const newBlog: BlogDbType = {
-            id: new ObjectId().toString(),
+    async create(blog: BlogInputModel): Promise<BlogViewModel | null> {
+        const newBlog: WithId<BlogDbType> = {
+            _id: new ObjectId(),
             name: blog.name,
             description: blog.description,
             websiteUrl: blog.websiteUrl,
@@ -22,19 +22,24 @@ export const blogsRepository = {
             isMembership: false
         }
 
-        await blogsCollection.insertOne(newBlog)
-        return newBlog.id
+        const result = await blogsCollection.insertOne(newBlog)
+       
+        if (!result.insertedId) {
+            return null
+        }
+
+        return this.mapBlog(newBlog)
     },
-    async findBlog(id: string): Promise<BlogViewModel | null> {
-        const res = await blogsCollection.findOne({ id: id });
+    async findBlog(id: BlogViewModel['id']): Promise<BlogViewModel | null> {
+        const res = await blogsCollection.findOne({ _id: new ObjectId(id) });
         if (!res) return null
-        return this.map(res)
+        return this.mapBlog(res)
     },
     async del(id: string): Promise<boolean> {
         const result = await blogsCollection.deleteOne({ id: id })
         return result.deletedCount === 1
     },
-    async updateBlog(blog: BlogInputModel, id: string): Promise<boolean> {
+    async updateBlog(blog: BlogInputModel, id: BlogViewModel['id']): Promise<boolean> {
         const userBlog = await this.findBlog(id)
         if (userBlog) {
             const updatedBlog = {
@@ -43,7 +48,7 @@ export const blogsRepository = {
                 description: blog.description,
                 websiteUrl: blog.websiteUrl,
             }
-            const result = await blogsCollection.updateOne({ id: id }, { $set: updatedBlog });
+            const result = await blogsCollection.updateOne({ _id: new ObjectId(id) }, { $set: updatedBlog });
             return result.matchedCount === 1
         } else {
             return false
@@ -77,16 +82,15 @@ export const blogsRepository = {
             createdAt: post.createdAt,
         }
     },
-    map(blog: BlogDbType) {
-        const blogForOutput: BlogViewModel = {
-            id: blog.id,
+    mapBlog(blog: WithId<BlogDbType>): BlogViewModel {
+        return {
+            id: new ObjectId(blog._id).toString(),
             name: blog.name,
             description: blog.description,
             websiteUrl: blog.websiteUrl,
             createdAt: blog.createdAt,
             isMembership: blog.isMembership
         }
-        return blogForOutput
     },
     async deleteAll(): Promise<boolean> {
         await blogsCollection.deleteMany()
