@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.postsRepository = void 0;
-const blogsRepository_1 = require("../blogs/blogsRepository");
+const blogs_repository_1 = require("../blogs/blogs.repository");
 const db_1 = require("../../db/db");
 exports.postsRepository = {
     createPost(post) {
@@ -39,7 +39,7 @@ exports.postsRepository = {
     },
     put(post, id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const blog = yield blogsRepository_1.blogsRepository.findBlog(post.blogId);
+            const blog = yield blogs_repository_1.blogsRepository.findBlog(post.blogId);
             if (!blog) {
                 return false;
             }

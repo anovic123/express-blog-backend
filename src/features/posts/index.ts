@@ -1,27 +1,27 @@
 import {Router} from 'express'
 
-import {createPostController} from './controllers/createPostController'
-import {getPostsController} from './controllers/getPostsController'
-import {findPostController} from './controllers/findPostController'
-import {delPostController} from './controllers/delPostController'
-import {putPostController} from './controllers/putPostController'
-import {createPostCommentController} from "./controllers/createPostCommentController";
-import {getPostCommentsController} from "./controllers/getPostCommentsController";
+import {createPostController} from './controllers/create-post.controller'
+import {getPostsController} from './controllers/get-posts.controller'
+import {findPostController} from './controllers/find-post.controller'
+import {deletePostController} from './controllers/delete-post.controller'
+import {putPostController} from './controllers/put-post.controller'
+import {createPostCommentController} from "./controllers/create-post-comment.controller";
+import {getPostCommentsController} from "./controllers/get-post-comments.controller";
 
 import {
     findPostValidator,
     postValidators, putValidators,
-} from './middlewares/postValidators'
-import {postCommentValidator, findPostsValidator} from "./middlewares/postCommentValidators";
+} from './middlewares/post.validators'
+import {postCommentValidator, findPostsValidator} from "./middlewares/post-comment.validators";
 
-import {adminMiddleware} from '../../global-middlewares/admin-middleware'
+import {adminMiddleware} from '../../global-middlewares/admin.middleware'
 
 export const postsRouter = Router()
 
 postsRouter.post('/', ...postValidators, createPostController)
 postsRouter.get('/', getPostsController)
 postsRouter.get('/:id', findPostController)
-postsRouter.delete('/:id', adminMiddleware, findPostValidator, delPostController)
+postsRouter.delete('/:id', adminMiddleware, findPostValidator, deletePostController)
 postsRouter.put('/:id', ...putValidators, putPostController)
 postsRouter.post('/:postId/comments', ...postCommentValidator, createPostCommentController)
 postsRouter.get('/:postId/comments', findPostsValidator, getPostCommentsController)

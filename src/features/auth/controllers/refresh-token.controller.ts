@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 
-import {jwtService} from "../../../application/jwtService";
+import {jwtService} from "../../../application/jwt.service";
 
 import {HTTP_STATUSES} from "../../../utils";
 
