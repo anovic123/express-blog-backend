@@ -1,10 +1,10 @@
 import { Router } from 'express'
 
-import { createUserController } from './controllers/createUserController'
-import { deleteUserController } from './controllers/deleteUserController'
-import { adminMiddleware } from '../../global-middlewares/admin-middleware'
-import { getUsersController } from './controllers/getUsersController'
-import { createUserValidator } from './middlewares/usersValidators'
+import { createUserController } from './controllers/create-user.controller'
+import { deleteUserController } from './controllers/delete-user.controller'
+import { adminMiddleware } from '../../global-middlewares/admin.middleware'
+import { getUsersController } from './controllers/get-users.controller'
+import { createUserValidator } from './middlewares/users.validators'
 
 export const usersRouter = Router()
 

@@ -1,10 +1,10 @@
 import { Router } from 'express'
 
-import {getCommentsByIdController} from "./controllers/getCommentsByIdController";
-import {putCommentController} from "./controllers/putCommentController";
-import {deleteCommentController} from "./controllers/deleteCommentController";
+import {getCommentsByIdController} from "./controllers/get-comments-by-id.controller";
+import {putCommentController} from "./controllers/put-comment.controller";
+import {deleteCommentController} from "./controllers/delete-comment.controller";
 
-import {deleteCommentValidator, putCommentValidator} from "./middlewares/commentsValidator";
+import {deleteCommentValidator, putCommentValidator} from "./middlewares/comments.validators";
 
 export const commentsRouter = Router()
 

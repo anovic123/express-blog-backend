@@ -2,10 +2,10 @@ import {Router} from 'express'
 
 import { HTTP_STATUSES } from '../../utils'
 
-import {blogsRepository} from "../blogs/blogsRepository";
-import {postsRepository} from "../posts/postsRepository";
-import { usersRepository } from '../users/usersRepository';
-import {commentsRepository} from "../comments/commentsRepository";
+import {blogsRepository} from "../blogs/blogs.repository";
+import {postsRepository} from "../posts/posts.repository";
+import { usersRepository } from '../users/users.repository';
+import {commentsRepository} from "../comments/comments.repository";
 
 export const testingRouter = Router()
 
