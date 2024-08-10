@@ -1,8 +1,11 @@
-import {CommentViewModel} from "../../types/comment-types";
-import {commentsCollection} from "../../db/db";
 import {ObjectId} from "mongodb";
+
+import {commentsCollection} from "../../db/db";
+
 import {CommentDBType} from "../../db/comment-db-type";
-import {UserAccountDBType, UserDBType} from "../../db/user-db-type";
+import {UserAccountDBType} from "../../db/user-db-type";
+
+import {CommentViewModel} from "../../types/comment-types";
 
 export const commentsQueryRepository = {
     async getCommentById(id: string): Promise<CommentViewModel | null> {

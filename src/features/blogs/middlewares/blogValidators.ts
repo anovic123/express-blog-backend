@@ -1,15 +1,14 @@
-import {body, validationResult,  query, param} from 'express-validator'
+import {NextFunction, Response} from 'express'
+import { body, validationResult } from 'express-validator'
+
 import {inputCheckErrorsMiddleware} from '../../../global-middlewares/inputCheckErrorsMiddleware'
-import {NextFunction, Request, Response} from 'express'
-import {blogsRepository} from '../blogsRepository'
 import {adminMiddleware} from '../../../global-middlewares/admin-middleware'
-import { HTTP_STATUSES } from '../../../utils'
-import { RequestWithParams } from '../../../types/common'
+
 import {blogsQueryRepository} from "../blogsQueryRepository";
 
-// name: string // max 15
-// description: string // max 500
-// websiteUrl: string // max 100 ^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$
+import { HTTP_STATUSES } from '../../../utils'
+
+import { RequestWithParams } from '../../../types/common'
 
 export const nameValidator = body('name').trim().isLength({ min: 3, max: 15 }).isString().withMessage('name')
 export const descriptionValidator = body('description').isString().withMessage('not string')

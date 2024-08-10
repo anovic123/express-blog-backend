@@ -1,6 +1,9 @@
 import { Response } from "express";
+
 import { RequestAuthModelWithParams } from "../../../types/common";
+
 import {commentsQueryRepository} from "../commentsQueryRepository";
+
 import {HTTP_STATUSES} from "../../../utils";
 
 export const getCommentsByIdController = async (req: RequestAuthModelWithParams<{ commentId: string }>, res: Response) => {

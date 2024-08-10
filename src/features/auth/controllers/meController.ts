@@ -1,5 +1,7 @@
 import { Response } from 'express'
+
 import {RequestAuthModel} from "../../../types/common";
+
 import {HTTP_STATUSES} from "../../../utils";
 
 export const meController = async (req: RequestAuthModel, res: Response) => {

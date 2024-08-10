@@ -13,11 +13,8 @@ exports.blogValidators = exports.createBlogPostValidator = exports.findBlogPostV
 const express_validator_1 = require("express-validator");
 const inputCheckErrorsMiddleware_1 = require("../../../global-middlewares/inputCheckErrorsMiddleware");
 const admin_middleware_1 = require("../../../global-middlewares/admin-middleware");
-const utils_1 = require("../../../utils");
 const blogsQueryRepository_1 = require("../blogsQueryRepository");
-// name: string // max 15
-// description: string // max 500
-// websiteUrl: string // max 100 ^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$
+const utils_1 = require("../../../utils");
 exports.nameValidator = (0, express_validator_1.body)('name').trim().isLength({ min: 3, max: 15 }).isString().withMessage('name');
 exports.descriptionValidator = (0, express_validator_1.body)('description').isString().withMessage('not string')
     .trim().isLength({ min: 1, max: 500 }).withMessage('more then 500 or 0');

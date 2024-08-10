@@ -1,6 +1,9 @@
 import { Response } from 'express'
+
 import {RequestWithBody} from "../../../types/common";
+
 import {authService} from "../domain/auth-service";
+
 import {HTTP_STATUSES} from "../../../utils";
 
 export const registrationEmailResending = async (req: RequestWithBody<{ email: string }>, res: Response) => {

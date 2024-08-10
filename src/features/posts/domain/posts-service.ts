@@ -1,12 +1,15 @@
-import {PostInputModel, PostViewModel} from "../../../types/posts-types";
-import {blogsRepository} from "../../blogs/blogsRepository";
-import {PostDbType} from "../../../db/post-db-type";
 import {ObjectId} from "mongodb";
+
+import {blogsRepository} from "../../blogs/blogsRepository";
 import {postsRepository} from "../postsRepository";
-import {UserAccountDBType, UserDBType} from "../../../db/user-db-type";
-import {CommentDBType} from "../../../db/comment-db-type";
-import {CommentViewModel} from "../../../types/comment-types";
+
 import {commentsQueryRepository} from "../../comments/commentsQueryRepository";
+
+import {PostDbType} from "../../../db/post-db-type";
+import {UserAccountDBType} from "../../../db/user-db-type";
+
+import {CommentViewModel} from "../../../types/comment-types";
+import {PostInputModel} from "../../../types/posts-types";
 
 export const postsService = {
     async createPost(post: PostInputModel): Promise<PostDbType['id'] | null> {
