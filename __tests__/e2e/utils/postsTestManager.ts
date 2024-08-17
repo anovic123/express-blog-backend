@@ -1,14 +1,15 @@
-import { BlogDbType } from "../../../src/db/blog-db-type";
-import { PostInputModel } from "../../../src/types/posts-types";
-import { SETTINGS } from "../../../src/settings";
+import {PostInputModel, PostViewModel} from "../../../src/types/posts-types";
+import {BlogViewModel} from "../../../src/types/blogs-types";
+
 import { HTTP_STATUSES, HttpStatusType } from "../../../src/utils";
+
+import { SETTINGS } from "../../../src/settings";
+
 import { codedAuth } from "../helpers/datasets";
 import { req } from "../helpers/test-helpers";
-import {BlogViewModel} from "../../../src/types/blogs-types";
-import {PostDbType} from "../../../src/db/post-db-type";
 
 export const postsTestManager = {
-  async createPost(data: PostInputModel, blog: BlogDbType, withCredentials?: boolean, expectedStatusCode: HttpStatusType = HTTP_STATUSES.CREATED_201) {
+  async createPost(data: PostInputModel, blog: BlogViewModel, withCredentials?: boolean, expectedStatusCode: HttpStatusType = HTTP_STATUSES.CREATED_201) {
     let request = req.post(SETTINGS.PATH.POSTS).send(data).expect(expectedStatusCode)
 
     if (withCredentials) {
@@ -40,7 +41,7 @@ export const postsTestManager = {
     
     return allPostsRes
   },
-  async getPostById(id: string, expectedStatusCode: HttpStatusType = HTTP_STATUSES.OKK_200) {
+  async getPostById(id: PostViewModel['id'], expectedStatusCode: HttpStatusType = HTTP_STATUSES.OKK_200) {
     const postById = await req.get(`${SETTINGS.PATH.POSTS}/${id}`).expect(expectedStatusCode)
     if (expectedStatusCode === HTTP_STATUSES.OKK_200) {
       expect(postById.body).toEqual({
@@ -58,7 +59,7 @@ export const postsTestManager = {
 
 
 
-  async createPostComment (postId: string, inputData: { content: string }, userToken: string | null, expectedStatusCode: HttpStatusType = HTTP_STATUSES.CREATED_201) {
+  async createPostComment (postId: PostViewModel['id'], inputData: { content: string }, userToken: string | null, expectedStatusCode: HttpStatusType = HTTP_STATUSES.CREATED_201) {
     let request = req.post(`${SETTINGS.PATH.POSTS}/${postId}${SETTINGS.PATH.COMMENTS}`).send(inputData).expect(expectedStatusCode)
 
     if (userToken) {

@@ -16,11 +16,13 @@ const blogs_repository_1 = require("../blogs/blogs.repository");
 const posts_repository_1 = require("../posts/posts.repository");
 const users_repository_1 = require("../users/users.repository");
 const comments_repository_1 = require("../comments/comments.repository");
+const security_repository_1 = require("../security/application/security.repository");
 exports.testingRouter = (0, express_1.Router)();
 exports.testingRouter.delete('/all-data', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield blogs_repository_1.blogsRepository.deleteAll();
     yield posts_repository_1.postsRepository.deleteAll();
     yield users_repository_1.usersRepository.deleteAll();
     yield comments_repository_1.commentsRepository.deleteAll();
+    yield security_repository_1.securityRepository.deleteAll();
     res.status(utils_1.HTTP_STATUSES.NO_CONTENT_204).json({});
 }));

@@ -1,6 +1,9 @@
-import { BlogInputModel } from "../../../src/types/blogs-types";
 import { SETTINGS } from "../../../src/settings";
+
 import { HTTP_STATUSES, HttpStatusType } from "../../../src/utils";
+
+import {BlogInputModel, BlogViewModel} from "../../../src/types/blogs-types";
+
 import {codedAuth, postCreate} from "../helpers/datasets";
 import { req } from "../helpers/test-helpers";
 
@@ -30,12 +33,12 @@ export const blogsTestManager = {
 
     return { allBlogsRes }
   },
-  async getAllPostByBlogsId (blogId: string, expectedStatusCode: HttpStatusType = HTTP_STATUSES.OKK_200) {
+  async getAllPostByBlogsId (blogId: BlogViewModel['id'], expectedStatusCode: HttpStatusType = HTTP_STATUSES.OKK_200) {
     const res=  await req.get(`${SETTINGS.PATH.BLOGS}/${blogId}${SETTINGS.PATH.POSTS}`).expect(expectedStatusCode)
 
     return res
   },
-  async createPostByBlogsId (blogId: string, expectedStatusCode: HttpStatusType = HTTP_STATUSES.CREATED_201) {
+  async createPostByBlogsId (blogId: BlogViewModel['id'], expectedStatusCode: HttpStatusType = HTTP_STATUSES.CREATED_201) {
     const res = await req.post(`${SETTINGS.PATH.BLOGS}/${blogId}${SETTINGS.PATH.POSTS}`).set({'Authorization': 'Basic ' + codedAuth}).send(postCreate).expect(expectedStatusCode)
 
     let createdEntity
@@ -55,7 +58,7 @@ export const blogsTestManager = {
     }
     return { res, createdEntity }
   },
-  async getBlogById (blogId: string, expectedStatusCode: HttpStatusType = HTTP_STATUSES.OKK_200) {
+  async getBlogById (blogId: BlogViewModel['id'], expectedStatusCode: HttpStatusType = HTTP_STATUSES.OKK_200) {
     const res = await req.get(`${SETTINGS.PATH.BLOGS}/${blogId}`).expect(expectedStatusCode)
 
     expect(res.body).toEqual({

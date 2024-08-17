@@ -1,9 +1,11 @@
-import { UserInputModel } from "../../../src/types/users-types";
 import { SETTINGS } from "../../../src/settings";
+
+import { UserInputModel } from "../../../src/types/users-types";
+
 import { HTTP_STATUSES, HttpStatusType } from "../../../src/utils";
+
 import { codedAuth } from "../helpers/datasets";
 import { req } from "../helpers/test-helpers";
-
 
 export const usersTestManager = {
   async createUser(data: UserInputModel, withCredentials?: boolean, expectedStatusCode: HttpStatusType = HTTP_STATUSES.CREATED_201) {

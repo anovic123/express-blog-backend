@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.runDb = exports.blackListTokensCollection = exports.commentsCollection = exports.usersCollection = exports.postsCollection = exports.blogsCollection = void 0;
+exports.runDb = exports.blackListTokensCollection = exports.authDevicesCollection = exports.rateLimitCollection = exports.commentsCollection = exports.usersCollection = exports.postsCollection = exports.blogsCollection = void 0;
 const mongodb_1 = require("mongodb");
 const url = 'mongodb+srv://vkanaev220:Q2tgZaS1r9EQIx2i@api-v1.otqbeom.mongodb.net/?retryWrites=true&w=majority&appName=api-v1';
 if (!url) {
@@ -21,6 +21,8 @@ exports.blogsCollection = dbApi.collection('blogs');
 exports.postsCollection = dbApi.collection('posts');
 exports.usersCollection = dbApi.collection('users');
 exports.commentsCollection = dbApi.collection('comments');
+exports.rateLimitCollection = dbApi.collection('rate-limit');
+exports.authDevicesCollection = dbApi.collection('auth-devices');
 exports.blackListTokensCollection = dbApi.collection('black-list-tokens');
 const runDb = () => __awaiter(void 0, void 0, void 0, function* () {
     try {

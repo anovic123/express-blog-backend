@@ -1,9 +1,14 @@
 import { Response, NextFunction } from 'express'
 import { body } from 'express-validator'
+
 import { inputCheckErrorsMiddleware } from '../../../global-middlewares/input-check-errors.middleware'
-import {RequestWithBody} from "../../../types/common";
-import {usersQueryRepository} from "../../users/users-query.repository";
-import {HTTP_STATUSES} from "../../../utils";
+import { rateLimitMiddleware } from "../../../global-middlewares/rate-limit.middleware";
+
+import { usersQueryRepository } from "../../users/users-query.repository";
+
+import { HTTP_STATUSES } from "../../../utils";
+
+import { RequestWithBody } from "../../../types/common";
 
 const loginValidator = body('login').trim().isString().isLength({ min: 3, max: 10 })
 const passwordValidator = body('password').trim().isString().isLength({ min: 6, max: 20 })
@@ -48,19 +53,22 @@ const findExistedUserByEmailAndConfirmedValidator = async (req: RequestWithBody<
 }
 
 export const registrationConfirmationValidator = [
+    rateLimitMiddleware,
     codeValidator,
     inputCheckErrorsMiddleware
 ]
 
 export const createUserValidator = [
-  loginValidator,
-  passwordValidator,
-  emailValidator,
-  findExistedUserValidator,
-  inputCheckErrorsMiddleware
+    rateLimitMiddleware,
+    loginValidator,
+    passwordValidator,
+    emailValidator,
+    findExistedUserValidator,
+    inputCheckErrorsMiddleware
 ]
 
 export const registrationResendingValidator = [
+    rateLimitMiddleware,
     emailValidator,
     findExistedUserByEmailAndConfirmedValidator,
     inputCheckErrorsMiddleware
