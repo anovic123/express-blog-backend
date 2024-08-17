@@ -9,7 +9,8 @@ import {refreshTokenController} from "./controllers/refresh-token.controller";
 import {logoutController} from "./controllers/logout.controller";
 
 import {authMiddleware} from "../../global-middlewares/auth.middleware";
-import {cookiesMiddleware} from "../../global-middlewares/cookies.middleware";
+import {cookiesRefreshTokenMiddleware} from "../../global-middlewares/cookiesRefreshTokenMiddleware";
+import {rateLimitMiddleware} from "../../global-middlewares/rate-limit.middleware";
 
 import {
     createUserValidator,
@@ -19,12 +20,12 @@ import {
 
 export const authRouter = Router()
 
-authRouter.post('/login', loginController)
+authRouter.post('/login', rateLimitMiddleware, loginController)
 authRouter.get('/me', authMiddleware, meController)
 
 authRouter.post('/registration', ...createUserValidator, registrationController)
 authRouter.post('/registration-confirmation', ...registrationConfirmationValidator, registrationConfirmationController)
 authRouter.post('/registration-email-resending', ...registrationResendingValidator, registrationEmailResendingController)
 
-authRouter.post('/refresh-token', cookiesMiddleware, refreshTokenController)
-authRouter.post('/logout', cookiesMiddleware, logoutController)
+authRouter.post('/refresh-token', cookiesRefreshTokenMiddleware, refreshTokenController)
+authRouter.post('/logout', cookiesRefreshTokenMiddleware, logoutController)

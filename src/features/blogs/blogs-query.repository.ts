@@ -9,7 +9,7 @@ import {blogsCollection, postsCollection} from "../../db/db";
 import {BlogDbType} from "../../db/blog-db-type";
 
 export const blogsQueryRepository = {
-    async getAllBlogs(query: any, blogId: string) {
+    async getAllBlogs(query: any, blogId: BlogViewModel['id']) {
         const byId = blogId ? { blogId: new ObjectId(blogId) } : {}
         const search = query.searchNameTerm ? { name: { $regex: query.searchNameTerm, $options: "i" } } : {}
 
@@ -28,7 +28,7 @@ export const blogsQueryRepository = {
                 page: query.pageNumber,
                 pageSize: query.pageSize,
                 totalCount,
-                items: items.map((b: any) => this.mapBlog(b))
+                items: items.map((b: any) => this._mapBlog(b))
             }
         } catch (error) {
             console.log(error)
@@ -42,7 +42,7 @@ export const blogsQueryRepository = {
     async findBlog(id: BlogViewModel['id']): Promise<BlogViewModel | null> {
         const res = await blogsCollection.findOne({ _id: new ObjectId(id) });
         if (!res) return null
-        return this.mapBlog(res)
+        return this._mapBlog(res)
     },
     async getBlogPosts(query: GetBlogPostsHelperResult, blogId: string): Promise<{
         pagesCount: number,
@@ -69,14 +69,14 @@ export const blogsQueryRepository = {
                 page: sanitizedQuery.pageNumber,
                 pageSize: sanitizedQuery.pageSize,
                 totalCount,
-                items: items.map((b: any) => this.mapPostBlog(b))
+                items: items.map((b: any) => this._mapPostBlog(b))
             }
         } catch (error) {
             console.log(error)
             return []
         }
     },
-    mapPostBlog(post: BlogPostViewModel): BlogPostViewModel {
+    _mapPostBlog(post: BlogPostViewModel): BlogPostViewModel {
         return {
             id: post.id,
             title: post.title,
@@ -87,7 +87,7 @@ export const blogsQueryRepository = {
             createdAt: post.createdAt,
         }
     },
-    mapBlog(blog: WithId<BlogDbType>) {
+    _mapBlog(blog: WithId<BlogDbType>) {
         const blogForOutput: BlogViewModel = {
             id: new ObjectId(blog._id).toString(),
             name: blog.name,

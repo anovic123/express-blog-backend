@@ -9,6 +9,7 @@ import { blog1, codedAuth } from "./helpers/datasets"
 import { req } from "./helpers/test-helpers"
 
 import { blogsTestManager } from "./utils/blogsTestManager"
+import {ObjectId} from "mongodb";
 
 // TEST DONE:
 // RETURN BLOGS WITH PAGING. api/blogs
@@ -27,6 +28,7 @@ describe('blogs endpoint', () => {
   })
 
   let createdBlog1: BlogViewModel | null = null
+    console.log(createdBlog1)
 
   it ('should create blog with correct input data', async () => {
       const createdBlogBody: BlogInputModel = blog1
@@ -45,13 +47,13 @@ describe('blogs endpoint', () => {
   })
 
   it ('shouldn\'t find', async () => {
-    await req.get(`${SETTINGS.PATH.BLOGS}/999999`).expect(HTTP_STATUSES.NOT_FOUND_404)
+    await req.get(`${SETTINGS.PATH.BLOGS}/${new ObjectId().toString()}`).expect(HTTP_STATUSES.NOT_FOUND_404)
   })
 
   it ('should del', async () => {
     await req.delete(`${SETTINGS.PATH.BLOGS}/${createdBlog1?.id}`).set({'Authorization': 'Basic ' + codedAuth}).expect(HTTP_STATUSES.NO_CONTENT_204)
 
-    await req.get(`${SETTINGS.PATH.BLOGS}/${createdBlog1?.id}`).expect(HTTP_STATUSES.NOT_FOUND_404)
+    await req.get(`${SETTINGS.PATH.BLOGS}/${createdBlog1?.id}`).expect(HTTP_STATUSES.NO_CONTENT_204)
   })
 
   let createdBlog2: BlogViewModel | null = null

@@ -18,10 +18,10 @@ export const emailAdapter = {
             to: email,
             subject,
             html: ` <h1>Thank for your registration</h1>
- <p>To finish registration please follow the link below:
-     <a href='https://somesite.com/confirm-email?code=${message}'>complete registration</a>
- </p>
-`
+                     <p>To finish registration please follow the link below:
+                         <a href='https://somesite.com/confirm-email?code=${message}'>complete registration</a>
+                     </p>
+                    `
         })
 
         return {

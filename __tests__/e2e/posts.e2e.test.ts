@@ -1,12 +1,18 @@
-import {PostInputModel} from "../../src/types/posts-types"
-import { SETTINGS } from "../../src/settings"
 import { HTTP_STATUSES } from "../../src/utils"
-import {blog1, blog2, codedAuth, createString, postComment, postCreate, userCreate3} from "./helpers/datasets"
-import { req } from "./helpers/test-helpers"
+
+import { SETTINGS } from "../../src/settings"
+
+import {PostDbType} from "../../src/db/post-db-type";
+
+import {PostInputModel, PostViewModel} from "../../src/types/posts-types"
+
 import { blogsTestManager } from "./utils/blogsTestManager"
 import { postsTestManager } from "./utils/postsTestManager"
-import {PostDbType} from "../../src/db/post-db-type";
+
 import {usersTestManager} from "./utils/usersTestManager";
+
+import { req } from "./helpers/test-helpers"
+import {blog1, blog2, codedAuth, createString, postComment, postCreate, userCreate3} from "./helpers/datasets"
 
 // TEST DONE
 
@@ -25,7 +31,7 @@ describe('posts endpoint', () => {
       await req.delete(`${SETTINGS.PATH.TESTING}/all-data`)
     })
 
-    let createdPost: PostDbType
+    let createdPost: PostViewModel
 
     const credentials = {
         loginOrEmail: userCreate3.login,
@@ -118,7 +124,7 @@ describe('posts endpoint', () => {
         expect(allPostsRes.body.items.length).toEqual(0)
     })
 
-    let createdPost2: PostDbType
+    let createdPost2: PostViewModel
     it ('should create post 2', async () => {
         const newBlog = await blogsTestManager.createBlog(blog1)
 

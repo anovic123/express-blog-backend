@@ -2,7 +2,7 @@ import { NextFunction, Response } from "express";
 
 import { RequestAuthModel } from "../types/common";
 
-import { jwtService } from "../application/jwt.service";
+import { jwtService } from "../features/auth/application/jwt.service";
 
 import { usersService } from "../features/users/domain/users.service";
 
@@ -13,26 +13,26 @@ export const authMiddleware = async (req: RequestAuthModel, res: Response, next:
         const authHeaders = req.headers.authorization;
 
         if (!authHeaders) {
-            res.status(HTTP_STATUSES.UNAUTHORIZED_401).send('Authorization header is missing');
+            res.status(HTTP_STATUSES.UNAUTHORIZED_401).json('Authorization header is missing');
             return;
         }
 
         const token = authHeaders.split(' ')[1];
 
         if (!token) {
-            res.status(HTTP_STATUSES.UNAUTHORIZED_401).send('Token is missing');
+            res.status(HTTP_STATUSES.UNAUTHORIZED_401).json('Token is missing');
             return;
         }
 
         const userId = await jwtService.getUserIdByToken(token);
         if (!userId) {
-            res.status(HTTP_STATUSES.UNAUTHORIZED_401).send('Invalid token');
+            res.status(HTTP_STATUSES.UNAUTHORIZED_401).json('Invalid token');
             return;
         }
 
         const findedUser = await usersService.findUserById(userId);
         if (!findedUser) {
-            res.status(HTTP_STATUSES.UNAUTHORIZED_401).send('User not found');
+            res.status(HTTP_STATUSES.UNAUTHORIZED_401).json('User not found');
             return;
         }
 

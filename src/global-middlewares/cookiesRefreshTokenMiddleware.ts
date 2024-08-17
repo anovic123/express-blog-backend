@@ -1,7 +1,7 @@
 import { NextFunction, Response, Request } from 'express'
 import {HTTP_STATUSES} from "../utils";
 
-export const cookiesMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const cookiesRefreshTokenMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const refreshToken = req.cookies['refreshToken']
 
     if (!refreshToken) {

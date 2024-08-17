@@ -35,7 +35,7 @@ export const blogsRepository = {
         if (!res) return null
         return this.mapBlog(res)
     },
-    async del(id: string): Promise<boolean> {
+    async del(id: BlogViewModel['id']): Promise<boolean> {
         const result = await blogsCollection.deleteOne({ id: id })
         return result.deletedCount === 1
     },
