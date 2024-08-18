@@ -4,7 +4,7 @@ exports.SETTINGS = void 0;
 const dotenv_1 = require("dotenv");
 (0, dotenv_1.config)();
 exports.SETTINGS = {
-    PORT: 3000,
+    PORT: 3001,
     PATH: {
         AUTH: '/auth',
         BLOGS: '/blogs',

@@ -38,8 +38,8 @@ export const deleteDeviceByIdController = async (req: RequestWithParams<{ device
             return
         }
 
-        await securityService.deleteUserDeviceById(deviceId)
         await jwtService.addTokensToBlackList(refreshToken)
+        await securityService.deleteUserDeviceById(deviceId)
 
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     }  catch (error) {
