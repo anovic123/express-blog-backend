@@ -1,4 +1,4 @@
-import { rateLimitCollection } from "../../../db/db";
+import {rateLimitCollection} from "../../../db/db";
 import { RateLimitDbType } from "../../../db/rate-limit-db-type";
 
 export const rateLimitRepository = {
@@ -15,6 +15,15 @@ export const rateLimitRepository = {
             return !!res.insertedId;
         } catch (error) {
             console.error("Error inserting new attempt:", error);
+            return false;
+        }
+    },
+    async deleteAll(): Promise<boolean> {
+        try {
+            const result = await rateLimitCollection.deleteMany({});
+            return result.deletedCount > 0;
+        } catch (error) {
+            console.error('Error deleting all comments:', error);
             return false;
         }
     }

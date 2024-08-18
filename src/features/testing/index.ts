@@ -1,20 +1,17 @@
 import {Router} from 'express'
 
 import { HTTP_STATUSES } from '../../utils'
-
-import {blogsRepository} from "../blogs/blogs.repository";
-import {postsRepository} from "../posts/posts.repository";
-import { usersRepository } from '../users/users.repository';
-import {commentsRepository} from "../comments/comments.repository";
-import {securityRepository} from "../security/application/security.repository";
+import {testingService} from "./domain/testing.service";
 
 export const testingRouter = Router()
 
 testingRouter.delete('/all-data', async (req, res) => {
-    await blogsRepository.deleteAll()
-    await postsRepository.deleteAll()
-    await usersRepository.deleteAll()
-    await commentsRepository.deleteAll()
-    await securityRepository.deleteAll()
-    res.status(HTTP_STATUSES.NO_CONTENT_204).json({})
+    const testResult = await testingService.clearAllDB()
+
+    if (!testResult) {
+        res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
+        return
+    }
+
+    res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
 })

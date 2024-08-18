@@ -21,8 +21,8 @@ const findExistedUserValidator = async (req: RequestWithBody<{ email: string, lo
 
     const existingUser = await usersQueryRepository.findUserByLoginOrEmail(email);
     if (existingUser) {
-         res.status(HTTP_STATUSES.BAD_REQUEST_400).json({ errorsMessages: [{ message: "Email already exists", field: "email" }] });
-         return
+        res.status(HTTP_STATUSES.BAD_REQUEST_400).json({ errorsMessages: [{ message: "Email already exists", field: "email" }] });
+        return
     }
 
     const existingLogin = await usersQueryRepository.findUserByLoginOrEmail(login);

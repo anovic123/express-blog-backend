@@ -30,7 +30,7 @@ export const jwtService = {
         const accessToken = this._signAccessToken(userId);
         const refreshToken = this._signRefreshToken(userId, deviceId);
 
-        const refreshTokenExp = this._calculateExpiration(100);
+        const refreshTokenExp = this._calculateExpiration(20);
 
         return { accessToken, refreshToken, refreshTokenExp };
     },
@@ -48,7 +48,7 @@ export const jwtService = {
             const newAccessToken = this._signAccessToken(decoded.userId);
             const newRefreshToken = this._signRefreshToken(decoded.userId, decoded.deviceId);
 
-            const refreshTokenExp = this._calculateExpiration(100);
+            const refreshTokenExp = this._calculateExpiration(20);
 
             return { accessToken: newAccessToken, refreshToken: newRefreshToken, refreshTokenExp };
         } catch (error) {
@@ -99,7 +99,7 @@ export const jwtService = {
     },
 
     _signRefreshToken(userId: string, deviceId: string): string {
-        return jwt.sign({ userId, deviceId }, SETTINGS.JWT_SECRET, { expiresIn: '100s' });
+        return jwt.sign({ userId, deviceId }, SETTINGS.JWT_SECRET, { expiresIn: '20s' });
     },
 
     _calculateExpiration(seconds: number): string {

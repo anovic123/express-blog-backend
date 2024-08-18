@@ -19,7 +19,7 @@ export const refreshTokenController = async ( req: Request, res: Response ) => {
                 await securityService.updateSessionUser(userId, deviceId, refreshTokenExp)
             }
 
-            res.cookie('refreshToken ', refreshToken, {httpOnly: true, secure: true,}).header('Authorization', accessToken).send({ accessToken })
+            res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true,}).header('Authorization', accessToken).send({ accessToken })
             return
         }
 
