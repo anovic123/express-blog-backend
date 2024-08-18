@@ -9,7 +9,7 @@ import {refreshTokenController} from "./controllers/refresh-token.controller";
 import {logoutController} from "./controllers/logout.controller";
 
 import {authMiddleware} from "../../global-middlewares/auth.middleware";
-import {cookiesRefreshTokenMiddleware} from "../../global-middlewares/cookiesRefreshTokenMiddleware";
+import {cookiesRefreshTokenMiddleware} from "../../global-middlewares/cookies-refresh-token.middleware";
 import {rateLimitMiddleware} from "../../global-middlewares/rate-limit.middleware";
 
 import {

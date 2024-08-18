@@ -2,7 +2,7 @@ import { NextFunction, Response } from "express";
 import { body, validationResult, param } from 'express-validator'
 
 import {inputCheckErrorsMiddleware} from "../../../global-middlewares/input-check-errors.middleware";
-import {cookiesRefreshTokenMiddleware} from "../../../global-middlewares/cookiesRefreshTokenMiddleware";
+import {cookiesRefreshTokenMiddleware} from "../../../global-middlewares/cookies-refresh-token.middleware";
 
 import {securityQueryRepository} from "../application/security-query.repository";
 
