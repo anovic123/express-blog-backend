@@ -17,11 +17,6 @@ export const deleteDeviceByIdController = async (req: RequestWithParams<{ device
     try {
         const refreshToken = req.cookies['refreshToken'];
 
-        if (!refreshToken) {
-            res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
-            return;
-        }
-
         const refreshTokenData = await jwtService.getDataFromRefreshToken(refreshToken);
 
         if (!refreshTokenData) {
@@ -38,7 +33,6 @@ export const deleteDeviceByIdController = async (req: RequestWithParams<{ device
             return
         }
 
-        await jwtService.addTokensToBlackList(refreshToken)
         await securityService.deleteUserDeviceById(deviceId)
 
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)

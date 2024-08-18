@@ -7,6 +7,7 @@ import { authRepository } from '../auth.repository';
 import { UserAccountDBType } from '../../../db/user-db-type';
 
 import { SETTINGS } from '../../../settings';
+import {securityQueryRepository} from "../../security/application/security-query.repository";
 
 interface JwtPayloadExtended extends JwtPayload {
     userId: string
@@ -37,7 +38,6 @@ export const jwtService = {
 
     async refreshTokensJWT(refreshToken: string): Promise<JwtTokensOutput | null> {
         try {
-            if (await this.isTokenInBlackList(refreshToken)) return null;
             const decoded = await this._verifyToken<JwtRefreshPayloadExtended>(refreshToken);
 
             if (!decoded || !decoded.userId || !decoded.deviceId) return null;
@@ -69,7 +69,12 @@ export const jwtService = {
     async getDataFromRefreshToken(refreshToken: string): Promise<{ userId: string; deviceId: string } | null> {
         try {
             const result = await this._verifyToken<JwtRefreshPayloadExtended>(refreshToken);
-            return result ? { userId: result.userId, deviceId: result.deviceId } : null;
+            console.log('result', result)
+            if (!result || !result.deviceId || !result.userId) {
+                return null;
+            }
+
+            return { userId: result.userId, deviceId: result.deviceId };
         } catch (error) {
             console.error('Error getting data from refresh token:', error);
             return null;
@@ -105,6 +110,7 @@ export const jwtService = {
         return new Date(Date.now() + seconds * 1000).toISOString();
     },
 
+    // TODO: Refactor
     async _verifyToken<T extends JwtPayload>(token: string): Promise<T | null> {
         try {
             if (await this.isTokenInBlackList(token)) {
@@ -113,6 +119,11 @@ export const jwtService = {
             }
 
             const decodedToken = jwt.verify(token, SETTINGS.JWT_SECRET) as T;
+
+            const isDeviceValid = await securityQueryRepository.checkUserDeviceById(new ObjectId(decodedToken.userId), decodedToken.deviceId);
+            if (!isDeviceValid) {
+                return null;
+            }
 
             if (decodedToken.exp && Date.now() >= decodedToken.exp * 1000) {
                 console.error('Token verification failed due to expiration');
