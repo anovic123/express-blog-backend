@@ -1,13 +1,14 @@
 import { Response } from 'express'
 
+import {blogsQueryRepository} from "../blogs-query.repository";
+
+import {blogsService} from "../domain/blogs.service";
+
 import {RequestWithParamsAndBody} from "../../../types/common";
 
 import {BlogPostInputModel} from "../../../types/blogs-types";
 
 import {HTTP_STATUSES} from "../../../utils";
-
-import {blogsRepository} from "../blogs.repository";
-import {blogsQueryRepository} from "../blogs-query.repository";
 
 export const createBlogPostController = async (req: RequestWithParamsAndBody<{ blogId: string },BlogPostInputModel>, res: Response<BlogPostInputModel | null>) => {
     const findBlog = await blogsQueryRepository.findBlog(req.params.blogId)
@@ -16,7 +17,7 @@ export const createBlogPostController = async (req: RequestWithParamsAndBody<{ b
         return
     }
 
-    const newBlogPost = await blogsRepository.createPostBlog(findBlog.id, req.body)
+    const newBlogPost = await blogsService.createPostBlog(findBlog.id, req.body)
 
     if (!newBlogPost) {
         res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)

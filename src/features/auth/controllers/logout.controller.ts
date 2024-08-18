@@ -1,19 +1,16 @@
 import { Request, Response } from 'express'
+import {ObjectId} from "mongodb";
+
+import {securityService} from "../../security/domain/security.service";
+
+import {securityQueryRepository} from "../../security/application/security-query.repository";
 
 import {jwtService} from "../application/jwt.service";
 
 import {HTTP_STATUSES} from "../../../utils";
-import {securityService} from "../../security/domain/security.service";
-import {securityQueryRepository} from "../../security/application/security-query.repository";
-import {ObjectId} from "mongodb";
 
 export const logoutController = async (req: Request, res: Response): Promise<void> => {
     const requestRefreshToken = req.cookies['refreshToken'];
-
-    if (!requestRefreshToken) {
-        res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
-        return
-    }
 
     try {
         const refreshTokenData = await jwtService.getDataFromRefreshToken(requestRefreshToken)
@@ -25,7 +22,7 @@ export const logoutController = async (req: Request, res: Response): Promise<voi
         const checkDeviceUser = await securityQueryRepository.checkUserDeviceById(new ObjectId(refreshTokenData.userId), refreshTokenData.deviceId)
 
         if (checkDeviceUser) {
-            await securityService.deleteUserDeviceById(refreshTokenData?.deviceId);
+          await securityService.deleteUserDeviceById(refreshTokenData?.deviceId);
         }
 
         const logoutResult = await jwtService.addTokensToBlackList(requestRefreshToken);

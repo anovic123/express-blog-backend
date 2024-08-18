@@ -9,10 +9,10 @@ export const rateLimitMiddleware = async (req: Request, res: Response, next: Nex
         const MAX_ATTEMPTS: number = 5
 
         const ip = req.ip || '0.0.0.0'
-        const url = req.baseUrl || req.originalUrl
+        const url = req.originalUrl
         const sinceDate = new Date(Date.now() - 10 * 1000) // 10 секунд назад
 
-        const isExceeded = await rateLimitService.isRateLimitExceeded(ip, url, sinceDate, MAX_ATTEMPTS)
+        const isExceeded = await rateLimitService.isRateLimitExceeded(ip, url, new Date(Date.now() - 10 * 1000), MAX_ATTEMPTS)
 
         if (isExceeded) {
             res.status(HTTP_STATUSES.TOO_MANY_REQUEST_429).send('Too many requests, please try again later.')

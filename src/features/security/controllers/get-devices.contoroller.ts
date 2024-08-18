@@ -13,7 +13,7 @@ export const getDevicesController = async (req: RequestAuthModel, res: Response)
     try {
         const resultData = await jwtService.getDataFromRefreshToken(req.cookies['refreshToken'])
         if (!resultData?.userId) {
-            return res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
+            return res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
         }
         const devices = await securityQueryRepository.getAllDevicesSessions(new ObjectId(resultData?.userId));
         return res.status(HTTP_STATUSES.OKK_200).json(devices);

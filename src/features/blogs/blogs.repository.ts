@@ -54,7 +54,7 @@ export const blogsRepository = {
             return false
         }
     },
-    async createPostBlog(blogId: BlogViewModel['id'], post: BlogPostInputModel) {
+    async createPostBlog(blogId: BlogViewModel['id'], post: BlogPostInputModel): Promise<BlogPostViewModel | null> {
         const blog = await this.findBlog(blogId)
         if (!blog) {
             return null

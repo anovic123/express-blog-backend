@@ -2,24 +2,27 @@ import { Request, Response } from 'express'
 
 import {jwtService} from "../application/jwt.service";
 
-import {HTTP_STATUSES} from "../../../utils";
 import {securityService} from "../../security/domain/security.service";
 
-export const refreshTokenController = async ( req: Request, res: Response ) => {
+import {HTTP_STATUSES} from "../../../utils";
 
+export const refreshTokenController = async ( req: Request, res: Response ) => {
     const requestRefreshToken = req.cookies['refreshToken']
+
     try {
         const newTokens = await jwtService.refreshTokensJWT(requestRefreshToken)
-
         if (newTokens) {
             const { accessToken, refreshToken, refreshTokenExp } = newTokens
+
             const refreshTokenData = await jwtService.getDataFromRefreshToken(refreshToken)
             if (refreshTokenData) {
                 const { userId, deviceId } = refreshTokenData
                 await securityService.updateSessionUser(userId, deviceId, refreshTokenExp)
             }
 
-            res.cookie('refreshToken ', refreshToken, {httpOnly: true, secure: true,}).header('Authorization', accessToken).send({ accessToken })
+            res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true,})
+                .header('Authorization', accessToken)
+                .send({ accessToken })
             return
         }
 

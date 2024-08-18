@@ -1,6 +1,7 @@
 import { Response } from 'express'
 
-import {blogsRepository} from '../blogs.repository'
+import {blogsService} from "../domain/blogs.service";
+
 import {blogsQueryRepository} from "../blogs-query.repository";
 
 import { HTTP_STATUSES } from '../../../utils';
@@ -15,7 +16,7 @@ export const deleteBlogController = async (req: RequestWithParams<{id: string}>,
         return res.status(HTTP_STATUSES.NOT_FOUND_404).json({ message: 'Blog not found' });
     }
 
-    await blogsRepository.del(req.params.id)
+    await blogsService.deleteBlog(req.params.id)
 
     return res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
 }
