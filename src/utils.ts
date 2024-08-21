@@ -10,5 +10,5 @@ export const HTTP_STATUSES = {
   INTERNAL_SERVER_ERROR_500: 500
 }
 
-type HttpStatusKeys = keyof typeof HTTP_STATUSES
+export type HttpStatusKeys = keyof typeof HTTP_STATUSES
 export type HttpStatusType = (typeof HTTP_STATUSES)[HttpStatusKeys]

@@ -32,7 +32,6 @@ export const logoutController = async (req: Request, res: Response): Promise<voi
             return;
         }
 
-        res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
     } catch (error) {
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
     }
