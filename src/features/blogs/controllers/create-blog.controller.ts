@@ -9,14 +9,19 @@ import { HTTP_STATUSES } from '../../../utils'
 import { RequestWithBody } from '../../../types/common'
 
 export const createBlogController = async (req: RequestWithBody<BlogInputModel>, res: Response<BlogViewModel>) => {
-    const newBlog = await blogsService.createBlog(req.body)
-
-    if (!newBlog) {
-        res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
-        return
+    try {
+        const newBlog = await blogsService.createBlog(req.body)
+    
+        if (!newBlog) {
+            res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
+            return
+        }
+    
+        res
+            .status(HTTP_STATUSES.CREATED_201)
+            .json(newBlog)
+    } catch (error) {
+        console.error('createBlogController', error)
+        res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR_500)
     }
-
-    res
-        .status(HTTP_STATUSES.CREATED_201)
-        .json(newBlog)
 }

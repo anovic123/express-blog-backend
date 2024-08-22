@@ -11,13 +11,17 @@ export const registrationController = async (req: RequestWithBody<{
     password: string,
     email: string
 }>, res: Response) => {
-
-    const user = await authService.createUser(req.body.login, req.body.email, req.body.password)
-
-    if (user) {
-        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
-        return
+    try {
+        const user = await authService.createUser(req.body.login, req.body.email, req.body.password)
+    
+        if (user) {
+            res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+            return
+        }
+    
+        res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
+    } catch (error) {
+        console.error('registrationController', error)
+        res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR_500)
     }
-
-    res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
 }

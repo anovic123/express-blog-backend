@@ -2,6 +2,8 @@ import { Request } from "express";
 
 import {UserAccountDBType} from "../db/user-db-type";
 
+import { HttpStatusType } from "../utils";
+
 export type RequestWithBody<T> = Request<{}, {}, T>
 export type RequestWithQuery<T> = Request<{}, {}, {}, T>
 export type RequestWithParams<T> = Request<T>
@@ -15,3 +17,8 @@ export interface RequestAuthModel extends Request {
 export type RequestAuthModelWithParamsAndBody<T, B> = RequestAuthModel & RequestWithParamsAndBody<T, B>;
 export type RequestAuthModelWithParams<T> = RequestAuthModel & RequestWithParams<T>
 export type RequestAuthModelWithBody<T> = RequestAuthModel & RequestWithBody<T>
+
+export type RequestResult<T> = {
+    statusCode: HttpStatusType,
+    data: T
+}

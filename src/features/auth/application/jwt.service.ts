@@ -1,55 +1,75 @@
 import { ObjectId } from 'mongodb';
 import jwt, { JwtPayload, TokenExpiredError } from 'jsonwebtoken';
 
-import { authQueryRepository } from '../auth-query.repository';
-import { authRepository } from '../auth.repository';
-
 import { UserAccountDBType } from '../../../db/user-db-type';
 
+import { securityQueryRepository } from '../../security/application/security-query.repository';
+
 import { SETTINGS } from '../../../settings';
-import {securityQueryRepository} from "../../security/application/security-query.repository";
 
 interface JwtPayloadExtended extends JwtPayload {
-    userId: string
+    userId: string;
 }
 
 interface JwtRefreshPayloadExtended extends JwtPayload {
-    userId: string
-    deviceId: string
+    userId: string;
+    deviceId: string;
 }
 
 interface JwtTokensOutput {
-    accessToken: string
-    refreshToken: string
-    refreshTokenExp: string
+    accessToken: string;
+    refreshToken: string;
+    refreshTokenExp: string;
 }
 
 export const jwtService = {
     async createJWT(user: UserAccountDBType, deviceId: string): Promise<JwtTokensOutput | null> {
         const userId = new ObjectId(user._id).toString();
 
-        const accessToken = this._signAccessToken(userId);
-        const refreshToken = this._signRefreshToken(userId, deviceId);
+        try {
+            const accessToken = this._signAccessToken(userId);
+            const refreshToken = this._signRefreshToken(userId, deviceId);
 
-        const refreshTokenExp = this._calculateExpiration(20);
+            const { exp: refreshTokenExp } = jwt.decode(refreshToken) as JwtPayload;
 
-        return { accessToken, refreshToken, refreshTokenExp };
+            if (!refreshTokenExp) {
+                throw new Error('Failed to create JWT: unable to extract expiration');
+            }
+
+            return {
+                accessToken,
+                refreshToken,
+                refreshTokenExp: new Date(refreshTokenExp * 1000).toISOString(),
+            };
+        } catch (error) {
+            console.error('Error creating JWT:', error);
+            return null;
+        }
     },
 
     async refreshTokensJWT(refreshToken: string): Promise<JwtTokensOutput | null> {
         try {
-            const decoded = await this._verifyToken<JwtRefreshPayloadExtended>(refreshToken);
+            const decodedRefresh = await this._verifyToken<JwtRefreshPayloadExtended>(refreshToken);
+            if (!decodedRefresh) return null;
 
-            if (!decoded || !decoded.userId || !decoded.deviceId) return null;
+            const { deviceId, exp: decodedExp } = decodedRefresh;
+            const deviceData = await securityQueryRepository.findUserDeviceById(deviceId);
+            if (!deviceData) throw new Error(`No device data found for the given deviceId: ${deviceId}`);
 
-            await this.addTokensToBlackList(refreshToken);
+            const isTokenExpired = decodedExp && new Date(decodedExp * 1000) < new Date(deviceData.lastActiveDate);
+            if (isTokenExpired) throw new Error('Refresh token is expired or invalid');
 
-            const newAccessToken = this._signAccessToken(decoded.userId);
-            const newRefreshToken = this._signRefreshToken(decoded.userId, decoded.deviceId);
+            const newAccessToken = this._signAccessToken(decodedRefresh.userId);
+            const newRefreshToken = this._signRefreshToken(decodedRefresh.userId, deviceId);
 
-            const refreshTokenExp = this._calculateExpiration(20);
+            const { exp: newRefreshTokenExp } = jwt.decode(newRefreshToken) as JwtPayload;
+            if (!newRefreshTokenExp) throw new Error('Failed to refresh JWT: unable to extract expiration');
 
-            return { accessToken: newAccessToken, refreshToken: newRefreshToken, refreshTokenExp };
+            return {
+                accessToken: newAccessToken,
+                refreshToken: newRefreshToken,
+                refreshTokenExp: new Date(newRefreshTokenExp * 1000).toISOString(),
+            };
         } catch (error) {
             console.error('Error refreshing JWT tokens:', error);
             return null;
@@ -68,34 +88,21 @@ export const jwtService = {
 
     async getDataFromRefreshToken(refreshToken: string): Promise<{ userId: string; deviceId: string } | null> {
         try {
-            const result = await this._verifyToken<JwtRefreshPayloadExtended>(refreshToken);
-            console.log('result', result)
-            if (!result || !result.deviceId || !result.userId) {
-                return null;
-            }
+            const decodedRefresh = await this._verifyToken<JwtRefreshPayloadExtended>(refreshToken);
+            if (!decodedRefresh) return null;
 
-            return { userId: result.userId, deviceId: result.deviceId };
+            const { deviceId, exp: decodedExp } = decodedRefresh;
+            const deviceData = await securityQueryRepository.findUserDeviceById(deviceId);
+            if (!deviceData) throw new Error(`No device data found for the given deviceId: ${deviceId}`);
+
+            const isTokenExpired = decodedExp && new Date(decodedExp * 1000) < new Date(deviceData.lastActiveDate);
+            if (isTokenExpired) throw new Error('Refresh token is expired or invalid');
+
+            return { userId: decodedRefresh.userId, deviceId: decodedRefresh.deviceId };
         } catch (error) {
             console.error('Error getting data from refresh token:', error);
             return null;
         }
-    },
-
-    async addTokensToBlackList(refreshToken: string): Promise<boolean> {
-        try {
-            if (!this._verifyToken(refreshToken)) return false;
-            if (await this.isTokenInBlackList(refreshToken)) return false;
-
-            const res = await authRepository.addTokenToBlackList(refreshToken);
-            return !!res;
-        } catch (error) {
-            console.error('Error adding token to blacklist:', error);
-            return false;
-        }
-    },
-
-    async isTokenInBlackList(token: string): Promise<boolean> {
-        return await authQueryRepository.checkBlackListTokens(token);
     },
 
     _signAccessToken(userId: string): string {
@@ -106,37 +113,20 @@ export const jwtService = {
         return jwt.sign({ userId, deviceId }, SETTINGS.JWT_SECRET, { expiresIn: '20s' });
     },
 
-    _calculateExpiration(seconds: number): string {
-        return new Date(Date.now() + seconds * 1000).toISOString();
-    },
-
-    // TODO: Refactor
     async _verifyToken<T extends JwtPayload>(token: string): Promise<T | null> {
         try {
-            if (await this.isTokenInBlackList(token)) {
-                console.error('Token verification failed: Token is in the blacklist');
-                return null;
-            }
-
             const decodedToken = jwt.verify(token, SETTINGS.JWT_SECRET) as T;
 
             const isDeviceValid = await securityQueryRepository.checkUserDeviceById(new ObjectId(decodedToken.userId), decodedToken.deviceId);
-            if (!isDeviceValid) {
-                return null;
-            }
+            if (!isDeviceValid) return null;
 
             if (decodedToken.exp && Date.now() >= decodedToken.exp * 1000) {
-                console.error('Token verification failed due to expiration');
-                return null;
+                throw new TokenExpiredError('Token verification failed due to expiration', new Date(decodedToken.exp * 1000));
             }
 
             return decodedToken;
         } catch (error) {
-            if (error instanceof TokenExpiredError) {
-                console.error('Token verification failed due to expiration:', error);
-            } else {
-                console.error('Token verification failed:', error);
-            }
+            console.error('Token verification failed:', error);
             return null;
         }
     }

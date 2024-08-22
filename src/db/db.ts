@@ -23,8 +23,6 @@ export const commentsCollection = dbApi.collection<CommentDBType>('comments')
 export const rateLimitCollection = dbApi.collection<RateLimitDbType>('rate-limit')
 export const authDevicesCollection = dbApi.collection<WithId<AuthDevicesDbType>>('auth-devices')
 
-export const blackListTokensCollection = dbApi.collection<WithId<{ token: string }>>('black-list-tokens')
-
 export const runDb = async (): Promise<boolean> => {
     try {
         await client.connect()
