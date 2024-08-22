@@ -11,8 +11,13 @@ import { UserAccountDBType } from '../../../db/user-db-type';
 
 import { RequestResult } from '../../../types/common';
 
+interface TokensResponse {
+    accessToken: string
+    refreshToken: string
+}
+
 export const securityService = {
-    async addNewUserDevice(user: UserAccountDBType, ip: string = '0.0.0.0', userAgent: string = 'Unknown'): Promise<RequestResult<{ accessToken: string, refreshToken: string } | null>> {
+    async addNewUserDevice(user: UserAccountDBType, ip: string = '0.0.0.0', userAgent: string = 'Unknown'): Promise<RequestResult<TokensResponse | null>> {
         try {
             const deviceId = uuidv4()
             
@@ -51,7 +56,42 @@ export const securityService = {
     async deleteUserDeviceByIdAll(deviceId: AuthDevicesDbType['devices_id'], userId: string): Promise<boolean> {
         return await securityRepository.deleteUserDeviceByIdAll(deviceId, userId)
     },
-    async updateSessionUser(userId: string, deviceId: string, refreshTokenExp: string): Promise<boolean> {
-        return await securityRepository.updateSessionUser(userId, deviceId, refreshTokenExp)
+    async updateSessionUser(requestRefreshToken: string): Promise<RequestResult<TokensResponse | false>> {
+        try {
+            const newTokens = await jwtService.refreshTokensJWT(requestRefreshToken)
+
+            if (!newTokens) {
+                return {
+                    statusCode: HTTP_STATUSES.UNAUTHORIZED_401,
+                    data: false
+                }
+            }
+
+            const { accessToken, refreshToken, refreshTokenExp } = newTokens
+
+            const refreshTokenData = await jwtService.getDataFromRefreshToken(refreshToken)
+
+            if (!refreshTokenData) {
+                return {
+                    statusCode: HTTP_STATUSES.UNAUTHORIZED_401,
+                    data: false
+                }
+            }
+
+            const { userId, deviceId } = refreshTokenData
+
+            const updatedSession = await securityRepository.updateSessionUser(userId, deviceId, refreshTokenExp)
+            
+            return {
+                statusCode: HTTP_STATUSES.OKK_200,
+                data: { accessToken, refreshToken }
+            }
+        } catch (error) {
+            console.error('updateSessionUser', error)
+            return {
+                statusCode: HTTP_STATUSES.INTERNAL_SERVER_ERROR_500,
+                data: false
+            }
+        }
     }
 }

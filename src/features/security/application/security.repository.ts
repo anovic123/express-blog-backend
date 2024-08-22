@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 
-import {authDevicesCollection, blackListTokensCollection, commentsCollection} from "../../../db/db";
+import {authDevicesCollection} from "../../../db/db";
 
 import {AuthDevicesDbType} from "../../../db/auth-devices-db-type";
 
@@ -61,7 +61,6 @@ export const securityRepository = {
     async deleteAll(): Promise<boolean> {
         try {
             const result = await authDevicesCollection.deleteMany({});
-            await blackListTokensCollection.deleteMany({})
             return result.deletedCount > 0;
         } catch (error) {
             console.error('Error deleting all authDevices:', error);

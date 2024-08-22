@@ -2,9 +2,13 @@ import bcrypt from 'bcrypt'
 import { ObjectId } from 'mongodb'
 import { v4 as uuidv4 } from 'uuid'
 import { add } from 'date-fns'
+
 import {UserAccountDBType} from "../../../db/user-db-type";
+
 import {usersRepository} from "../../users/users.repository";
+
 import {emailsManager} from "../../../managers/email.manager";
+
 import {usersQueryRepository} from "../../users/users-query.repository";
 
 export const authService = {

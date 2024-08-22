@@ -25,13 +25,8 @@ export const logoutController = async (req: Request, res: Response): Promise<voi
           await securityService.deleteUserDeviceById(refreshTokenData?.deviceId);
         }
 
-        const logoutResult = await jwtService.addTokensToBlackList(requestRefreshToken);
-
-        if (logoutResult) {
-            res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
-            return;
-        }
-
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
+        return;
     } catch (error) {
         res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
     }

@@ -33,6 +33,7 @@ export const loginController = async (req: RequestWithBody<AuthInputModel>, res:
       .header('Authorization', accessToken)
       .send({ accessToken });
   } catch (error) {
+    console.error('loginController', error)
     res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR_500);
   }
 };
