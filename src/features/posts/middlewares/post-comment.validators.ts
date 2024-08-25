@@ -2,10 +2,11 @@ import {NextFunction, Response} from "express";
 
 import {body} from "express-validator";
 
-import {postsQueryRepository} from "../posts-query.repository";
+import {postsQueryRepository} from "../infra/posts-query.repository";
+
+import {inputCheckErrorsMiddleware} from "../../../global-middlewares/input-checks-errors.middleware";
 
 import {authMiddleware} from "../../../global-middlewares/auth.middleware";
-import {inputCheckErrorsMiddleware} from "../../../global-middlewares/input-check-errors.middleware";
 
 import {RequestWithParams} from "../../../types/common";
 

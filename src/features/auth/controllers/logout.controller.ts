@@ -1,11 +1,9 @@
 import { Request, Response } from 'express'
-import {ObjectId} from "mongodb";
-
-import {securityService} from "../../security/domain/security.service";
-
-import {securityQueryRepository} from "../../security/application/security-query.repository";
 
 import {jwtService} from "../application/jwt.service";
+
+import {securityQueryRepository} from "../../security/infra/sequrity-query.repository";
+import {securityService} from "../../security/application/security.service";
 
 import {HTTP_STATUSES} from "../../../utils";
 
@@ -19,10 +17,10 @@ export const logoutController = async (req: Request, res: Response): Promise<voi
             res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
             return
         }
-        const checkDeviceUser = await securityQueryRepository.checkUserDeviceById(new ObjectId(refreshTokenData.userId), refreshTokenData.deviceId)
+        const checkDeviceUser = await securityQueryRepository.checkUserDeviceById(refreshTokenData.userId, refreshTokenData.deviceId)
 
         if (checkDeviceUser) {
-          await securityService.deleteUserDeviceById(refreshTokenData?.deviceId);
+            await securityService.deleteUserDeviceById(refreshTokenData?.deviceId);
         }
 
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);

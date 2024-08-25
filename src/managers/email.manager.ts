@@ -1,6 +1,6 @@
 import {emailAdapter} from "../adapters/email.adapter";
 
-import {UserAccountDBType} from "../db/user-db-type";
+import {UserAccountDBType} from "../features/auth/domain/auth.entity";
 
 export const emailsManager =  {
     async sendConfirmationMessage(user: UserAccountDBType) {

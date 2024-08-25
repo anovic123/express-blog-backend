@@ -1,6 +1,6 @@
 import { Request } from "express";
 
-import {UserAccountDBType} from "../db/user-db-type";
+import {UserAccountDBType} from "../features/auth/domain/auth.entity";
 
 import { HttpStatusType } from "../utils";
 

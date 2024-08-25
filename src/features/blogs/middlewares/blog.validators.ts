@@ -1,14 +1,14 @@
 import {NextFunction, Response} from 'express'
 import { body, validationResult } from 'express-validator'
 
-import {inputCheckErrorsMiddleware} from '../../../global-middlewares/input-check-errors.middleware'
-import {adminMiddleware} from '../../../global-middlewares/admin.middleware'
+import {blogsQueryRepository} from "../infra/blogs-query.repository";
 
-import {blogsQueryRepository} from "../blogs-query.repository";
+import {adminMiddleware} from "../../../global-middlewares/admin.middleware";
+import {inputCheckErrorsMiddleware} from "../../../global-middlewares/input-checks-errors.middleware";
 
-import { HTTP_STATUSES } from '../../../utils'
+import {RequestWithParams} from "../../../types/common";
 
-import { RequestWithParams } from '../../../types/common'
+import {HTTP_STATUSES} from "../../../utils";
 
 export const nameValidator = body('name').trim().isLength({ min: 3, max: 15 }).isString().withMessage('name')
 export const descriptionValidator = body('description').isString().withMessage('not string')
@@ -54,21 +54,17 @@ const contentValidator = body('content').isString().trim().isLength({ min: 3, ma
 
 export const createBlogPostValidator = [
     adminMiddleware,
-
     findBlogPostValidator,
     titleValidator,
     shortDescriptionValidator,
     contentValidator,
-
     inputCheckErrorsMiddleware
 ]
 
 export const blogValidators = [
     adminMiddleware,
-
     nameValidator,
     descriptionValidator,
     websiteUrlValidator,
-
     inputCheckErrorsMiddleware,
 ]

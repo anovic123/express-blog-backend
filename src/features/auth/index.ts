@@ -1,16 +1,16 @@
 import { Router } from 'express'
 
-import { loginController } from './controllers/login.controller';
-import {meController} from "./controllers/me.controller";
-import {registrationEmailResendingController} from "./controllers/registration-email-resending.controller";
-import {registrationController} from "./controllers/registration.controller";
-import {registrationConfirmationController} from "./controllers/registration-confirmation.controller";
-import {refreshTokenController} from "./controllers/refresh-token.controller";
-import {logoutController} from "./controllers/logout.controller";
-
+import {rateLimitMiddleware} from "../../global-middlewares/rate-limit.middleware";
 import {authMiddleware} from "../../global-middlewares/auth.middleware";
 import {cookiesRefreshTokenMiddleware} from "../../global-middlewares/cookies-refresh-token.middleware";
-import {rateLimitMiddleware} from "../../global-middlewares/rate-limit.middleware";
+
+import {loginController} from "./controllers/login.controller";
+import {meController} from "./controllers/me.controller";
+import {registrationController} from "./controllers/registration.controller";
+import {registrationConfirmationController} from "./controllers/registration-confirmation.controller";
+import {registrationEmailResendingController} from "./controllers/registration-email-resending.controller";
+import {refreshTokenController} from "./controllers/refresh-token.controller";
+import {logoutController} from "./controllers/logout.controller";
 
 import {
     createUserValidator,
@@ -18,7 +18,7 @@ import {
     registrationResendingValidator
 } from "./middlewares/auth.validators";
 
-export const authRouter = Router()
+export const authRouter = Router({})
 
 authRouter.post('/login', rateLimitMiddleware, loginController)
 authRouter.get('/me', authMiddleware, meController)

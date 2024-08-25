@@ -1,19 +1,15 @@
-import { Request, Response } from 'express';
+import { Request, Response } from 'express'
 
-import { jwtService } from '../../auth/application/jwt.service';
+import {jwtService} from "../../auth/application/jwt.service";
 
-import { securityService } from '../domain/security.service';
+import {securityService} from "../application/security.service";
 
-import { HTTP_STATUSES } from '../../../utils';
+import {HTTP_STATUSES} from "../../../utils";
+
 
 export const deleteAllOtherDevicesController = async (req: Request, res: Response) => {
     try {
-        const refreshToken = req.cookies['refreshToken'];
-
-        if (!refreshToken) {
-            res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
-            return;
-        }
+        const refreshToken = req.cookies['refreshToken']
 
         const refreshTokenData = await jwtService.getDataFromRefreshToken(refreshToken);
 
@@ -32,7 +28,7 @@ export const deleteAllOtherDevicesController = async (req: Request, res: Respons
             res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
         }
     } catch (error) {
-        console.error('Error in deleteAllOtherDevicesController:', error);
-        res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR_500);
+        console.error('deleteAllOtherDevicesController', error)
+        res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR_500)
     }
-};
+}

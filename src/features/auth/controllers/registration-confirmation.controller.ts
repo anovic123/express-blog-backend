@@ -4,7 +4,7 @@ import { RequestWithBody } from "../../../types/common";
 
 import { HTTP_STATUSES } from "../../../utils";
 
-import { authService } from "../domain/auth.service";
+import { authService } from "../application/auth.service";
 
 export const registrationConfirmationController = async (req: RequestWithBody<{ code: string }>, res: Response) => {
     try {

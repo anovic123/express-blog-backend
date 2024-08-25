@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 
-import {securityService} from "../../security/domain/security.service";
+import {securityService} from "../../security/application/security.service";
 
 import {HTTP_STATUSES} from "../../../utils";
 
@@ -16,7 +16,7 @@ export const refreshTokenController = async ( req: Request, res: Response ) => {
         }
 
         const { accessToken, refreshToken } = updatedSession.data
-      
+
         res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true,})
             .header('Authorization', accessToken)
             .send({ accessToken })
