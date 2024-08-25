@@ -1,9 +1,15 @@
 import {emailAdapter} from "../adapters/email.adapter";
 
-import {UserAccountDBType} from "../db/user-db-type";
+type EmailDto = {
+    email: string
+    confirmationCode: string
+}
 
 export const emailsManager =  {
-    async sendConfirmationMessage(user: UserAccountDBType) {
-        await emailAdapter.sendEmail(user.accountData.email, "confirmation code", user.emailConfirmation.confirmationCode)
+    async sendConfirmationMessage({ email, confirmationCode }: EmailDto) {
+        await emailAdapter.sendEmail(email, "confirmation code", confirmationCode)
+    },
+    async sendRecoveryMessage({ email, confirmationCode }: EmailDto) {
+        return await emailAdapter.sendRecoveryEmail(email, "recoveryMessage", confirmationCode)
     }
 }

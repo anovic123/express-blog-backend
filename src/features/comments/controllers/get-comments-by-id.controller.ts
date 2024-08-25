@@ -2,7 +2,7 @@ import { Response } from "express";
 
 import { RequestAuthModelWithParams } from "../../../types/common";
 
-import {commentsQueryRepository} from "../comments-query.repository";
+import {commentsQueryRepository} from "../infra/comments-query.repository";
 
 import {HTTP_STATUSES} from "../../../utils";
 

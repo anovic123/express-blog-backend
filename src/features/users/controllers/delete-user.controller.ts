@@ -1,21 +1,22 @@
-import { ObjectId } from "mongodb";
-import { Request, Response } from 'express'
+import { Response } from 'express'
 
-import { usersService } from "../domain/users.service";
+import {usersService} from "../application/users.service";
 
-import { HTTP_STATUSES } from "../../../utils";
+import {RequestWithParams} from "../../../types/common";
 
-export const deleteUserController = async (req: Request, res: Response) => {
-  const userId = req.params.id
+import {HTTP_STATUSES} from "../../../utils";
 
-  const user = await usersService.findUserById(new ObjectId(userId))
+export const deleteUserController = async (req: RequestWithParams<{ id: string }>, res: Response) => {
+    const userId = req.params.id
 
-  if (!user || !userId) {
-    res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
-    return 
-  }
+    try {
+        const user = await usersService.findUserById(userId)
 
-  await usersService.deleteUser(new ObjectId(userId))
+        await usersService.deleteUser(userId)
 
-  return res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+        res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+    } catch (error) {
+        console.error('deleteUserController', error)
+        res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR_500)
+    }
 }

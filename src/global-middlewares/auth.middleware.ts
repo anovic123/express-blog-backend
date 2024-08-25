@@ -1,12 +1,11 @@
-import { NextFunction, Response } from "express";
+import {NextFunction, Response} from "express";
 
-import { RequestAuthModel } from "../types/common";
+import {jwtService} from "../features/auth/application/jwt.service";
+import {usersService} from "../features/users/application/users.service";
 
-import { jwtService } from "../features/auth/application/jwt.service";
+import {RequestAuthModel} from "../types/common";
 
-import { usersService } from "../features/users/domain/users.service";
-
-import { HTTP_STATUSES } from "../utils";
+import {HTTP_STATUSES} from "../utils";
 
 export const authMiddleware = async (req: RequestAuthModel, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -18,7 +17,6 @@ export const authMiddleware = async (req: RequestAuthModel, res: Response, next:
         }
 
         const token = authHeaders.split(' ')[1];
-
         if (!token) {
             res.status(HTTP_STATUSES.UNAUTHORIZED_401).json('Token is missing');
             return;

@@ -4,7 +4,7 @@ import {RequestWithBody} from "../../../types/common";
 
 import {HTTP_STATUSES} from "../../../utils";
 
-import {authService} from "../domain/auth.service";
+import {authService} from "../application/auth.service";
 
 export const registrationController = async (req: RequestWithBody<{
     login: string,
@@ -13,12 +13,12 @@ export const registrationController = async (req: RequestWithBody<{
 }>, res: Response) => {
     try {
         const user = await authService.createUser(req.body.login, req.body.email, req.body.password)
-    
+
         if (user) {
             res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
             return
         }
-    
+
         res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
     } catch (error) {
         console.error('registrationController', error)

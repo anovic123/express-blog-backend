@@ -4,9 +4,9 @@ import {cookiesRefreshTokenMiddleware} from "../../global-middlewares/cookies-re
 
 import {deleteDeviceByIdValidator} from "./middlewares/security.validator";
 
-import {getDevicesController} from "./controllers/get-devices.contoroller";
+import {getDevicesController} from "./controllers/get-devices.controller";
 import {deleteAllOtherDevicesController} from "./controllers/delete-all-other-devices.controller";
-import {deleteDeviceByIdController} from "./controllers/delete-device-by-id.controller";
+import {deleteDeviceByIdController} from "./controllers/delete-devicy-by-id.controller";
 
 export const securityRouter = Router()
 

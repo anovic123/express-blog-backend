@@ -6,7 +6,7 @@ import { GetBlogPostsHelperResult} from "../helper";
 
 import { HTTP_STATUSES } from '../../../utils';
 
-import {blogsQueryRepository} from "../blogs-query.repository";
+import {blogsQueryRepository} from "../infra/blogs-query.repository";
 
 export const getBlogPostsController = async (req: RequestWithQueryAndParams<GetBlogPostsHelperResult, { blogId: string }>, res: Response) => {
     try {

@@ -1,10 +1,8 @@
-import { SortDirection } from "mongodb";
-
 export interface getAllBlogsHelperResult {
     pageNumber?: number;
     pageSize?: number;
     sortBy?: string;
-    sortDirection?: SortDirection;
+    sortDirection?: 'asc' | 'desc';
     searchNameTerm?: string;
 }
 
@@ -12,14 +10,14 @@ export interface GetBlogPostsHelperResult {
     pageNumber?: number
     pageSize?: number
     sortBy?: string
-    sortDirection?: SortDirection
+    sortDirection?: 'asc' | 'desc'
 }
 
 export const getAllBlogsHelper = (query: { [key: string]: string | undefined }) => {
     return {
         searchNameTerm: query.searchNameTerm ? query.searchNameTerm : undefined,
         sortBy: query.sortBy ? query.sortBy : 'createdAt',
-        sortDirection: query.sortDirection !== undefined ? query.sortDirection as SortDirection : 'desc',
+        sortDirection: query.sortDirection !== undefined ? query.sortDirection : 'desc',
         pageNumber: query.pageNumber ? +query.pageNumber : 1,
         pageSize: query.pageSize !== undefined ? +query.pageSize : 10,
     }
@@ -30,6 +28,6 @@ export const getBlogPostsHelper = (query: { [ key: string ]: string | undefined 
         pageNumber: query.pageNumber ? +query.pageNumber : 1,
         pageSize: query.pageSize !== undefined ? +query.pageSize : 10,
         sortBy: query.sortBy ? query.sortBy : 'createdAt',
-        sortDirection: query.sortDirection !== undefined ? query.sortDirection as SortDirection : 'desc'
+        sortDirection: query.sortDirection !== undefined ? query.sortDirection : 'desc'
     }
 }

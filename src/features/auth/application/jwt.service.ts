@@ -1,11 +1,10 @@
-import { ObjectId } from 'mongodb';
-import jwt, { JwtPayload, TokenExpiredError } from 'jsonwebtoken';
+import jwt, { JwtPayload, TokenExpiredError } from "jsonwebtoken";
 
-import { UserAccountDBType } from '../../../db/user-db-type';
+import {securityQueryRepository} from "../../security/infra/sequrity-query.repository";
 
-import { securityQueryRepository } from '../../security/application/security-query.repository';
+import {UserAccountDocument} from "../domain/auth.entity";
 
-import { SETTINGS } from '../../../settings';
+import {SETTINGS} from "../../../settings";
 
 interface JwtPayloadExtended extends JwtPayload {
     userId: string;
@@ -23,8 +22,8 @@ interface JwtTokensOutput {
 }
 
 export const jwtService = {
-    async createJWT(user: UserAccountDBType, deviceId: string): Promise<JwtTokensOutput | null> {
-        const userId = new ObjectId(user._id).toString();
+    async createJWT(user: UserAccountDocument, deviceId: string): Promise<JwtTokensOutput | null> {
+        const userId = user._id.toString()
 
         try {
             const accessToken = this._signAccessToken(userId);
@@ -76,10 +75,10 @@ export const jwtService = {
         }
     },
 
-    async getUserIdByToken(token: string): Promise<ObjectId | null> {
+    async getUserIdByToken(token: string): Promise<string | null> {
         try {
-            const result = await this._verifyToken<JwtPayloadExtended>(token);
-            return result ? new ObjectId(result.userId) : null;
+            const result =  jwt.verify(token, SETTINGS.JWT_SECRET) as JwtPayloadExtended;
+            return result ? result.userId : null;
         } catch (error) {
             console.error('Error getting user ID by token:', error);
             return null;
@@ -116,8 +115,10 @@ export const jwtService = {
     async _verifyToken<T extends JwtPayload>(token: string): Promise<T | null> {
         try {
             const decodedToken = jwt.verify(token, SETTINGS.JWT_SECRET) as T;
+            console.log(decodedToken)
 
-            const isDeviceValid = await securityQueryRepository.checkUserDeviceById(new ObjectId(decodedToken.userId), decodedToken.deviceId);
+            const isDeviceValid = await securityQueryRepository.checkUserDeviceById(decodedToken.userId, decodedToken.deviceId);
+            console.log(isDeviceValid)
             if (!isDeviceValid) return null;
 
             if (decodedToken.exp && Date.now() >= decodedToken.exp * 1000) {
@@ -130,4 +131,4 @@ export const jwtService = {
             return null;
         }
     }
-};
+}

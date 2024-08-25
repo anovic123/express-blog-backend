@@ -1,8 +1,8 @@
 import { Response } from 'express'
 
-import {commentsService} from "../domain/comments.service";
+import {commentsQueryRepository} from "../infra/comments-query.repository";
 
-import {commentsQueryRepository} from "../comments-query.repository";
+import {commentsService} from "../application/comments.service";
 
 import {RequestAuthModelWithParams} from "../../../types/common";
 

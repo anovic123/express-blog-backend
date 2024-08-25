@@ -11,7 +11,7 @@ export const fromUTF8ToBase64 = (code: string) => {
 }
 
 export const adminMiddleware = (req: Request, res: Response, next: NextFunction) => {
-    const auth = req.headers['authorization'] as string // 'Basic xxxx'
+    const auth = req.headers['authorization'] as string
     if (!auth) {
         res
             .status(HTTP_STATUSES.UNAUTHORIZED_401)
@@ -25,10 +25,8 @@ export const adminMiddleware = (req: Request, res: Response, next: NextFunction)
         return
     }
 
-    // const decodedAuth = fromBase64ToUTF8(auth.slice(6))
     const codedAuth = fromUTF8ToBase64(SETTINGS.ADMIN)
 
-    // if (decodedAuth !== SETTINGS.ADMIN) {
     if (auth.slice(6) !== codedAuth) {
         res
             .status(HTTP_STATUSES.UNAUTHORIZED_401)

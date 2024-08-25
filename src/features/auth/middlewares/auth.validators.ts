@@ -1,18 +1,21 @@
 import { Response, NextFunction } from 'express'
 import { body } from 'express-validator'
 
-import { inputCheckErrorsMiddleware } from '../../../global-middlewares/input-check-errors.middleware'
-import { rateLimitMiddleware } from "../../../global-middlewares/rate-limit.middleware";
+import {usersQueryRepository} from "../../users/infra/users-query.repository";
 
-import { usersQueryRepository } from "../../users/users-query.repository";
-
-import { HTTP_STATUSES } from "../../../utils";
+import {rateLimitMiddleware} from "../../../global-middlewares/rate-limit.middleware";
+import {inputCheckErrorsMiddleware} from "../../../global-middlewares/input-checks-errors.middleware";
 
 import { RequestWithBody } from "../../../types/common";
+
+import { HTTP_STATUSES } from "../../../utils";
+import {rateLimitService} from "../../security/application/rate-limit.service";
 
 const loginValidator = body('login').trim().isString().isLength({ min: 3, max: 10 })
 const passwordValidator = body('password').trim().isString().isLength({ min: 6, max: 20 })
 const emailValidator = body('email').trim().isEmail()
+const newPasswordBodyValidator = body('newPassword').trim().isString().isLength({ min: 6, max: 20 })
+const recoveryCodeValidator = body('recoveryCode').trim().isString()
 
 const codeValidator = body('code').trim().isString()
 
@@ -71,5 +74,20 @@ export const registrationResendingValidator = [
     rateLimitMiddleware,
     emailValidator,
     findExistedUserByEmailAndConfirmedValidator,
+    inputCheckErrorsMiddleware
+]
+
+const emailCustomValidator = body('email').trim().isString()
+
+export const passwordRecoveryValidator = [
+    rateLimitMiddleware,
+    emailCustomValidator,
+    inputCheckErrorsMiddleware
+]
+
+export const newPasswordValidator = [
+    rateLimitMiddleware,
+    newPasswordBodyValidator,
+    recoveryCodeValidator,
     inputCheckErrorsMiddleware
 ]

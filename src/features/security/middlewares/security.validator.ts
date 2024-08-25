@@ -1,14 +1,14 @@
 import { NextFunction, Response } from "express";
-import { body, validationResult, param } from 'express-validator'
+import { validationResult, param } from 'express-validator'
 
-import {inputCheckErrorsMiddleware} from "../../../global-middlewares/input-check-errors.middleware";
 import {cookiesRefreshTokenMiddleware} from "../../../global-middlewares/cookies-refresh-token.middleware";
+import {inputCheckErrorsMiddleware} from "../../../global-middlewares/input-checks-errors.middleware";
 
-import {securityQueryRepository} from "../application/security-query.repository";
-
-import {HTTP_STATUSES} from "../../../utils";
+import {securityQueryRepository} from "../infra/sequrity-query.repository";
 
 import {RequestWithParams} from "../../../types/common";
+
+import {HTTP_STATUSES} from "../../../utils";
 
 export const checkExistedDevicesValidator = async (req: RequestWithParams<{ deviceId: string }>, res: Response, next: NextFunction) => {
     param('deviceId').isString().withMessage('not device id')
