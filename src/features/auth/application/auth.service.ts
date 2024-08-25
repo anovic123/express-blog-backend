@@ -122,16 +122,17 @@ export const authService = {
     },
     async resendCodeForRecoveryPassword (email: string): Promise<boolean> {
         try {
-            let user = await usersQueryRepository.findUserByLoginOrEmail(email)
-
-            if (!user) return false
-
             const newCode = uuidv4()
-            const createdResult = await usersRepository.updateUserConfirmationCode(user._id.toString(), newCode)
+
             await emailsManager.sendRecoveryMessage({
-                email: user.accountData.email,
+                email,
                 confirmationCode: newCode
             })
+            const user = await usersQueryRepository.findUserByLoginOrEmail(email)
+
+            if (!user) return true
+
+            const createdResult = await usersRepository.updateUserConfirmationCode(user._id.toString(), newCode)
             return true
         } catch (error) {
             console.error('resendCodeForRecoveryPassword', error)

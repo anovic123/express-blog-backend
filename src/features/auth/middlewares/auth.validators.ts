@@ -14,7 +14,7 @@ import {rateLimitService} from "../../security/application/rate-limit.service";
 const loginValidator = body('login').trim().isString().isLength({ min: 3, max: 10 })
 const passwordValidator = body('password').trim().isString().isLength({ min: 6, max: 20 })
 const emailValidator = body('email').trim().isEmail()
-const newPasswordBodyValidator = body('newPassword').trim().isString().isLength({ min: 3, max: 20 })
+const newPasswordBodyValidator = body('newPassword').trim().isString().isLength({ min: 6, max: 20 })
 const recoveryCodeValidator = body('recoveryCode').trim().isString()
 
 const codeValidator = body('code').trim().isString()
@@ -77,9 +77,11 @@ export const registrationResendingValidator = [
     inputCheckErrorsMiddleware
 ]
 
+const emailCustomValidator = body('email').trim().isString()
+
 export const passwordRecoveryValidator = [
     rateLimitMiddleware,
-    emailValidator,
+    emailCustomValidator,
     inputCheckErrorsMiddleware
 ]
 

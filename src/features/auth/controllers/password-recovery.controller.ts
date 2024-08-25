@@ -13,7 +13,7 @@ export const passwordRecoveryController = async (req: RequestWithBody<{ email: s
         const emailResending = await authService.resendCodeForRecoveryPassword(email)
 
         if (!emailResending) {
-            res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
+            res.status(HTTP_STATUSES.BAD_REQUEST_400).json({ errorsMessages: [{ message: 'Wrong email', field: "email" }] })
             return
         }
 

@@ -13,7 +13,7 @@ export const newPasswordController = async (req: RequestWithBody<{ newPassword: 
             recoveryCode: req.body.recoveryCode
         })
         if (!newPasswordRes) {
-            res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
+            res.status(HTTP_STATUSES.BAD_REQUEST_400).json({ errorsMessages: [{ message: 'Wrong recoveryCode', field: "recoveryCode" }] })
             return
         }
 

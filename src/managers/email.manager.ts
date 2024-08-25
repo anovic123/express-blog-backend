@@ -10,6 +10,6 @@ export const emailsManager =  {
         await emailAdapter.sendEmail(email, "confirmation code", confirmationCode)
     },
     async sendRecoveryMessage({ email, confirmationCode }: EmailDto) {
-        await emailAdapter.sendRecoveryEmail(email, "recoveryMessage", confirmationCode)
+        return await emailAdapter.sendRecoveryEmail(email, "recoveryMessage", confirmationCode)
     }
 }
