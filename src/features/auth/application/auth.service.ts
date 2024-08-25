@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt'
 import {v4 as uuidv4} from 'uuid'
 import {add} from 'date-fns'
+import { Types } from 'mongoose'
 
 import {UserAccountDBType, UserAccountDocument} from "../domain/auth.entity";
 
@@ -8,13 +9,14 @@ import {usersRepository} from "../../users/infra/users.repository";
 import {usersQueryRepository} from "../../users/infra/users-query.repository";
 
 import {emailsManager} from "../../../managers/email.manager";
-import {ObjectId} from "mongodb";
+import {securityService} from "../../security/application/security.service";
+
 
 export const authService = {
     async createUser (login: string, email: string, password: string): Promise<UserAccountDBType | null> {
         const passwordHash = await this._generateHash(password)
         const user = {
-            _id: new ObjectId(),
+            _id: new Types.ObjectId(),
             accountData: {
                 login,
                 email,
@@ -32,7 +34,10 @@ export const authService = {
         }
         const createdResult = usersRepository.createUser(user)
         try {
-            await emailsManager.sendConfirmationMessage(user)
+            await emailsManager.sendConfirmationMessage({
+                email: user.accountData.email,
+                confirmationCode: user.emailConfirmation.confirmationCode
+            })
 
             return createdResult
         } catch (error) {
@@ -71,9 +76,32 @@ export const authService = {
             if (user.emailConfirmation.expirationDate < new Date()) return false
             return await usersRepository.updateConfirmation(user._id.toString())
         } catch (error) {
-            console.error(`Error in confirmEmail:`, error);
+            console.error(`Error in the confirmEmail:`, error);
             return false
         }
+    },
+    async changeNewPassword ({ newPassword, recoveryCode }: { newPassword: string, recoveryCode: string }): Promise<boolean> {
+       try {
+           let user = await usersQueryRepository.findUserByConfirmationCode(recoveryCode)
+           if (!user) {
+               return false
+           }
+           if (user.emailConfirmation.confirmationCode !== recoveryCode) return false
+           if (user.emailConfirmation.expirationDate < new Date()) return false
+
+
+           const newPasswordHash = await this._generateHash(newPassword)
+
+           const newPasswordHashRes = await usersRepository.updateUserPasswordHash(user._id, newPasswordHash)
+
+           if (!newPasswordHash) return false
+
+           await securityService.deleteUserAllSessions(user._id)
+           return true
+       } catch (error) {
+           console.error('Error in the changeNewPassword', error)
+           return false
+       }
     },
     async resendCode (email: string): Promise<boolean> {
         let user = await usersQueryRepository.findUserByLoginOrEmail(email)
@@ -83,22 +111,30 @@ export const authService = {
             const newCode = uuidv4()
             const createdResult = await usersRepository.updateUserConfirmationCode(user._id.toString(), newCode)
             await emailsManager.sendConfirmationMessage({
-                _id: user._id,
-                accountData: {
-                    login: user.accountData.login,
-                    passwordHash: user.accountData.passwordHash,
-                    email: user.accountData.email,
-                    createdAt: user?.accountData?.createdAt
-                },
-                emailConfirmation: {
-                    confirmationCode: newCode,
-                    expirationDate: user.emailConfirmation.expirationDate,
-                    isConfirmed: user.emailConfirmation.isConfirmed
-                }
+                email: user.accountData.email,
+                confirmationCode: newCode
             })
             return true
         } catch (error) {
             console.log(error)
+            return false
+        }
+    },
+    async resendCodeForRecoveryPassword (email: string): Promise<boolean> {
+        try {
+            let user = await usersQueryRepository.findUserByLoginOrEmail(email)
+
+            if (!user) return false
+
+            const newCode = uuidv4()
+            const createdResult = await usersRepository.updateUserConfirmationCode(user._id.toString(), newCode)
+            await emailsManager.sendRecoveryMessage({
+                email: user.accountData.email,
+                confirmationCode: newCode
+            })
+            return true
+        } catch (error) {
+            console.error('resendCodeForRecoveryPassword', error)
             return false
         }
     },

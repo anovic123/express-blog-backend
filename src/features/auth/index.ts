@@ -11,9 +11,11 @@ import {registrationConfirmationController} from "./controllers/registration-con
 import {registrationEmailResendingController} from "./controllers/registration-email-resending.controller";
 import {refreshTokenController} from "./controllers/refresh-token.controller";
 import {logoutController} from "./controllers/logout.controller";
+import {passwordRecoveryController} from "./controllers/password-recovery.controller";
+import {newPasswordController} from "./controllers/new-password.controller";
 
 import {
-    createUserValidator,
+    createUserValidator, newPasswordValidator, passwordRecoveryValidator,
     registrationConfirmationValidator,
     registrationResendingValidator
 } from "./middlewares/auth.validators";
@@ -26,6 +28,9 @@ authRouter.get('/me', authMiddleware, meController)
 authRouter.post('/registration', ...createUserValidator, registrationController)
 authRouter.post('/registration-confirmation', ...registrationConfirmationValidator, registrationConfirmationController)
 authRouter.post('/registration-email-resending', ...registrationResendingValidator, registrationEmailResendingController)
+
+authRouter.post('/password-recovery', ...passwordRecoveryValidator, passwordRecoveryController)
+authRouter.post('/new-password', ...newPasswordValidator, newPasswordController)
 
 authRouter.post('/refresh-token', cookiesRefreshTokenMiddleware, refreshTokenController)
 authRouter.post('/logout', cookiesRefreshTokenMiddleware, logoutController)

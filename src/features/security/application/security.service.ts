@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
+import {Types} from "mongoose";
 
 import {UserAccountDBType, UserAccountDocument} from "../../auth/domain/auth.entity";
 import {RequestResult} from "../../../types/common";
@@ -6,7 +7,6 @@ import {jwtService} from "../../auth/application/jwt.service";
 import {HTTP_STATUSES} from "../../../utils";
 import {securityRepository} from "../infra/security.repository";
 import {AuthDevicesDB} from "../domain/device.entity";
-
 
 interface TokensResponse {
     accessToken: string
@@ -52,6 +52,9 @@ export const securityService = {
     },
     async deleteUserDeviceByIdAll(deviceId: AuthDevicesDB['devices_id'], userId: string): Promise<boolean> {
         return await securityRepository.deleteUserDeviceByIdAll(deviceId, userId)
+    },
+    async deleteUserAllSessions(userId: Types.ObjectId): Promise<boolean> {
+        return await securityRepository.deleteUserAllSessions(userId)
     },
     async updateSessionUser(requestRefreshToken: string): Promise<RequestResult<TokensResponse | false>> {
         try {

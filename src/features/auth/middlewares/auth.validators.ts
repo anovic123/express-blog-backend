@@ -9,10 +9,13 @@ import {inputCheckErrorsMiddleware} from "../../../global-middlewares/input-chec
 import { RequestWithBody } from "../../../types/common";
 
 import { HTTP_STATUSES } from "../../../utils";
+import {rateLimitService} from "../../security/application/rate-limit.service";
 
 const loginValidator = body('login').trim().isString().isLength({ min: 3, max: 10 })
 const passwordValidator = body('password').trim().isString().isLength({ min: 6, max: 20 })
 const emailValidator = body('email').trim().isEmail()
+const newPasswordBodyValidator = body('newPassword').trim().isString().isLength({ min: 3, max: 20 })
+const recoveryCodeValidator = body('recoveryCode').trim().isString()
 
 const codeValidator = body('code').trim().isString()
 
@@ -71,5 +74,18 @@ export const registrationResendingValidator = [
     rateLimitMiddleware,
     emailValidator,
     findExistedUserByEmailAndConfirmedValidator,
+    inputCheckErrorsMiddleware
+]
+
+export const passwordRecoveryValidator = [
+    rateLimitMiddleware,
+    emailValidator,
+    inputCheckErrorsMiddleware
+]
+
+export const newPasswordValidator = [
+    rateLimitMiddleware,
+    newPasswordBodyValidator,
+    recoveryCodeValidator,
     inputCheckErrorsMiddleware
 ]

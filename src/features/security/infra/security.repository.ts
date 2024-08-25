@@ -1,5 +1,9 @@
+import { Types } from 'mongoose'
+
 import {AuthDevicesDB, AuthDevicesModel} from "../domain/device.entity";
+
 import {DevicesSessionViewModel} from "../../../types/devices-types";
+import {ObjectId} from "mongodb";
 
 export const securityRepository = {
     async insertNewUserDevice (inputData: AuthDevicesDB): Promise<boolean> {
@@ -28,6 +32,18 @@ export const securityRepository = {
             const res = await AuthDevicesModel.deleteMany({
                 user_id: userId,
                 devices_id: { $ne: deviceId }
+            });
+
+            return res.deletedCount > 0;
+        } catch (error) {
+            console.error('Error in deleteUserDeviceByIdAll:', error);
+            return false;
+        }
+    },
+    async deleteUserAllSessions(userId: Types.ObjectId): Promise<boolean> {
+        try {
+            const res = await AuthDevicesModel.deleteMany({
+                user_id: new ObjectId(userId).toString(),
             });
 
             return res.deletedCount > 0;
