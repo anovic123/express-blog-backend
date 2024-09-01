@@ -1,4 +1,4 @@
-import {CommentOutputCommentatorInfoModel} from "../features/comments/domain/comment.entity";
+import {CommentOutputCommentatorInfoModel} from "../../domain/comment.entity";
 
 export interface CommentViewModel {
     id: string
