@@ -9,8 +9,10 @@ import {PostsQueryRepository} from "../infra/posts-query.repository";
 
 import {commentsQueryRepository} from "../../comments/composition-root";
 
-import { PostInputModel, PostViewModel } from "../../../types/posts-types";
-import {CommentViewModel} from "../../comments/dto/output/comment-output-types";
+import {PostInputModel} from "../dto/input";
+import {PostViewModel} from "../dto/output";
+
+import {CommentViewModel} from "../../comments/dto/output";
 
 import { PostDbType } from "../domain/post.entity";
 

@@ -1,12 +1,12 @@
 import { Response } from 'express'
 
-import {PostViewModel} from '../../../types/posts-types'
-
 import { HTTP_STATUSES } from '../../../utils'
 
 import {RequestWithParams} from "../../../core/request-types";
 
 import {postsQueryRepository} from "../composition-root";
+
+import {PostViewModel} from "../dto/output";
 
 export const findPostController = async (req: RequestWithParams<{id: PostViewModel['id']}>, res: Response<PostViewModel | {}>) => {
     try {

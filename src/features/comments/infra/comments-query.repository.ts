@@ -1,12 +1,15 @@
 import {CommentDBType, CommentModel} from "../domain/comment.entity";
 import {UserAccountDBType} from "../../auth/domain/auth.entity";
 
-import {CommentViewModel} from "../dto/output/comment-output-types";
+import {CommentViewModel} from "../dto/output";
+
+import {LikeDBType, LikeModel, LikeStatus} from "../domain/like.entity";
 
 export class CommentsQueryRepository {
     async getCommentById(id: CommentViewModel['id']): Promise<CommentViewModel | null> {
         const comment = await CommentModel.findOne({ id });
-        return comment ? this.mapPostCommentsOutput(comment) : null;
+        const like = await LikeModel.find({ commentId: id })
+        return comment ? this.mapPostCommentsOutput(comment, like) : null;
     }
     async checkIsOwn (commentId: string, user: UserAccountDBType): Promise<boolean> {
         const commentsRes = await CommentModel.findOne({ id: commentId })
@@ -17,7 +20,7 @@ export class CommentsQueryRepository {
 
         return commentsRes.commentatorInfo.userId === user._id.toString()
     }
-    mapPostCommentsOutput(comment: CommentDBType): CommentViewModel {
+    mapPostCommentsOutput(comment: CommentDBType, like: LikeDBType[] | null): CommentViewModel {
         const commentForOutput = {
             id: comment.id,
             content: comment.content,
@@ -25,7 +28,12 @@ export class CommentsQueryRepository {
                 userId: comment.commentatorInfo.userId,
                 userLogin: comment.commentatorInfo.userLogin
             },
-            createdAt: comment.createdAt
+            createdAt: comment.createdAt,
+            likesInfo: {
+                likesCount: like?.filter(l => l.status === LikeStatus.LIKE).length ?? 0,
+                dislikesCount: like?.filter(l => l.status === LikeStatus.Dislike).length ?? 0,
+                myStatus: LikeStatus.LIKE
+            }
         }
         return commentForOutput
     }

@@ -6,8 +6,8 @@ import {PostDbType, PostModel} from "../domain/post.entity";
 
 import {CommentDBType, CommentModel} from "../../comments/domain/comment.entity";
 
-import {PostViewModel} from "../../../types/posts-types";
 import {BlogViewModel} from "../../blogs/dto/output";
+import {PostViewModel} from "../dto/output";
 
 export class PostsQueryRepository {
     public async getMappedPostById(id: PostViewModel['id']): Promise<PostViewModel | null> {

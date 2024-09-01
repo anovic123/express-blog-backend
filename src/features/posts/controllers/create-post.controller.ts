@@ -2,10 +2,12 @@ import {Response} from 'express'
 
 import {postsService} from "../composition-root";
 
-import {PostInputModel, PostViewModel} from '../../../types/posts-types'
 import {RequestWithBody} from "../../../core/request-types";
 
 import { HTTP_STATUSES } from '../../../utils'
+
+import {PostInputModel} from "../dto/input";
+import {PostViewModel} from "../dto/output";
 
 export const createPostController = async (req: RequestWithBody<PostInputModel>, res: Response<PostViewModel>) => {
 

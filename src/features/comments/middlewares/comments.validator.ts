@@ -8,11 +8,11 @@ import {inputCheckErrorsMiddleware} from "../../../global-middlewares/input-chec
 
 import {HTTP_STATUSES} from "../../../utils";
 
-import {RequestWithParams} from "../../../core/request-types";
+import {RequestCommentModelWithParams} from "../../../core/request-types";
 
 const contentValidator = body('content').isString().trim().isLength({ min: 20, max: 300 })
 
-export const findCommentsValidator = async (req: RequestWithParams<{ commentId: string }>, res: Response, next: NextFunction) => {
+export const findCommentsValidator = async (req: RequestCommentModelWithParams<{ commentId: string }>, res: Response, next: NextFunction) => {
     if (!req.params.commentId) {
         res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
         return
@@ -25,6 +25,7 @@ export const findCommentsValidator = async (req: RequestWithParams<{ commentId: 
         return
     }
 
+    req.comment = comment
     next()
 }
 

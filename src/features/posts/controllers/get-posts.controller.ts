@@ -6,9 +6,9 @@ import { HTTP_STATUSES } from '../../../utils'
 
 import { GetAllPostsHelperResult } from "../helper";
 
-import { PostViewModel } from '../../../types/posts-types';
-
 import {RequestWithQueryAndParams} from "../../../core/request-types";
+
+import {PostViewModel} from "../dto/output";
 
 export const getPostsController = async (req: RequestWithQueryAndParams<GetAllPostsHelperResult, { id: PostViewModel['id'] }>, res: Response<any>) => {
     try {

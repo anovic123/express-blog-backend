@@ -3,8 +3,9 @@ import { Types } from 'mongoose';
 import {PostDbType, PostModel} from "../domain/post.entity";
 import {CommentDBType} from "../../comments/domain/comment.entity";
 
-import {PostInputModel, PostViewModel} from "../../../types/posts-types";
-import {CommentViewModel} from "../../comments/dto/output/comment-output-types";
+import {CommentViewModel} from "../../comments/dto/output";
+import {PostViewModel} from "../dto/output";
+import {PostInputModel} from "../dto/input";
 
 import {blogsRepository} from "../../blogs/composition-root";
 

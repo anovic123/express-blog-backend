@@ -2,9 +2,9 @@ import * as mongoose from 'mongoose'
 import { Model, model, HydratedDocument } from "mongoose";
 
 export enum LikeStatus {
-    NONE,
-    LIKE,
-    Dislike
+    NONE = 'None',
+    LIKE = 'Like',
+    Dislike = 'Dislike'
 }
 
 export type LikeDBType = {
@@ -22,7 +22,7 @@ export type LikeDocument = HydratedDocument<LikeDBType>
 
 const likeSchema = new mongoose.Schema<LikeDBType>({
     createdAt: { type: Date, required: true },
-    status: { type: Number, enum: LikeStatus, required: true },
+    status: { type: String, enum: LikeStatus, required: true },
     authorId: { typeId: String, required: true},
     // parentId: { typeId: String, required: true },
     commentId: { typeId: String, required: true },
