@@ -1,12 +1,12 @@
-import {securityRepository} from "../../security/infra/security.repository";
-import {rateLimitRepository} from "../../security/infra/rate-limit.repository";
-import {usersRepository} from "../../users/infra/users.repository";
-import {blogsRepository} from "../../blogs/infra/blogs.repository";
-import {postsRepository} from "../../posts/infra/posts.repository";
-import {commentsRepository} from "../../comments/infra/comments.repository";
+import {rateLimitRepository} from "../../../core/infra/rate-limit.repository";
+import {usersRepository} from "../../users/composition-root";
+import {blogsRepository} from "../../blogs/composition-root";
+import {commentsRepository} from "../../comments/composition-root";
+import {postsRepository} from "../../posts/composition-root";
+import {securityRepository} from "../../security/composition-root";
 
-export const testingService = {
-    async clearAllDB(): Promise<boolean> {
+export class TestingService {
+    public async clearAllDB(): Promise<boolean> {
         try {
             await Promise.all([
                 blogsRepository.deleteAll(),
@@ -23,3 +23,5 @@ export const testingService = {
         }
     }
 }
+
+export const testingService = new TestingService()

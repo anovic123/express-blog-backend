@@ -3,13 +3,13 @@ import { Types } from 'mongoose';
 import {PostDbType, PostModel} from "../domain/post.entity";
 import {CommentDBType} from "../../comments/domain/comment.entity";
 
-import {blogsRepository} from "../../blogs/infra/blogs.repository";
-
 import {PostInputModel, PostViewModel} from "../../../types/posts-types";
-import {CommentViewModel} from "../../../types/comment-types";
+import {CommentViewModel} from "../../comments/dto/output/comment-output-types";
 
-export const postsRepository = {
-    async createPost(post: PostDbType): Promise<boolean> {
+import {blogsRepository} from "../../blogs/composition-root";
+
+export class PostsRepository {
+    public async createPost(post: PostDbType): Promise<boolean> {
         try {
             const newPost = await PostModel.create(post);
             return !!newPost;
@@ -17,9 +17,9 @@ export const postsRepository = {
             console.error('Error creating post:', error);
             return false;
         }
-    },
+    }
 
-    async createPostComment(comment: CommentDBType): Promise<CommentViewModel | null> {
+    public async createPostComment(comment: CommentDBType): Promise<CommentViewModel | null> {
         try {
             const result = await PostModel.create(comment);
             return result ? comment : null;
@@ -27,9 +27,9 @@ export const postsRepository = {
             console.error('Error creating comment:', error);
             return null;
         }
-    },
+    }
 
-    async findPost(id: PostViewModel['id']): Promise<PostDbType | null> {
+    public async findPost(id: PostViewModel['id']): Promise<PostDbType | null> {
         try {
             const res = await PostModel.findOne({ _id: new Types.ObjectId(id) }).lean();
             return res;
@@ -37,9 +37,9 @@ export const postsRepository = {
             console.error('Error finding post:', error);
             return null;
         }
-    },
+    }
 
-    async deletePost(id: PostViewModel['id']): Promise<boolean> {
+    public async deletePost(id: PostViewModel['id']): Promise<boolean> {
         try {
             const deleteResult = await PostModel.deleteOne({ _id: new Types.ObjectId(id) });
             return deleteResult.deletedCount === 1;
@@ -47,9 +47,9 @@ export const postsRepository = {
             console.error('Error deleting post:', error);
             return false;
         }
-    },
+    }
 
-    async putPost(post: PostInputModel, id: string): Promise<boolean> {
+    public async putPost(post: PostInputModel, id: string): Promise<boolean> {
         try {
             const blog = await blogsRepository.findBlog(post.blogId);
             if (!blog) return false;
@@ -69,9 +69,9 @@ export const postsRepository = {
             console.error('Error updating post:', error);
             return false;
         }
-    },
+    }
 
-    async deleteAll(): Promise<boolean> {
+    public async deleteAll(): Promise<boolean> {
         try {
             await PostModel.deleteMany();
             return true;

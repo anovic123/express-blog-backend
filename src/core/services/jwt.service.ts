@@ -1,10 +1,11 @@
 import jwt, { JwtPayload, TokenExpiredError } from "jsonwebtoken";
 
-import {securityQueryRepository} from "../../security/infra/sequrity-query.repository";
+import {UserAccountDocument} from "../../features/auth/domain/auth.entity";
 
-import {UserAccountDocument} from "../domain/auth.entity";
+import {securityQueryRepository} from "../../features/security/composition-root";
+import {SecurityQueryRepository} from "../../features/security/infra/sequrity-query.repository";
 
-import {SETTINGS} from "../../../settings";
+import {SETTINGS} from "../../settings";
 
 interface JwtPayloadExtended extends JwtPayload {
     userId: string;
@@ -21,8 +22,11 @@ interface JwtTokensOutput {
     refreshTokenExp: string;
 }
 
-export const jwtService = {
-    async createJWT(user: UserAccountDocument, deviceId: string): Promise<JwtTokensOutput | null> {
+export class JwtService {
+
+    constructor(protected securityQueryRepository: SecurityQueryRepository) {}
+
+    public async createJWT(user: UserAccountDocument, deviceId: string): Promise<JwtTokensOutput | null> {
         const userId = user._id.toString()
 
         try {
@@ -44,9 +48,9 @@ export const jwtService = {
             console.error('Error creating JWT:', error);
             return null;
         }
-    },
+    }
 
-    async refreshTokensJWT(refreshToken: string): Promise<JwtTokensOutput | null> {
+    public async refreshTokensJWT(refreshToken: string): Promise<JwtTokensOutput | null> {
         try {
             const decodedRefresh = await this._verifyToken<JwtRefreshPayloadExtended>(refreshToken);
             if (!decodedRefresh) return null;
@@ -73,9 +77,9 @@ export const jwtService = {
             console.error('Error refreshing JWT tokens:', error);
             return null;
         }
-    },
+    }
 
-    async getUserIdByToken(token: string): Promise<string | null> {
+    public async getUserIdByToken(token: string): Promise<string | null> {
         try {
             const result =  jwt.verify(token, SETTINGS.JWT_SECRET) as JwtPayloadExtended;
             return result ? result.userId : null;
@@ -83,9 +87,9 @@ export const jwtService = {
             console.error('Error getting user ID by token:', error);
             return null;
         }
-    },
+    }
 
-    async getDataFromRefreshToken(refreshToken: string): Promise<{ userId: string; deviceId: string } | null> {
+    public async getDataFromRefreshToken(refreshToken: string): Promise<{ userId: string; deviceId: string } | null> {
         try {
             const decodedRefresh = await this._verifyToken<JwtRefreshPayloadExtended>(refreshToken);
             if (!decodedRefresh) return null;
@@ -102,23 +106,21 @@ export const jwtService = {
             console.error('Error getting data from refresh token:', error);
             return null;
         }
-    },
+    }
 
-    _signAccessToken(userId: string): string {
-        return jwt.sign({ userId }, SETTINGS.JWT_SECRET, { expiresIn: '10s' });
-    },
+    protected _signAccessToken(userId: string): string {
+        return jwt.sign({ userId }, SETTINGS.JWT_SECRET, { expiresIn: SETTINGS.TOKENS.ACCESS_TOKEN_EXPIRATION });
+    }
 
-    _signRefreshToken(userId: string, deviceId: string): string {
-        return jwt.sign({ userId, deviceId }, SETTINGS.JWT_SECRET, { expiresIn: '20s' });
-    },
+    protected _signRefreshToken(userId: string, deviceId: string): string {
+        return jwt.sign({ userId, deviceId }, SETTINGS.JWT_SECRET, { expiresIn: SETTINGS.TOKENS.REFRESH_TOKEN_EXPIRATION });
+    }
 
-    async _verifyToken<T extends JwtPayload>(token: string): Promise<T | null> {
+    protected async _verifyToken<T extends JwtPayload>(token: string): Promise<T | null> {
         try {
             const decodedToken = jwt.verify(token, SETTINGS.JWT_SECRET) as T;
-            console.log(decodedToken)
 
             const isDeviceValid = await securityQueryRepository.checkUserDeviceById(decodedToken.userId, decodedToken.deviceId);
-            console.log(isDeviceValid)
             if (!isDeviceValid) return null;
 
             if (decodedToken.exp && Date.now() >= decodedToken.exp * 1000) {
@@ -132,3 +134,5 @@ export const jwtService = {
         }
     }
 }
+
+export const jwtService = new JwtService(securityQueryRepository)

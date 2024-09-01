@@ -2,9 +2,9 @@ import { Response } from 'express'
 
 import {authService} from "../application/auth.service";
 
-import {RequestWithBody} from "../../../types/common";
-
 import {HTTP_STATUSES} from "../../../utils";
+
+import {RequestWithBody} from "../../../core/request-types";
 
 export const newPasswordController = async (req: RequestWithBody<{ newPassword: string, recoveryCode: string }>, res: Response) => {
     try {

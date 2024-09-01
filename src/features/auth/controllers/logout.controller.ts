@@ -1,9 +1,8 @@
 import { Request, Response } from 'express'
 
-import {jwtService} from "../application/jwt.service";
+import {securityQueryRepository, securityService} from "../../security/composition-root";
 
-import {securityQueryRepository} from "../../security/infra/sequrity-query.repository";
-import {securityService} from "../../security/application/security.service";
+import {jwtService} from "../../../core/services/jwt.service";
 
 import {HTTP_STATUSES} from "../../../utils";
 

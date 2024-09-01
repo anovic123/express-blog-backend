@@ -5,12 +5,9 @@ import { Types } from 'mongoose'
 
 import {UserAccountDBType, UserAccountDocument} from "../domain/auth.entity";
 
-import {usersRepository} from "../../users/infra/users.repository";
-import {usersQueryRepository} from "../../users/infra/users-query.repository";
-
-import {emailsManager} from "../../../managers/email.manager";
-import {securityService} from "../../security/application/security.service";
-
+import {emailsManager} from "../../../core/managers/email.manager";
+import {usersQueryRepository, usersRepository} from "../../users/composition-root";
+import {securityService} from "../../security/composition-root";
 
 export const authService = {
     async createUser (login: string, email: string, password: string): Promise<UserAccountDBType | null> {

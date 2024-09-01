@@ -1,9 +1,9 @@
 import {NextFunction, Response} from "express";
 
-import {jwtService} from "../features/auth/application/jwt.service";
-import {usersService} from "../features/users/application/users.service";
+import {usersService} from "../features/users/composition-root";
 
-import {RequestAuthModel} from "../types/common";
+import {jwtService} from "../core/services/jwt.service";
+import {RequestAuthModel} from "../core/request-types";
 
 import {HTTP_STATUSES} from "../utils";
 

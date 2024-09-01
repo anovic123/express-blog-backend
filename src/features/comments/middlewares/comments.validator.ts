@@ -1,14 +1,14 @@
 import {NextFunction, Response} from "express";
 import {body, param} from "express-validator";
 
+import {commentsQueryRepository} from "../composition-root";
+
 import {authMiddleware} from "../../../global-middlewares/auth.middleware";
 import {inputCheckErrorsMiddleware} from "../../../global-middlewares/input-checks-errors.middleware";
 
-import {commentsQueryRepository} from "../infra/comments-query.repository";
-
 import {HTTP_STATUSES} from "../../../utils";
 
-import {RequestWithParams} from "../../../types/common";
+import {RequestWithParams} from "../../../core/request-types";
 
 const contentValidator = body('content').isString().trim().isLength({ min: 20, max: 300 })
 
@@ -42,4 +42,9 @@ export const deleteCommentValidator = [
     commentIdValidator,
     findCommentsValidator,
     inputCheckErrorsMiddleware
+]
+
+export const putLikeCommentValidator = [
+    authMiddleware,
+    findCommentsValidator
 ]

@@ -1,12 +1,12 @@
 import { Response } from 'express'
 
-import {blogsQueryRepository} from "../infra/blogs-query.repository";
-
 import { HTTP_STATUSES } from '../../../utils'
 
-import {getAllBlogsHelper, getAllBlogsHelperResult} from "../helper";
+import { getAllBlogsHelperResult} from "../helper";
 
-import { RequestWithQueryAndParams } from "../../../types/common";
+import {RequestWithQueryAndParams} from "../../../core/request-types";
+
+import {blogsQueryRepository} from "../composition-root";
 
 export const getBlogsController = async (req: RequestWithQueryAndParams<getAllBlogsHelperResult, { id: string }>, res: Response) => {
     try {

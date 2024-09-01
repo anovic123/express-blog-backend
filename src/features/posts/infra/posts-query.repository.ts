@@ -6,18 +6,18 @@ import {PostDbType, PostModel} from "../domain/post.entity";
 
 import {CommentDBType, CommentModel} from "../../comments/domain/comment.entity";
 
-import {BlogViewModel} from "../../../types/blogs-types";
 import {PostViewModel} from "../../../types/posts-types";
+import {BlogViewModel} from "../../blogs/dto/output";
 
-export const postsQueryRepository = {
-    async getMappedPostById(id: PostViewModel['id']): Promise<PostViewModel | null> {
+export class PostsQueryRepository {
+    public async getMappedPostById(id: PostViewModel['id']): Promise<PostViewModel | null> {
         return await this.findPostsAndMap(id)
-    },
-    async getPostsCommentsLength(id: string): Promise<number> {
+    }
+    public async getPostsCommentsLength(id: string): Promise<number> {
         const commentsRes = await CommentModel.find({ _id: new ObjectId(id) }).exec()
         return commentsRes.length
-    },
-    async getAllPosts(query: GetAllPostsHelperResult, blogId: BlogViewModel['id']) {
+    }
+    public async getAllPosts(query: GetAllPostsHelperResult, blogId: BlogViewModel['id']) {
         const sanitizedQuery = getAllPostsHelper(query)
 
         const byId = blogId ? { blogId: new ObjectId(blogId) } : {}
@@ -46,8 +46,8 @@ export const postsQueryRepository = {
             console.log(error)
             return []
         }
-    },
-    async getPostsComments (query: GetAllPostsHelperResult, postId: string) {
+    }
+    public async getPostsComments (query: GetAllPostsHelperResult, postId: string) {
         const sanitizedQuery = getAllPostsHelper(query)
 
         const byId = postId ? { postId} : {}
@@ -76,15 +76,15 @@ export const postsQueryRepository = {
             console.log(error)
             return []
         }
-    },
-    async findPostsAndMap(id: PostViewModel['id']): Promise<PostViewModel | null> {
+    }
+    public async findPostsAndMap(id: PostViewModel['id']): Promise<PostViewModel | null> {
         const post = await this.findPost(id)
         if (!post) {
             return null
         }
         return this.mapPostOutput(post)
-    },
-    async findPost(id: PostViewModel['id']): Promise<WithId<PostDbType> | null> {
+    }
+    public async findPost(id: PostViewModel['id']): Promise<WithId<PostDbType> | null> {
         const res = await PostModel.findOne({ _id: new ObjectId(id) })
 
         if (!res) {
@@ -92,8 +92,8 @@ export const postsQueryRepository = {
         }
 
         return res
-    },
-    mapPostOutput(post: WithId<PostDbType>) {
+    }
+    protected mapPostOutput(post: WithId<PostDbType>) {
         const postForOutput: PostViewModel = {
             id: new ObjectId(post._id).toString(),
             title: post.title,
@@ -104,8 +104,8 @@ export const postsQueryRepository = {
             createdAt: post.createdAt
         }
         return postForOutput
-    },
-    mapPostCommentsOutput(comment: CommentDBType) {
+    }
+    protected mapPostCommentsOutput(comment: CommentDBType) {
         const commentForOutput = {
             id: comment.id,
             content: comment.content,

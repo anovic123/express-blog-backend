@@ -1,13 +1,11 @@
 import { Response } from 'express'
 import { ObjectId } from 'mongodb'
 
-import {postsQueryRepository} from "../infra/posts-query.repository";
+import {postsQueryRepository, postsService} from "../composition-root";
 
-import {postsService} from "../application/posts.service";
+import {RequestAuthModelWithParamsAndBody} from "../../../core/request-types";
 
 import {HTTP_STATUSES} from "../../../utils";
-
-import { RequestAuthModelWithParamsAndBody} from "../../../types/common";
 
 export const createPostCommentController = async (req: RequestAuthModelWithParamsAndBody<{ postId: string }, { content: string }>, res: Response) => {
     const postId = new ObjectId(req.params.postId);

@@ -1,7 +1,7 @@
 import {CommentModel} from "../domain/comment.entity";
 
-export const commentsRepository = {
-    async updateComment(commentId: string, content: string): Promise<boolean> {
+export class CommentsRepository {
+    public async updateComment(commentId: string, content: string): Promise<boolean> {
         try {
             const result = await CommentModel.updateOne(
                 { id: commentId },
@@ -12,9 +12,9 @@ export const commentsRepository = {
             console.error(`Error updating comment ${commentId}:`, error);
             return false;
         }
-    },
+    }
 
-    async deleteComment(commentId: string): Promise<boolean> {
+    public async deleteComment(commentId: string): Promise<boolean> {
         try {
             const result = await CommentModel.deleteOne({ id: commentId });
             return result.deletedCount > 0;
@@ -22,9 +22,9 @@ export const commentsRepository = {
             console.error(`Error deleting comment ${commentId}:`, error);
             return false;
         }
-    },
+    }
 
-    async deleteAll(): Promise<boolean> {
+    public async deleteAll(): Promise<boolean> {
         try {
             const result = await CommentModel.deleteMany({});
             return result.deletedCount > 0;

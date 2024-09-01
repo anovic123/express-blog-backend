@@ -1,15 +1,14 @@
 import { Response, NextFunction } from 'express'
 import { body } from 'express-validator'
 
-import {usersQueryRepository} from "../../users/infra/users-query.repository";
+import {usersQueryRepository} from "../../users/composition-root";
 
 import {rateLimitMiddleware} from "../../../global-middlewares/rate-limit.middleware";
 import {inputCheckErrorsMiddleware} from "../../../global-middlewares/input-checks-errors.middleware";
 
-import { RequestWithBody } from "../../../types/common";
-
 import { HTTP_STATUSES } from "../../../utils";
-import {rateLimitService} from "../../security/application/rate-limit.service";
+
+import {RequestWithBody} from "../../../core/request-types";
 
 const loginValidator = body('login').trim().isString().isLength({ min: 3, max: 10 })
 const passwordValidator = body('password').trim().isString().isLength({ min: 6, max: 20 })

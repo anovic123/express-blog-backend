@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-import {rateLimitService} from "../features/security/application/rate-limit.service";
+import {rateLimitService} from "../core/services/rate-limit.service";
 
 import {HTTP_STATUSES} from "../utils";
 

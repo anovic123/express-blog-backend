@@ -4,9 +4,9 @@ import {PostViewModel} from '../../../types/posts-types'
 
 import { HTTP_STATUSES } from '../../../utils'
 
-import { RequestWithParams } from '../../../types/common'
+import {RequestWithParams} from "../../../core/request-types";
 
-import {postsQueryRepository} from "../infra/posts-query.repository";
+import {postsQueryRepository} from "../composition-root";
 
 export const findPostController = async (req: RequestWithParams<{id: PostViewModel['id']}>, res: Response<PostViewModel | {}>) => {
     try {

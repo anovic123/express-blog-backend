@@ -1,13 +1,13 @@
 import {CommentDBType, CommentModel} from "../domain/comment.entity";
 import {UserAccountDBType} from "../../auth/domain/auth.entity";
 
-import {CommentViewModel} from "../../../types/comment-types";
+import {CommentViewModel} from "../dto/output/comment-output-types";
 
-export const commentsQueryRepository = {
+export class CommentsQueryRepository {
     async getCommentById(id: CommentViewModel['id']): Promise<CommentViewModel | null> {
         const comment = await CommentModel.findOne({ id });
         return comment ? this.mapPostCommentsOutput(comment) : null;
-    },
+    }
     async checkIsOwn (commentId: string, user: UserAccountDBType): Promise<boolean> {
         const commentsRes = await CommentModel.findOne({ id: commentId })
 
@@ -16,7 +16,7 @@ export const commentsQueryRepository = {
         }
 
         return commentsRes.commentatorInfo.userId === user._id.toString()
-    },
+    }
     mapPostCommentsOutput(comment: CommentDBType): CommentViewModel {
         const commentForOutput = {
             id: comment.id,

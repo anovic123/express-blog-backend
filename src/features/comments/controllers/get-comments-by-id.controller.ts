@@ -1,8 +1,8 @@
 import { Response } from "express";
 
-import { RequestAuthModelWithParams } from "../../../types/common";
+import {commentsQueryRepository} from "../composition-root";
 
-import {commentsQueryRepository} from "../infra/comments-query.repository";
+import {RequestAuthModelWithParams} from "../../../core/request-types";
 
 import {HTTP_STATUSES} from "../../../utils";
 

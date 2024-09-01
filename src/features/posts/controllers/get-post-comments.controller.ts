@@ -1,10 +1,10 @@
 import { Response } from 'express'
 
-import {postsQueryRepository} from "../infra/posts-query.repository";
+import {postsQueryRepository} from "../composition-root";
 
 import {GetAllPostsHelperResult} from "../helper";
 
-import {RequestWithQueryAndParams} from "../../../types/common";
+import {RequestWithQueryAndParams} from "../../../core/request-types";
 
 import {HTTP_STATUSES} from "../../../utils";
 

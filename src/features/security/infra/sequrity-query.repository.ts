@@ -1,8 +1,9 @@
 import {DevicesSessionViewModel} from "../../../types/devices-types";
+
 import {AuthDevicesDB, AuthDevicesModel} from "../domain/device.entity";
 
-export const securityQueryRepository = {
-    async getAllDevicesSessions(userId: string): Promise<DevicesSessionViewModel[]> {
+export class SecurityQueryRepository {
+    public async getAllDevicesSessions(userId: string): Promise<DevicesSessionViewModel[]> {
         try {
             const devicesSessions = await AuthDevicesModel.find({ user_id: userId }).exec();
 
@@ -11,8 +12,8 @@ export const securityQueryRepository = {
             console.error('Error in getAllDevicesSessions:', error);
             return [];
         }
-    },
-    async checkUserDeviceById(userId: string, deviceId: DevicesSessionViewModel['deviceId']): Promise<boolean> {
+    }
+    public async checkUserDeviceById(userId: string, deviceId: DevicesSessionViewModel['deviceId']): Promise<boolean> {
         try {
             const deviceRes = await AuthDevicesModel.findOne<{ user_id: string, devices_id: string }>({ user_id: userId, devices_id: deviceId }).exec();
 
@@ -21,8 +22,8 @@ export const securityQueryRepository = {
             console.error('Error in checkUserDeviceById:', error);
             return false;
         }
-    },
-    async findUserDeviceById(deviceId: DevicesSessionViewModel['deviceId']): Promise<DevicesSessionViewModel | null> {
+    }
+    public async findUserDeviceById(deviceId: DevicesSessionViewModel['deviceId']): Promise<DevicesSessionViewModel | null> {
         try {
             const deviceRes = await AuthDevicesModel.findOne(
                 { devices_id: deviceId }
@@ -32,8 +33,8 @@ export const securityQueryRepository = {
             console.error('Error in findUserDeviceById:', error);
             return null;
         }
-    },
-    _mapDeviceSession(deviceSession: AuthDevicesDB): DevicesSessionViewModel {
+    }
+    protected _mapDeviceSession(deviceSession: AuthDevicesDB): DevicesSessionViewModel {
         return {
             deviceId: deviceSession.devices_id,
             title: deviceSession.devices_name,

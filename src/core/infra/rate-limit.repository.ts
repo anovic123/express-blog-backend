@@ -1,14 +1,14 @@
-import {RateLimitDbType, RateLimitModel} from "../domain/rate.entity";
+import {RateLimitDbType, RateLimitModel} from "../../features/security/domain/rate.entity";
 
-export const rateLimitRepository = {
-    async getAttemptCountSinceDate(ip: string, url: string, sinceDate: Date): Promise<number> {
+export class RateLimitRepository {
+    public async getAttemptCountSinceDate(ip: string, url: string, sinceDate: Date): Promise<number> {
         return RateLimitModel.countDocuments({
             ip,
             url,
             date: {$gte: sinceDate}
         });
-    },
-    async setAttempt(newAttempt: RateLimitDbType): Promise<boolean> {
+    }
+    public async setAttempt(newAttempt: RateLimitDbType): Promise<boolean> {
         try {
             const res = await RateLimitModel.insertMany([newAttempt])
             return true
@@ -16,8 +16,8 @@ export const rateLimitRepository = {
             console.error("Error inserting new attempt:", error);
             return false;
         }
-    },
-    async deleteAll(): Promise<boolean> {
+    }
+    public async deleteAll(): Promise<boolean> {
         try {
             const result = await RateLimitModel.deleteMany({});
             return result.deletedCount > 0;
@@ -27,3 +27,5 @@ export const rateLimitRepository = {
         }
     }
 }
+
+export const rateLimitRepository = new RateLimitRepository()

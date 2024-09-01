@@ -1,8 +1,8 @@
 import { Response } from 'express'
 
-import {RequestAuthModel} from "../../../types/common";
-
 import {HTTP_STATUSES} from "../../../utils";
+
+import {RequestAuthModel} from "../../../core/request-types";
 
 export const meController = async (req: RequestAuthModel, res: Response) => {
     try {

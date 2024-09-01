@@ -1,10 +1,8 @@
 import { Response } from 'express';
 
-import {commentsQueryRepository} from "../infra/comments-query.repository";
+import {commentsQueryRepository, commentsService} from "../composition-root";
 
-import {commentsService} from "../application/comments.service";
-
-import { RequestAuthModelWithParamsAndBody} from "../../../types/common";
+import {RequestAuthModelWithParamsAndBody} from "../../../core/request-types";
 
 import { HTTP_STATUSES } from "../../../utils";
 

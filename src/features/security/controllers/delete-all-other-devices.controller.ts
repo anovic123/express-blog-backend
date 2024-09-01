@@ -1,11 +1,10 @@
 import { Request, Response } from 'express'
 
-import {jwtService} from "../../auth/application/jwt.service";
+import {jwtService} from "../../../core/services/jwt.service";
 
-import {securityService} from "../application/security.service";
+import {securityService} from "../composition-root";
 
 import {HTTP_STATUSES} from "../../../utils";
-
 
 export const deleteAllOtherDevicesController = async (req: Request, res: Response) => {
     try {

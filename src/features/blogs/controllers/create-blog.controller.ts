@@ -1,12 +1,13 @@
 import {Response} from 'express'
 
-import {BlogInputModel, BlogViewModel} from '../../../types/blogs-types'
-
-import {blogsService} from "../application/blogs.service";
-
 import { HTTP_STATUSES } from '../../../utils'
 
-import { RequestWithBody } from '../../../types/common'
+import {RequestWithBody} from "../../../core/request-types";
+
+import {blogsService} from "../composition-root";
+
+import {BlogInputModel} from "../dto/input";
+import {BlogViewModel} from "../dto/output";
 
 export const createBlogController = async (req: RequestWithBody<BlogInputModel>, res: Response<BlogViewModel>) => {
     try {

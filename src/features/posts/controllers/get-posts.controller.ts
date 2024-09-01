@@ -1,14 +1,14 @@
 import { Response } from 'express'
 
-import {postsQueryRepository} from "../infra/posts-query.repository";
+import {postsQueryRepository} from "../composition-root";
 
 import { HTTP_STATUSES } from '../../../utils'
 
 import { GetAllPostsHelperResult } from "../helper";
 
-import { RequestWithQueryAndParams } from "../../../types/common";
-
 import { PostViewModel } from '../../../types/posts-types';
+
+import {RequestWithQueryAndParams} from "../../../core/request-types";
 
 export const getPostsController = async (req: RequestWithQueryAndParams<GetAllPostsHelperResult, { id: PostViewModel['id'] }>, res: Response<any>) => {
     try {

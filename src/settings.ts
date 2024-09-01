@@ -14,5 +14,9 @@ export const SETTINGS = {
     },
     ADMIN: process.env.ADMIN || 'admin:qwerty',
     JWT_SECRET: process.env.JWT_SECRET || '123',
-    MONGO_URI: process.env.MONGO_URI
+    MONGO_URI: process.env.MONGO_URI || 'mongodb+srv://vkanaev220:Q2tgZaS1r9EQIx2i@api-v1.otqbeom.mongodb.net/?retryWrites=true&w=majority&appName=api-v1',
+    TOKENS: {
+        ACCESS_TOKEN_EXPIRATION: '5m',
+        REFRESH_TOKEN_EXPIRATION : '20s'
+    }
 }

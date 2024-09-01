@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 
-import {securityService} from "../../security/application/security.service";
+import {securityService} from "../../security/composition-root";
 
 import {HTTP_STATUSES} from "../../../utils";
 

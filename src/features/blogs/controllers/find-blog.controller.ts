@@ -1,12 +1,11 @@
 import { Response} from 'express'
 
-import {blogsQueryRepository} from "../infra/blogs-query.repository";
-
-import {BlogViewModel} from '../../../types/blogs-types'
+import {blogsQueryRepository} from "../composition-root";
 
 import { HTTP_STATUSES } from '../../../utils'
 
-import { RequestWithParams } from '../../../types/common'
+import {RequestWithParams} from "../../../core/request-types";
+import {BlogViewModel} from "../dto/output";
 
 export const findBlogController = async (req: RequestWithParams<{id: string}>, res: Response<BlogViewModel | {}>) => {
     try {

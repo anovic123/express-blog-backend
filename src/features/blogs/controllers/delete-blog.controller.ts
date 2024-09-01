@@ -1,12 +1,10 @@
 import { Response } from 'express'
 
-import {blogsQueryRepository} from "../infra/blogs-query.repository";
-
-import {blogsService} from "../application/blogs.service";
-
 import { HTTP_STATUSES } from '../../../utils';
 
-import { RequestWithParams } from '../../../types/common';
+import {RequestWithParams} from "../../../core/request-types";
+
+import {blogsQueryRepository, blogsService} from "../composition-root";
 
 export const deleteBlogController = async (req: RequestWithParams<{id: string}>, res: Response) => {
     try {
