@@ -3,8 +3,8 @@ import { body } from 'express-validator'
 
 import {usersQueryRepository} from "../../users/composition-root";
 
-import {rateLimitMiddleware} from "../../../global-middlewares/rate-limit.middleware";
-import {inputCheckErrorsMiddleware} from "../../../global-middlewares/input-checks-errors.middleware";
+import {rateLimitMiddleware} from "../../../middlewares/rate-limit.middleware";
+import {inputCheckErrorsMiddleware} from "../../../middlewares/input-checks-errors.middleware";
 
 import { HTTP_STATUSES } from "../../../utils";
 

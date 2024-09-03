@@ -1,31 +1,37 @@
+import { Types, ObjectId } from "mongoose";
 import {NextFunction, Response} from "express";
 import {body, param} from "express-validator";
 
 import {commentsQueryRepository} from "../composition-root";
 
-import {authMiddleware} from "../../../global-middlewares/auth.middleware";
-import {inputCheckErrorsMiddleware} from "../../../global-middlewares/input-checks-errors.middleware";
+import {authMiddleware} from "../../../middlewares/auth.middleware";
+import {inputCheckErrorsMiddleware} from "../../../middlewares/input-checks-errors.middleware";
 
 import {HTTP_STATUSES} from "../../../utils";
 
-import {RequestCommentModelWithParams} from "../../../core/request-types";
+import {RequestUserStatusCommentModelWithParams, RequestWithParams} from "../../../core/request-types";
+import { LikeStatus } from "../domain/like.entity";
 
 const contentValidator = body('content').isString().trim().isLength({ min: 20, max: 300 })
 
-export const findCommentsValidator = async (req: RequestCommentModelWithParams<{ commentId: string }>, res: Response, next: NextFunction) => {
+export const findCommentsValidator = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     if (!req.params.commentId) {
         res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
         return
     }
 
-    const comment = await commentsQueryRepository.getCommentById(req.params.commentId)
+    const comment = await commentsQueryRepository.getCommentById(req.params.commentId, new Types.ObjectId(req.user._id).toString())
 
     if (!comment) {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
         return
     }
 
-    req.comment = comment
+    req.likesInfo = {
+        likesCount: comment.likesInfo.likesCount,
+        dislikesCount: comment.likesInfo.dislikesCount,
+        myStatus: comment.likesInfo.myStatus
+    } as any
     next()
 }
 
@@ -45,7 +51,13 @@ export const deleteCommentValidator = [
     inputCheckErrorsMiddleware
 ]
 
+const likeStatusValidator = body('likeStatus')
+    .isString()
+    .isIn(Object.values(LikeStatus))
+
 export const putLikeCommentValidator = [
     authMiddleware,
-    findCommentsValidator
+    likeStatusValidator,
+    findCommentsValidator,
+    inputCheckErrorsMiddleware
 ]

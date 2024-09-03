@@ -1,6 +1,6 @@
 import {UserAccountDBType, UserAccountDocument, UserAccountModel} from "../../auth/domain/auth.entity";
 
-import { UserOutputType } from "../../../types/users-types";
+import { UserOutputType } from "../dto";
 
 export class UsersQueryRepository {
     public async allUsers(query: any): Promise<{

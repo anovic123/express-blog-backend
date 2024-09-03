@@ -1,4 +1,4 @@
-import {DevicesSessionViewModel} from "../../../types/devices-types";
+import { DevicesSessionViewModel } from "../dto/output";
 
 import {AuthDevicesDB, AuthDevicesModel} from "../domain/device.entity";
 

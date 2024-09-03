@@ -2,7 +2,7 @@ import { Types } from 'mongoose'
 
 import {AuthDevicesDB, AuthDevicesModel} from "../domain/device.entity";
 
-import {DevicesSessionViewModel} from "../../../types/devices-types";
+import { DevicesSessionViewModel } from '../dto/output';
 
 export class SecurityRepository {
     public async insertNewUserDevice (inputData: AuthDevicesDB): Promise<boolean> {

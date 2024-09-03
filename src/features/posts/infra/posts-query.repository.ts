@@ -5,6 +5,7 @@ import {getAllPostsHelper, GetAllPostsHelperResult} from "../helper";
 import {PostDbType, PostModel} from "../domain/post.entity";
 
 import {CommentDBType, CommentModel} from "../../comments/domain/comment.entity";
+import { LikeModel, LikeStatus } from "../../comments/domain/like.entity";
 
 import {BlogViewModel} from "../../blogs/dto/output";
 import {PostViewModel} from "../dto/output";
@@ -47,36 +48,43 @@ export class PostsQueryRepository {
             return []
         }
     }
-    public async getPostsComments (query: GetAllPostsHelperResult, postId: string) {
-        const sanitizedQuery = getAllPostsHelper(query)
-
-        const byId = postId ? { postId} : {}
-        const search = sanitizedQuery.searchNameTerm ? { title: { $regex: sanitizedQuery.searchNameTerm, $options: "i" } } : {}
-
+    public async getPostsComments(query: GetAllPostsHelperResult, postId: string, userId?: string | null | undefined) {
+        const sanitizedQuery = getAllPostsHelper(query);
+    
+        const byId = postId ? { postId } : {};
+        const search = sanitizedQuery.searchNameTerm ? { title: { $regex: sanitizedQuery.searchNameTerm, $options: "i" } } : {};
+    
         const filter: any = {
             ...byId,
             ...search
-        }
-
-        const sortDirection = sanitizedQuery.sortDirection === 'asc' ? 1 : -1
-
+        };
+    
+        const sortDirection = sanitizedQuery.sortDirection === 'asc' ? 1 : -1;
+    
         try {
-            const items: any = await CommentModel.find(filter).sort(sanitizedQuery.sortBy, {[ sanitizedQuery.sortDirection ]: sortDirection}).skip((sanitizedQuery.pageNumber - 1) * sanitizedQuery.pageSize).limit(sanitizedQuery.pageSize).exec()
-
-            const totalCount = await CommentModel.countDocuments(filter)
-
+            const items = await CommentModel.find(filter)
+                .sort(sanitizedQuery.sortBy, { [sanitizedQuery.sortDirection]: sortDirection })
+                .skip((sanitizedQuery.pageNumber - 1) * sanitizedQuery.pageSize)
+                .limit(sanitizedQuery.pageSize)
+                .exec();
+    
+            const totalCount = await CommentModel.countDocuments(filter);
+    
+            const mappedItems = await Promise.all(items.map((i: CommentDBType) => this.mapPostCommentsOutput(i, userId)));
+    
             return {
                 pagesCount: Math.ceil(totalCount / (query.pageSize ?? 10)),
                 page: sanitizedQuery.pageNumber,
                 pageSize: sanitizedQuery.pageSize,
                 totalCount,
-                items: items.map((i: any) => this.mapPostCommentsOutput(i))
-            }
-        } catch(error) {
-            console.log(error)
-            return []
+                items: mappedItems
+            };
+        } catch (error) {
+            console.log(error);
+            return [];
         }
     }
+    
     public async findPostsAndMap(id: PostViewModel['id']): Promise<PostViewModel | null> {
         const post = await this.findPost(id)
         if (!post) {
@@ -105,7 +113,14 @@ export class PostsQueryRepository {
         }
         return postForOutput
     }
-    protected mapPostCommentsOutput(comment: CommentDBType) {
+    protected async mapPostCommentsOutput(comment: CommentDBType, userId: string | null | undefined) {
+        const likes = await LikeModel.find({ commentId: comment.id });
+        const userLike = userId ? likes.find(like => like.authorId === userId) : null;
+
+        const likesCount = likes.filter(l => l.status === LikeStatus.LIKE).length;
+        const dislikesCount = likes.filter(l => l.status === LikeStatus.DISLIKE).length;
+        const myStatus = userLike?.status ?? LikeStatus.NONE;
+        
         const commentForOutput = {
             id: comment.id,
             content: comment.content,
@@ -113,7 +128,12 @@ export class PostsQueryRepository {
                 userId: comment.commentatorInfo.userId,
                 userLogin: comment.commentatorInfo.userLogin
             },
-            createdAt: comment.createdAt
+            createdAt: comment.createdAt,
+            likesInfo: {
+                likesCount,
+                dislikesCount,
+                myStatus,
+            },
         }
         return commentForOutput
     }

@@ -3,7 +3,7 @@ import { Request } from "express";
 import {UserAccountDBType} from "../features/auth/domain/auth.entity";
 
 import { HttpStatusType } from "../utils";
-import {CommentViewModel} from "../features/comments/dto/output";
+import {CommentLikesViewModel} from "../features/comments/dto/output";
 
 export type RequestWithBody<T> = Request<{}, {}, T>
 export type RequestWithQuery<T> = Request<{}, {}, {}, T>
@@ -24,10 +24,10 @@ export type RequestResult<T> = {
     data: T
 }
 
-export interface RequestCommentModel extends Request {
-    comment?: CommentViewModel | null
+export interface RequestUserStatusCommentModel extends Request {
+    likesInfo?: CommentLikesViewModel | null
 }
 
-export type RequestCommentModelWithParams<T> = RequestCommentModel & RequestWithParams<T>
+export type RequestUserStatusCommentModelWithParams<T> = RequestUserStatusCommentModel & RequestWithParams<T>
 
-export type RequestCommentModelWithParamsAndBody<T, B> = RequestCommentModel & RequestWithParamsAndBody<T, B>;
+export type RequestUserStatusCommentModelWithParamsAndBody<T, B> = RequestUserStatusCommentModel & RequestWithParamsAndBody<T, B>;

@@ -13,8 +13,9 @@ export class TestingService {
                 postsRepository.deleteAll(),
                 usersRepository.deleteAll(),
                 commentsRepository.deleteAll(),
+                commentsRepository.deleteAll(),
                 rateLimitRepository.deleteAll(),
-                securityRepository.deleteAll()
+                securityRepository.deleteAll(),
             ]);
             return true;
         } catch (error) {

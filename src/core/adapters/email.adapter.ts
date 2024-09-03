@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer"
 
-export const emailAdapter = {
-    async sendEmail (email: string, subject: string, message: string) {
+export class EmailAdapter {
+    public async sendEmail (email: string, subject: string, message: string) {
         const transporter = nodemailer.createTransport({
             host: "smtp.ethereal.email",
             service: 'gmail',
@@ -29,8 +29,9 @@ export const emailAdapter = {
             subject,
             message
         }
-    },
-    async sendRecoveryEmail (email: string, subject: string, message: string) {
+    }
+
+    public async sendRecoveryEmail (email: string, subject: string, message: string) {
         const transporter = nodemailer.createTransport({
             host: "smtp.ethereal.email",
             service: 'gmail',
@@ -58,5 +59,7 @@ export const emailAdapter = {
             subject,
             message
         }
-    },
+    }
 }
+
+export const emailAdapter = new EmailAdapter()

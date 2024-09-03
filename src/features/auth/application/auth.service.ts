@@ -1,3 +1,4 @@
+import { usersRepository } from "./../../users/composition-root";
 import bcrypt from 'bcrypt'
 import {v4 as uuidv4} from 'uuid'
 import {add} from 'date-fns'
@@ -5,12 +6,23 @@ import { Types } from 'mongoose'
 
 import {UserAccountDBType, UserAccountDocument} from "../domain/auth.entity";
 
-import {emailsManager} from "../../../core/managers/email.manager";
-import {usersQueryRepository, usersRepository} from "../../users/composition-root";
-import {securityService} from "../../security/composition-root";
+import { EmailAdapter } from "./../../../core/adapters/email.adapter";
+import { EmailsManager } from "../../../core/managers/email.manager";
 
-export const authService = {
-    async createUser (login: string, email: string, password: string): Promise<UserAccountDBType | null> {
+import { UsersRepository } from '../../users/infra/users.repository';
+import { UsersQueryRepository } from "../../users/infra/users-query.repository";
+
+import { SecurityService } from "../../security/application/security.service";
+
+export class AuthService {
+    constructor(
+        protected usersRepository: UsersRepository, 
+        protected usersQueryRepository: UsersQueryRepository,
+        protected emailAdapter: EmailAdapter,
+        protected emailsManager: EmailsManager,
+        protected securityService: SecurityService
+    ) {}
+    public async createUser (login: string, email: string, password: string): Promise<UserAccountDBType | null> {
         const passwordHash = await this._generateHash(password)
         const user = {
             _id: new Types.ObjectId(),
@@ -31,7 +43,7 @@ export const authService = {
         }
         const createdResult = usersRepository.createUser(user)
         try {
-            await emailsManager.sendConfirmationMessage({
+            await this.emailsManager.sendConfirmationMessage({
                 email: user.accountData.email,
                 confirmationCode: user.emailConfirmation.confirmationCode
             })
@@ -41,10 +53,11 @@ export const authService = {
             console.log(error)
             return null
         }
-    },
-    async checkCredentials (loginOrEmail: string, password: string): Promise<UserAccountDBType | null> {
+    }
+
+    public async checkCredentials (loginOrEmail: string, password: string): Promise<UserAccountDBType | null> {
         try {
-            const user: UserAccountDocument | null = await usersQueryRepository.findUserByLoginOrEmail(loginOrEmail)
+            const user: UserAccountDocument | null = await this.usersQueryRepository.findUserByLoginOrEmail(loginOrEmail)
             if (!user) return null
 
             if (!user.emailConfirmation.isConfirmed) {
@@ -61,10 +74,11 @@ export const authService = {
             console.error(`checkCredentials for ${loginOrEmail}:`, error)
             return null
         }
-    },
-    async confirmEmail (code: string): Promise<boolean> {
+    }
+
+    public async confirmEmail (code: string): Promise<boolean> {
         try {
-            let user = await usersQueryRepository.findUserByConfirmationCode(code)
+            let user = await this.usersQueryRepository.findUserByConfirmationCode(code)
             if (!user) {
                 return false
             }
@@ -76,10 +90,11 @@ export const authService = {
             console.error(`Error in the confirmEmail:`, error);
             return false
         }
-    },
-    async changeNewPassword ({ newPassword, recoveryCode }: { newPassword: string, recoveryCode: string }): Promise<boolean> {
+    }
+
+    public async changeNewPassword ({ newPassword, recoveryCode }: { newPassword: string, recoveryCode: string }): Promise<boolean> {
        try {
-           let user = await usersQueryRepository.findUserByConfirmationCode(recoveryCode)
+           let user = await this.usersQueryRepository.findUserByConfirmationCode(recoveryCode)
            if (!user) {
                return false
            }
@@ -93,21 +108,21 @@ export const authService = {
 
            if (!newPasswordHash) return false
 
-           await securityService.deleteUserAllSessions(user._id)
+           await this.securityService.deleteUserAllSessions(user._id)
            return true
        } catch (error) {
            console.error('Error in the changeNewPassword', error)
            return false
        }
-    },
-    async resendCode (email: string): Promise<boolean> {
-        let user = await usersQueryRepository.findUserByLoginOrEmail(email)
+    }
+    public async resendCode (email: string): Promise<boolean> {
+        let user = await this.usersQueryRepository.findUserByLoginOrEmail(email)
 
         if (!user) return false
         try {
             const newCode = uuidv4()
             const createdResult = await usersRepository.updateUserConfirmationCode(user._id.toString(), newCode)
-            await emailsManager.sendConfirmationMessage({
+            await this.emailsManager.sendConfirmationMessage({
                 email: user.accountData.email,
                 confirmationCode: newCode
             })
@@ -116,16 +131,17 @@ export const authService = {
             console.log(error)
             return false
         }
-    },
-    async resendCodeForRecoveryPassword (email: string): Promise<boolean> {
+    }
+
+    public async resendCodeForRecoveryPassword (email: string): Promise<boolean> {
         try {
             const newCode = uuidv4()
 
-            await emailsManager.sendRecoveryMessage({
+            await this.emailsManager.sendRecoveryMessage({
                 email,
                 confirmationCode: newCode
             })
-            const user = await usersQueryRepository.findUserByLoginOrEmail(email)
+            const user = await this.usersQueryRepository.findUserByLoginOrEmail(email)
 
             if (!user) return true
 
@@ -135,12 +151,14 @@ export const authService = {
             console.error('resendCodeForRecoveryPassword', error)
             return false
         }
-    },
-    async _isPasswordCorrect (password: string, hash: string) {
+    }
+
+    protected async _isPasswordCorrect (password: string, hash: string) {
         const isEqual = await bcrypt.compare(password, hash)
         return isEqual
-    },
-    async _generateHash(password: string) {
+    }
+
+    protected async _generateHash(password: string) {
         const salt = await bcrypt.genSalt(10)
         const hash = await bcrypt.hash(password, salt)
         return hash

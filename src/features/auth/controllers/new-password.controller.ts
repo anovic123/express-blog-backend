@@ -1,6 +1,6 @@
 import { Response } from 'express'
 
-import {authService} from "../application/auth.service";
+import { authService } from '../composition-root';
 
 import {HTTP_STATUSES} from "../../../utils";
 

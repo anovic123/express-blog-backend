@@ -4,7 +4,7 @@ import {usersService} from "../../users/composition-root";
 
 import {securityService} from "../../security/composition-root";
 
-import {AuthInputModel} from "../../../types/users-types";
+import { AuthInputModel } from '../dto/input/auth-input-type';
 
 import {HTTP_STATUSES} from "../../../utils";
 

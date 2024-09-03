@@ -1,9 +1,11 @@
 import {Response, Request, NextFunction} from 'express'
 import {validationResult} from 'express-validator'
 
-import {OutputErrorsType} from '../types/output-errors-type'
-
 import { HTTP_STATUSES } from '../utils'
+
+export type OutputErrorsType = {
+    errorsMessages: {message: string, field: string}[]
+}
 
 export const inputCheckErrorsMiddleware = (req: Request, res: Response<OutputErrorsType>, next: NextFunction) => {
     const e = validationResult(req)

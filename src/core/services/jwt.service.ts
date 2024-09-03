@@ -92,6 +92,7 @@ export class JwtService {
     public async getDataFromRefreshToken(refreshToken: string): Promise<{ userId: string; deviceId: string } | null> {
         try {
             const decodedRefresh = await this._verifyToken<JwtRefreshPayloadExtended>(refreshToken);
+            
             if (!decodedRefresh) return null;
 
             const { deviceId, exp: decodedExp } = decodedRefresh;

@@ -1,6 +1,11 @@
 import {CommentsRepository} from "../infra/comments.repository";
 import {CommentsQueryRepository} from "../infra/comments-query.repository";
-import {CommentViewModel} from "../dto/output";
+
+import {CommentLikesViewModel} from "../dto/output";
+
+import {commentsRepository} from "../composition-root";
+
+import {LikeStatus} from "../domain/like.entity";
 
 export class CommentsService {
     constructor(protected commentsRepository: CommentsRepository, protectedRepository: CommentsQueryRepository) {}
@@ -11,25 +16,34 @@ export class CommentsService {
     public async updateComment(commentId: string, content: string) {
         return await this.commentsRepository.updateComment(commentId, content)
     }
-    public async likeComment(commentId: string, comment: CommentViewModel, likeStatus: 'None' | 'Like' | 'Dislike'): Promise<boolean> {
-        switch (likeStatus) {
-            case 'None':
-                if (comment.likesInfo.myStatus === 'Like') {
-                    // Logic like
-                } else {
-                    // Logic dislike
-                }
-                break
-            case 'Like':
-                // logic like
-                break
-            case 'Dislike':
-                // logic dislike
-                break
-            default:
-                return false
+    public async likeComment(
+        commentId: string,
+        likesInfo: CommentLikesViewModel | null,
+        likeStatus: LikeStatus,
+        userId: string | undefined
+    ): Promise<boolean> {
+        if (!userId) return false;
+
+        if (likesInfo?.myStatus === likeStatus) {
+            return false;
         }
 
-        return true
+        switch (likeStatus) {
+            case LikeStatus.NONE:
+                if (likesInfo?.myStatus === LikeStatus.LIKE) {
+                    await commentsRepository.removeLike(commentId, userId);
+                }
+                break;
+            case LikeStatus.LIKE:
+                await commentsRepository.likeComment(commentId, userId);
+                break;
+            case LikeStatus.DISLIKE:
+                await commentsRepository.dislikeComment(commentId, userId);
+                break;
+            default:
+                return false;
+        }
+
+        return true;
     }
 }

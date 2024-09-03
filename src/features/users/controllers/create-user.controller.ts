@@ -1,11 +1,10 @@
 import { Response } from "express";
 
-
-import {authService} from "../../auth/application/auth.service";
+import { authService } from "../../auth/composition-root";
 
 import {RequestWithBody} from "../../../core/request-types";
 
-import {UserInputModel} from "../../../types/users-types";
+import { UserInputModel } from "../dto";
 
 import {HTTP_STATUSES} from "../../../utils";
 

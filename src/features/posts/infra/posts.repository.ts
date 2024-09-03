@@ -1,7 +1,8 @@
 import { Types } from 'mongoose';
 
 import {PostDbType, PostModel} from "../domain/post.entity";
-import {CommentDBType} from "../../comments/domain/comment.entity";
+import {CommentDBType, CommentModel} from "../../comments/domain/comment.entity";
+import { LikeStatus} from "../../comments/domain/like.entity";
 
 import {CommentViewModel} from "../../comments/dto/output";
 import {PostViewModel} from "../dto/output";
@@ -22,8 +23,8 @@ export class PostsRepository {
 
     public async createPostComment(comment: CommentDBType): Promise<CommentViewModel | null> {
         try {
-            const result = await PostModel.create(comment);
-            return result ? comment : null;
+            const result = await CommentModel.create(comment);
+            return result ? this.mapPostCommentsOutput(comment) : null;
         } catch (error) {
             console.error('Error creating comment:', error);
             return null;
@@ -80,5 +81,23 @@ export class PostsRepository {
             console.error('Error deleting all posts:', error);
             return false;
         }
+    }
+
+    public mapPostCommentsOutput(comment: CommentDBType): CommentViewModel {
+        const commentForOutput = {
+            id: comment.id,
+            content: comment.content,
+            commentatorInfo: {
+                userId: comment.commentatorInfo.userId,
+                userLogin: comment.commentatorInfo.userLogin
+            },
+            createdAt: comment.createdAt,
+            likesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: LikeStatus.NONE
+            }
+        }
+        return commentForOutput
     }
 };

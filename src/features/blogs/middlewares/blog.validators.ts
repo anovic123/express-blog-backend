@@ -3,8 +3,8 @@ import { body, validationResult } from 'express-validator'
 
 import {blogsQueryRepository} from "../composition-root";
 
-import {adminMiddleware} from "../../../global-middlewares/admin.middleware";
-import {inputCheckErrorsMiddleware} from "../../../global-middlewares/input-checks-errors.middleware";
+import {adminMiddleware} from "../../../middlewares/admin.middleware";
+import {inputCheckErrorsMiddleware} from "../../../middlewares/input-checks-errors.middleware";
 
 import {RequestWithParams} from "../../../core/request-types";
 

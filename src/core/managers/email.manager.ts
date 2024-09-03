@@ -5,11 +5,13 @@ type EmailDto = {
     confirmationCode: string
 }
 
-export const emailsManager =  {
-    async sendConfirmationMessage({ email, confirmationCode }: EmailDto) {
+export class EmailsManager  {
+    public async sendConfirmationMessage({ email, confirmationCode }: EmailDto) {
         await emailAdapter.sendEmail(email, "confirmation code", confirmationCode)
-    },
-    async sendRecoveryMessage({ email, confirmationCode }: EmailDto) {
+    }
+    public async sendRecoveryMessage({ email, confirmationCode }: EmailDto) {
         return await emailAdapter.sendRecoveryEmail(email, "recoveryMessage", confirmationCode)
     }
 }
+
+export const emailManager = new EmailsManager()

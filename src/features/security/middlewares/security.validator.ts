@@ -1,8 +1,8 @@
 import { NextFunction, Response } from "express";
 import { validationResult, param } from 'express-validator'
 
-import {cookiesRefreshTokenMiddleware} from "../../../global-middlewares/cookies-refresh-token.middleware";
-import {inputCheckErrorsMiddleware} from "../../../global-middlewares/input-checks-errors.middleware";
+import {cookiesRefreshTokenMiddleware} from "../../../middlewares/cookies-refresh-token.middleware";
+import {inputCheckErrorsMiddleware} from "../../../middlewares/input-checks-errors.middleware";
 
 import {securityQueryRepository} from "../composition-root";
 

@@ -6,9 +6,11 @@ export interface CommentViewModel {
     content: string
     commentatorInfo: CommentOutputCommentatorInfoModel
     createdAt: string
-    likesInfo: {
-        likesCount: number
-        dislikesCount: number
-        myStatus: LikeStatus
-    }
+    likesInfo: CommentLikesViewModel
+}
+
+export interface CommentLikesViewModel {
+    likesCount: number
+    dislikesCount: number
+    myStatus: LikeStatus
 }
