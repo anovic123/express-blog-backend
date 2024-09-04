@@ -22,3 +22,4 @@ postsRouter.delete('/:id', adminMiddleware, findPostValidator, deletePostControl
 postsRouter.put('/:id', ...putValidators, putPostController)
 postsRouter.post('/:postId/comments', ...postCommentValidator, createPostCommentController)
 postsRouter.get('/:postId/comments', findPostsValidator, getPostCommentsController)
+postsRouter.put('/:postId/like-status')

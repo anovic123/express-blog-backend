@@ -48,22 +48,26 @@ export class PostsQueryRepository {
             return []
         }
     }
+
     public async getPostsComments(query: GetAllPostsHelperResult, postId: string, userId?: string | null | undefined) {
         const sanitizedQuery = getAllPostsHelper(query);
     
-        const byId = postId ? { postId } : {};
-        const search = sanitizedQuery.searchNameTerm ? { title: { $regex: sanitizedQuery.searchNameTerm, $options: "i" } } : {};
+        const filter: { postId?: string; title?: { $regex: string, $options: string } } = {};
+        
+        if (postId) {
+            filter.postId = postId;
+        }
     
-        const filter: any = {
-            ...byId,
-            ...search
-        };
+        if (sanitizedQuery.searchNameTerm) {
+            filter.title = { $regex: sanitizedQuery.searchNameTerm, $options: "i" };
+        }
     
         const sortDirection = sanitizedQuery.sortDirection === 'asc' ? 1 : -1;
+        const sortBy = sanitizedQuery.sortBy || 'createdAt';
     
         try {
             const items = await CommentModel.find(filter)
-                .sort(sanitizedQuery.sortBy, { [sanitizedQuery.sortDirection]: sortDirection })
+                .sort({ [sortBy]: sortDirection }) 
                 .skip((sanitizedQuery.pageNumber - 1) * sanitizedQuery.pageSize)
                 .limit(sanitizedQuery.pageSize)
                 .exec();
@@ -80,8 +84,8 @@ export class PostsQueryRepository {
                 items: mappedItems
             };
         } catch (error) {
-            console.log(error);
-            return [];
+            console.error('Error fetching post comments:', error);
+            throw new Error('Could not fetch post comments');
         }
     }
     
