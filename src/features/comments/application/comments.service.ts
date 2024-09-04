@@ -31,7 +31,9 @@ export class CommentsService {
         switch (likeStatus) {
             case LikeStatus.NONE:
                 if (likesInfo?.myStatus === LikeStatus.LIKE) {
-                    await commentsRepository.removeLike(commentId, userId);
+                    await commentsRepository.dislikeComment(commentId, userId);
+                } else {
+                    await commentsRepository.likeComment(commentId, userId);
                 }
                 break;
             case LikeStatus.LIKE:
