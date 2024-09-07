@@ -14,14 +14,3 @@ commentsRouter.get('/:commentId', getCommentsByIdController)
 commentsRouter.put('/:commentId', ...putCommentValidator, putCommentController)
 commentsRouter.delete('/:commentId', ...deleteCommentValidator, deleteCommentController)
 commentsRouter.put('/:commentId/like-status', ...putLikeCommentValidator, putLikeController)
-
-//========================================================================================================================================================
-
-commentsRouter.post('/clear-likes', async (req: Request, res: Response) => {
-  try {
-   await commentsRepository.deleteAllLikes()
-   res.sendStatus(200)
-  } catch (error) {
-    console.error(error)
-  }
-})
