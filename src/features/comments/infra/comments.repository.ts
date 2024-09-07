@@ -27,51 +27,68 @@ export class CommentsRepository {
         }
     }
 
-    public async likeComment(commentId: string, userId: string | undefined): Promise<boolean> {
+    public async likeComment(commentId: string, userId: string, postId: string): Promise<boolean> {
         try {
-            if (!userId) return false;
-            const postId = await this.getPostIdByCommentId(commentId)
-            console.log(postId)
-            if (!postId) return false;
-
-            const result = await LikeModel.create({
-                createdAt: new Date(),
-                status: LikeStatus.LIKE,
-                authorId: userId,
-                commentId,
-                postId: postId
-            });
-
-            return !!result;
+            await LikeModel.findOneAndUpdate(
+                { commentId, authorId: userId },
+                { 
+                    status: LikeStatus.LIKE,
+                    postId,
+                    updatedAt: new Date()
+                },
+                { 
+                    upsert: true,
+                    new: true, 
+                    runValidators: true
+                }
+            );
+            return true;
         } catch (error) {
             console.error(`Error liking comment ${commentId}:`, error);
             return false;
         }
     }
-
-    public async dislikeComment(commentId: string, userId: string | undefined): Promise<boolean> {
+    
+    public async dislikeComment(commentId: string, userId: string, postId: string): Promise<boolean> {
         try {
-            if (!userId) return false;
-            const result = await LikeModel.updateOne(
+            await LikeModel.findOneAndUpdate(
                 { commentId, authorId: userId },
-                { status: LikeStatus.DISLIKE }
+                { 
+                    status: LikeStatus.DISLIKE,
+                    postId,
+                    updatedAt: new Date()
+                },
+                { 
+                    upsert: true, 
+                    new: true,   
+                    runValidators: true 
+                }
             );
-
-            return !!result.modifiedCount;
+            return true;
         } catch (error) {
             console.error(`Error disliking comment ${commentId}:`, error);
             return false;
         }
     }
-
-    public async removeLike(commentId: string, userId: string | undefined): Promise<boolean> {
+    
+    public async noneStatusComment(commentId: string, userId: string, postId: string): Promise<boolean> {
         try {
-            if (!userId) return false;
-            const result = await LikeModel.deleteOne({ commentId, authorId: userId });
-            return !!result.deletedCount;
+            await LikeModel.findOneAndUpdate({
+                commentId, authorId: userId
+            }, {
+                status: LikeStatus.NONE,
+                postId,
+                updatedAt: new Date()
+            }, {
+                upsert: true,
+                new: true,
+                runValidators: true
+            })
+
+            return true
         } catch (error) {
-            console.error(`Error removing like from comment ${commentId}:`, error);
-            return false;
+            console.error(`Error none status comment ${commentId}:`, error)
+            return false
         }
     }
 

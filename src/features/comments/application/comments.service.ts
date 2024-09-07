@@ -3,8 +3,6 @@ import {CommentsQueryRepository} from "../infra/comments-query.repository";
 
 import {CommentLikesViewModel} from "../dto/output";
 
-import {commentsRepository} from "../composition-root";
-
 import {LikeStatus} from "../domain/like.entity";
 
 export class CommentsService {
@@ -28,17 +26,23 @@ export class CommentsService {
             return false;
         }
 
+        const postId = await this.commentsRepository.getPostIdByCommentId(commentId);
+        if (!postId) return false;
+
         switch (likeStatus) {
             case LikeStatus.NONE:
-                if (likesInfo?.myStatus === LikeStatus.LIKE) {
-                    await commentsRepository.removeLike(commentId, userId);
+                if (likesInfo?.myStatus === LikeStatus.DISLIKE || likesInfo?.myStatus === LikeStatus.LIKE) {
+                    await this.commentsRepository.noneStatusComment(commentId, userId, postId);
+                } else if (likesInfo?.myStatus === LikeStatus.NONE) {
+                    await this.commentsRepository.likeComment(commentId, userId, postId);
                 }
+                
                 break;
             case LikeStatus.LIKE:
-                await commentsRepository.likeComment(commentId, userId);
+                await this.commentsRepository.likeComment(commentId, userId, postId);
                 break;
             case LikeStatus.DISLIKE:
-                await commentsRepository.dislikeComment(commentId, userId);
+                await this.commentsRepository.dislikeComment(commentId, userId, postId);
                 break;
             default:
                 return false;
@@ -46,4 +50,5 @@ export class CommentsService {
 
         return true;
     }
+    
 }
