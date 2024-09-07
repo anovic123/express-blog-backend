@@ -1,6 +1,6 @@
 import { Router } from 'express'
 
-import {cookiesRefreshTokenMiddleware} from "../../global-middlewares/cookies-refresh-token.middleware";
+import {cookiesRefreshTokenMiddleware} from "../../middlewares/cookies-refresh-token.middleware";
 
 import {deleteDeviceByIdValidator} from "./middlewares/security.validator";
 

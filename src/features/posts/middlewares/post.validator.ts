@@ -1,15 +1,14 @@
 import {NextFunction, Response} from 'express'
 import {body} from 'express-validator'
 
-import {blogsRepository} from "../../blogs/infra/blogs.repository";
+import {blogsRepository} from "../../blogs/composition-root";
 
-import {postsQueryRepository} from "../infra/posts-query.repository";
+import {adminMiddleware} from "../../../middlewares/admin.middleware";
+import {inputCheckErrorsMiddleware} from "../../../middlewares/input-checks-errors.middleware";
 
-import {adminMiddleware} from "../../../global-middlewares/admin.middleware";
+import {RequestWithParams} from "../../../core/request-types";
 
-import {inputCheckErrorsMiddleware} from "../../../global-middlewares/input-checks-errors.middleware";
-
-import {RequestWithParams} from "../../../types/common";
+import {postsQueryRepository} from "../composition-root";
 
 // title: string // max 30
 // shortDescription: string // max 100

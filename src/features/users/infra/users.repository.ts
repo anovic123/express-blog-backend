@@ -3,8 +3,8 @@ import {add} from 'date-fns'
 
 import { UserAccountDBType, UserAccountModel } from "../../auth/domain/auth.entity";
 
-export const usersRepository = {
-    async createUser(user: UserAccountDBType): Promise<UserAccountDBType | null> {
+export class UsersRepository {
+    public async createUser(user: UserAccountDBType): Promise<UserAccountDBType | null> {
         try {
             const result = await UserAccountModel.insertMany([user])
 
@@ -17,8 +17,8 @@ export const usersRepository = {
             console.error('Error in createUser:', error);
             return null;
         }
-    },
-    async deleteUser(id: string): Promise<boolean> {
+    }
+    public async deleteUser(id: string): Promise<boolean> {
         try {
             const result = await UserAccountModel.deleteOne({ _id: new Types.ObjectId(id)});
 
@@ -27,18 +27,18 @@ export const usersRepository = {
             console.error(`Error deleting user with id ${id}:`, error);
             return false;
         }
-    },
-    async deleteAll(): Promise<boolean> {
+    }
+    public async deleteAll(): Promise<boolean> {
         try {
-            await UserAccountModel.deleteMany({});
+            const res = await UserAccountModel.deleteMany({});
 
             return true;
         } catch (error) {
             console.error('Error in deleteAll:', error);
             return false;
         }
-    },
-    async updateConfirmation(_id: string): Promise<boolean> {
+    }
+    public async updateConfirmation(_id: string): Promise<boolean> {
         try {
             const result = await UserAccountModel.updateOne({ _id }, { $set: { 'emailConfirmation.isConfirmed': true } });
 
@@ -47,8 +47,8 @@ export const usersRepository = {
             console.error(`Error updating confirmation for user with id ${_id}:`, error);
             return false;
         }
-    },
-    async updateUserConfirmationCode(_id: string, newCode: string): Promise<boolean> {
+    }
+    public async updateUserConfirmationCode(_id: string, newCode: string): Promise<boolean> {
         try {
             const result = await UserAccountModel.updateOne({ _id }, { $set:
                     {
@@ -65,8 +65,8 @@ export const usersRepository = {
             console.error(`Error updating confirmation code for user with id ${_id}:`, error);
             return false;
         }
-    },
-    async updateUserPasswordHash(_id: Types.ObjectId, newPasswordHash: string): Promise<boolean> {
+    }
+    public async updateUserPasswordHash(_id: Types.ObjectId, newPasswordHash: string): Promise<boolean> {
         try {
             const res = await UserAccountModel.updateOne({ _id }, {
                 $set: {
@@ -81,4 +81,4 @@ export const usersRepository = {
             return false
         }
     }
-};
+}

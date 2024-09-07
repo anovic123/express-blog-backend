@@ -1,6 +1,6 @@
 import { Router } from 'express'
 
-import {adminMiddleware} from "../../global-middlewares/admin.middleware";
+import {adminMiddleware} from "../../middlewares/admin.middleware";
 
 import {findPostValidator, postValidators, putValidators} from "./middlewares/post.validator";
 import {findPostsValidator, postCommentValidator} from "./middlewares/post-comment.validators";

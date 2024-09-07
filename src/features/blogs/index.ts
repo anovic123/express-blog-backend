@@ -7,7 +7,7 @@ import {
     findBlogValidator
 } from "./middlewares/blog.validators";
 
-import {adminMiddleware} from "../../global-middlewares/admin.middleware";
+import {adminMiddleware} from "../../middlewares/admin.middleware";
 
 import {createBlogController} from "./controllers/create-blog.controller";
 import {getBlogsController} from "./controllers/get-blogs.controller";

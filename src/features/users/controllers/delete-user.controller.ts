@@ -1,8 +1,8 @@
 import { Response } from 'express'
 
-import {usersService} from "../application/users.service";
+import {usersService} from "../composition-root";
 
-import {RequestWithParams} from "../../../types/common";
+import {RequestWithParams} from "../../../core/request-types";
 
 import {HTTP_STATUSES} from "../../../utils";
 

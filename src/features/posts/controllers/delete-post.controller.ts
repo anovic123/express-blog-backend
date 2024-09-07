@@ -1,10 +1,10 @@
 import {Response} from 'express'
 
-import {postsService} from "../application/posts.service";
+import {postsService} from "../composition-root";
 
 import { HTTP_STATUSES } from '../../../utils'
 
-import { RequestWithParams } from '../../../types/common'
+import {RequestWithParams} from "../../../core/request-types";
 
 export const deletePostController = async (req: RequestWithParams<{id: string}>, res: Response) => {
     try {

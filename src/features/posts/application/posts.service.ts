@@ -1,24 +1,30 @@
 import { Types } from 'mongoose';
 
+import {blogsRepository} from "../../blogs/composition-root";
+
 import { UserAccountDBType } from "../../auth/domain/auth.entity";
 
-import { blogsRepository } from "../../blogs/infra/blogs.repository";
-import { postsRepository } from "../infra/posts.repository";
+import {PostsRepository} from "../infra/posts.repository";
+import {PostsQueryRepository} from "../infra/posts-query.repository";
 
-import { commentsQueryRepository } from "../../comments/infra/comments-query.repository"
+import {commentsQueryRepository} from "../../comments/composition-root";
 
-import { PostInputModel, PostViewModel } from "../../../types/posts-types";
-import { CommentViewModel } from "../../../types/comment-types";
+import {PostInputModel} from "../dto/input";
+import {PostViewModel} from "../dto/output";
+
+import {CommentViewModel} from "../../comments/dto/output";
 
 import { PostDbType } from "../domain/post.entity";
-
 
 interface NewPost extends Omit<PostDbType, '_id'> {
     _id: Types.ObjectId;
 }
 
-export const postsService = {
-    async createPost(post: PostInputModel): Promise<PostViewModel | null> {
+export class PostsService {
+
+    constructor(protected postsRepository: PostsRepository, protected postsQueryRepository: PostsQueryRepository) {}
+
+    public async createPost(post: PostInputModel): Promise<PostViewModel | null> {
         const blog = await blogsRepository.findBlog(post.blogId);
         if (!blog) return null;
 
@@ -33,13 +39,13 @@ export const postsService = {
             isMembership: false,
         };
 
-        const createdPost = await postsRepository.createPost(newPost);
+        const createdPost = await this.postsRepository.createPost(newPost);
         if (!createdPost) return null;
 
         return this.mapPostOutput(newPost);
-    },
+    }
 
-    async createPostComment(postId: string, content: string, user: UserAccountDBType): Promise<CommentViewModel> {
+    public async createPostComment(postId: string, content: string, user: UserAccountDBType): Promise<CommentViewModel> {
         const newComment = {
             id: new Types.ObjectId().toString(),
             content,
@@ -51,19 +57,19 @@ export const postsService = {
             createdAt: new Date().toISOString(),
         };
 
-        const createdComment = await postsRepository.createPostComment(newComment);
+        const createdComment = await this.postsRepository.createPostComment(newComment);
         return commentsQueryRepository.mapPostCommentsOutput(newComment);
-    },
+    }
 
-    async delPostById(id: PostViewModel['id']): Promise<boolean> {
-        return await postsRepository.deletePost(id);
-    },
+    public async delPostById(id: PostViewModel['id']): Promise<boolean> {
+        return await this.postsRepository.deletePost(id);
+    }
 
-    async putPostById(body: PostInputModel, id: PostViewModel['id']): Promise<boolean> {
-        return await postsRepository.putPost(body, id);
-    },
+    public async putPostById(body: PostInputModel, id: PostViewModel['id']): Promise<boolean> {
+        return await this.postsRepository.putPost(body, id);
+    }
 
-    mapPostOutput(post: NewPost): PostViewModel {
+    protected mapPostOutput(post: NewPost): PostViewModel {
         return {
             id: post._id.toString(),
             title: post.title,
@@ -73,5 +79,5 @@ export const postsService = {
             blogName: post.blogName,
             createdAt: post.createdAt,
         };
-    },
+    }
 };

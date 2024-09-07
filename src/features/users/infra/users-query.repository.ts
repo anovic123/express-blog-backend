@@ -1,9 +1,9 @@
 import {UserAccountDBType, UserAccountDocument, UserAccountModel} from "../../auth/domain/auth.entity";
 
-import { UserOutputType } from "../../../types/users-types";
+import { UserOutputType } from "../dto";
 
-export const usersQueryRepository = {
-    async allUsers(query: any): Promise<{
+export class UsersQueryRepository {
+    public async allUsers(query: any): Promise<{
         pagesCount: number;
         page: number;
         pageSize: number;
@@ -41,9 +41,9 @@ export const usersQueryRepository = {
             console.error(error);
             return null;
         }
-    },
+    }
 
-    async findUserByLoginOrEmail(loginOrEmail: string): Promise<UserAccountDocument | null> {
+    public async findUserByLoginOrEmail(loginOrEmail: string): Promise<UserAccountDocument | null> {
         const user = await UserAccountModel.findOne({
             $or: [
                 { 'accountData.login': loginOrEmail },
@@ -52,9 +52,9 @@ export const usersQueryRepository = {
         });
 
         return user ? (user.toObject() as UserAccountDocument) : null;
-    },
+    }
 
-    async checkUnique(login: string, password: string): Promise<boolean> {
+    public async checkUnique(login: string, password: string): Promise<boolean> {
         const user = await UserAccountModel.findOne({
             $or: [
                 { 'accountData.login': login },
@@ -63,21 +63,21 @@ export const usersQueryRepository = {
         });
 
         return user === null;
-    },
+    }
 
-    async findUserById(id: string): Promise<UserAccountDBType | null> {
+    public async findUserById(id: string): Promise<UserAccountDBType | null> {
         const user = await UserAccountModel.findById(id);
 
         return user ? (user.toObject() as UserAccountDBType) : null;
-    },
+    }
 
-    async findUserByConfirmationCode(emailConfirmationCode: string): Promise<UserAccountDocument | null> {
+    public async findUserByConfirmationCode(emailConfirmationCode: string): Promise<UserAccountDocument | null> {
         const user = await UserAccountModel.findOne({ "emailConfirmation.confirmationCode": emailConfirmationCode });
 
         return user ? (user.toObject() as UserAccountDocument) : null;
-    },
+    }
 
-    outputModelUser(user: UserAccountDocument | UserAccountDBType): UserOutputType {
+    public outputModelUser(user: UserAccountDocument | UserAccountDBType): UserOutputType {
         return {
             id: user._id.toString(),
             createdAt: user.accountData.createdAt,

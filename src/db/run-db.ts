@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
+import {SETTINGS} from "../settings";
 
-export const mongoUrl = 'mongodb+srv://vkanaev220:Q2tgZaS1r9EQIx2i@api-v1.otqbeom.mongodb.net/?retryWrites=true&w=majority&appName=api-v1'
+export const mongoUrl = SETTINGS.MONGO_URI
 
 export async function runDb() {
     try {

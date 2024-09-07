@@ -1,20 +1,27 @@
 import { v4 as uuidv4 } from 'uuid'
 import {Types} from "mongoose";
 
-import {UserAccountDBType, UserAccountDocument} from "../../auth/domain/auth.entity";
-import {RequestResult} from "../../../types/common";
-import {jwtService} from "../../auth/application/jwt.service";
-import {HTTP_STATUSES} from "../../../utils";
-import {securityRepository} from "../infra/security.repository";
+import { UserAccountDocument } from "../../auth/domain/auth.entity";
 import {AuthDevicesDB} from "../domain/device.entity";
+
+import {jwtService} from "../../../core/services/jwt.service";
+
+import {SecurityRepository} from "../infra/security.repository";
+import {SecurityQueryRepository} from "../infra/sequrity-query.repository";
+
+import {RequestResult} from "../../../core/request-types";
+
+import {HTTP_STATUSES} from "../../../utils";
 
 interface TokensResponse {
     accessToken: string
     refreshToken: string
 }
 
-export const securityService = {
-    async addNewUserDevice(user: UserAccountDocument, ip: string = '0.0.0.0', userAgent: string = 'Unknown'): Promise<RequestResult<TokensResponse | null>> {
+export class SecurityService {
+    constructor (protected securityRepository: SecurityRepository, protected securityQueryRepository: SecurityQueryRepository) {}
+
+    public async addNewUserDevice(user: UserAccountDocument, ip: string = '0.0.0.0', userAgent: string = 'Unknown'): Promise<RequestResult<TokensResponse | null>> {
         try {
             const deviceId = uuidv4()
 
@@ -26,7 +33,7 @@ export const securityService = {
                 }
             }
 
-            await securityRepository.insertNewUserDevice({
+            await this.securityRepository.insertNewUserDevice({
                 ip,
                 user_id: user._id.toString(),
                 devices_id: deviceId,
@@ -46,17 +53,17 @@ export const securityService = {
                 data: null
             }
         }
-    },
-    async deleteUserDeviceById(deviceId: AuthDevicesDB['devices_id']): Promise<boolean> {
-        return await securityRepository.deleteUserDeviceById(deviceId)
-    },
-    async deleteUserDeviceByIdAll(deviceId: AuthDevicesDB['devices_id'], userId: string): Promise<boolean> {
-        return await securityRepository.deleteUserDeviceByIdAll(deviceId, userId)
-    },
-    async deleteUserAllSessions(userId: Types.ObjectId): Promise<boolean> {
-        return await securityRepository.deleteUserAllSessions(userId)
-    },
-    async updateSessionUser(requestRefreshToken: string): Promise<RequestResult<TokensResponse | false>> {
+    }
+    public async deleteUserDeviceById(deviceId: AuthDevicesDB['devices_id']): Promise<boolean> {
+        return await this.securityRepository.deleteUserDeviceById(deviceId)
+    }
+    public async deleteUserDeviceByIdAll(deviceId: AuthDevicesDB['devices_id'], userId: string): Promise<boolean> {
+        return await this.securityRepository.deleteUserDeviceByIdAll(deviceId, userId)
+    }
+    public async deleteUserAllSessions(userId: Types.ObjectId): Promise<boolean> {
+        return await this.securityRepository.deleteUserAllSessions(userId)
+    }
+    public async updateSessionUser(requestRefreshToken: string): Promise<RequestResult<TokensResponse | false>> {
         try {
             const newTokens = await jwtService.refreshTokensJWT(requestRefreshToken)
 
@@ -80,7 +87,7 @@ export const securityService = {
 
             const { userId, deviceId } = refreshTokenData
 
-            const updatedSession = await securityRepository.updateSessionUser(userId, deviceId, refreshTokenExp)
+            const updatedSession = await this.securityRepository.updateSessionUser(userId, deviceId, refreshTokenExp)
 
             return {
                 statusCode: HTTP_STATUSES.OKK_200,

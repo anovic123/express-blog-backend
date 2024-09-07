@@ -5,19 +5,20 @@ import {getAllPostsHelper, GetAllPostsHelperResult} from "../helper";
 import {PostDbType, PostModel} from "../domain/post.entity";
 
 import {CommentDBType, CommentModel} from "../../comments/domain/comment.entity";
+import { LikeModel, LikeStatus } from "../../comments/domain/like.entity";
 
-import {BlogViewModel} from "../../../types/blogs-types";
-import {PostViewModel} from "../../../types/posts-types";
+import {BlogViewModel} from "../../blogs/dto/output";
+import {PostViewModel} from "../dto/output";
 
-export const postsQueryRepository = {
-    async getMappedPostById(id: PostViewModel['id']): Promise<PostViewModel | null> {
+export class PostsQueryRepository {
+    public async getMappedPostById(id: PostViewModel['id']): Promise<PostViewModel | null> {
         return await this.findPostsAndMap(id)
-    },
-    async getPostsCommentsLength(id: string): Promise<number> {
+    }
+    public async getPostsCommentsLength(id: string): Promise<number> {
         const commentsRes = await CommentModel.find({ _id: new ObjectId(id) }).exec()
         return commentsRes.length
-    },
-    async getAllPosts(query: GetAllPostsHelperResult, blogId: BlogViewModel['id']) {
+    }
+    public async getAllPosts(query: GetAllPostsHelperResult, blogId: BlogViewModel['id']) {
         const sanitizedQuery = getAllPostsHelper(query)
 
         const byId = blogId ? { blogId: new ObjectId(blogId) } : {}
@@ -46,45 +47,56 @@ export const postsQueryRepository = {
             console.log(error)
             return []
         }
-    },
-    async getPostsComments (query: GetAllPostsHelperResult, postId: string) {
-        const sanitizedQuery = getAllPostsHelper(query)
+    }
 
-        const byId = postId ? { postId} : {}
-        const search = sanitizedQuery.searchNameTerm ? { title: { $regex: sanitizedQuery.searchNameTerm, $options: "i" } } : {}
-
-        const filter: any = {
-            ...byId,
-            ...search
+    public async getPostsComments(query: GetAllPostsHelperResult, postId: string, userId?: string | null | undefined) {
+        const sanitizedQuery = getAllPostsHelper(query);
+    
+        const filter: { postId?: string; title?: { $regex: string, $options: string } } = {};
+        
+        if (postId) {
+            filter.postId = postId;
         }
-
-        const sortDirection = sanitizedQuery.sortDirection === 'asc' ? 1 : -1
-
+    
+        if (sanitizedQuery.searchNameTerm) {
+            filter.title = { $regex: sanitizedQuery.searchNameTerm, $options: "i" };
+        }
+    
+        const sortDirection = sanitizedQuery.sortDirection === 'asc' ? 1 : -1;
+        const sortBy = sanitizedQuery.sortBy || 'createdAt';
+    
         try {
-            const items: any = await CommentModel.find(filter).sort(sanitizedQuery.sortBy, {[ sanitizedQuery.sortDirection ]: sortDirection}).skip((sanitizedQuery.pageNumber - 1) * sanitizedQuery.pageSize).limit(sanitizedQuery.pageSize).exec()
-
-            const totalCount = await CommentModel.countDocuments(filter)
-
+            const items = await CommentModel.find(filter)
+                .sort({ [sortBy]: sortDirection }) 
+                .skip((sanitizedQuery.pageNumber - 1) * sanitizedQuery.pageSize)
+                .limit(sanitizedQuery.pageSize)
+                .exec();
+    
+            const totalCount = await CommentModel.countDocuments(filter);
+    
+            const mappedItems = await Promise.all(items.map((i: CommentDBType) => this.mapPostCommentsOutput(i, userId)));
+    
             return {
                 pagesCount: Math.ceil(totalCount / (query.pageSize ?? 10)),
                 page: sanitizedQuery.pageNumber,
                 pageSize: sanitizedQuery.pageSize,
                 totalCount,
-                items: items.map((i: any) => this.mapPostCommentsOutput(i))
-            }
-        } catch(error) {
-            console.log(error)
-            return []
+                items: mappedItems
+            };
+        } catch (error) {
+            console.error('Error fetching post comments:', error);
+            throw new Error('Could not fetch post comments');
         }
-    },
-    async findPostsAndMap(id: PostViewModel['id']): Promise<PostViewModel | null> {
+    }
+    
+    public async findPostsAndMap(id: PostViewModel['id']): Promise<PostViewModel | null> {
         const post = await this.findPost(id)
         if (!post) {
             return null
         }
         return this.mapPostOutput(post)
-    },
-    async findPost(id: PostViewModel['id']): Promise<WithId<PostDbType> | null> {
+    }
+    public async findPost(id: PostViewModel['id']): Promise<WithId<PostDbType> | null> {
         const res = await PostModel.findOne({ _id: new ObjectId(id) })
 
         if (!res) {
@@ -92,8 +104,8 @@ export const postsQueryRepository = {
         }
 
         return res
-    },
-    mapPostOutput(post: WithId<PostDbType>) {
+    }
+    protected mapPostOutput(post: WithId<PostDbType>) {
         const postForOutput: PostViewModel = {
             id: new ObjectId(post._id).toString(),
             title: post.title,
@@ -104,8 +116,15 @@ export const postsQueryRepository = {
             createdAt: post.createdAt
         }
         return postForOutput
-    },
-    mapPostCommentsOutput(comment: CommentDBType) {
+    }
+    protected async mapPostCommentsOutput(comment: CommentDBType, userId: string | null | undefined) {
+        const likes = await LikeModel.find({ commentId: comment.id });
+        const userLike = userId ? likes.find(like => like.authorId === userId) : null;
+
+        const likesCount = likes.filter(l => l.status === LikeStatus.LIKE).length;
+        const dislikesCount = likes.filter(l => l.status === LikeStatus.DISLIKE).length;
+        const myStatus = userLike?.status ?? LikeStatus.NONE;
+        
         const commentForOutput = {
             id: comment.id,
             content: comment.content,
@@ -113,7 +132,12 @@ export const postsQueryRepository = {
                 userId: comment.commentatorInfo.userId,
                 userLogin: comment.commentatorInfo.userLogin
             },
-            createdAt: comment.createdAt
+            createdAt: comment.createdAt,
+            likesInfo: {
+                likesCount,
+                dislikesCount,
+                myStatus,
+            },
         }
         return commentForOutput
     }

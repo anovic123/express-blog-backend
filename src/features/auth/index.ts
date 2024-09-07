@@ -1,8 +1,8 @@
 import { Router } from 'express'
 
-import {rateLimitMiddleware} from "../../global-middlewares/rate-limit.middleware";
-import {authMiddleware} from "../../global-middlewares/auth.middleware";
-import {cookiesRefreshTokenMiddleware} from "../../global-middlewares/cookies-refresh-token.middleware";
+import {rateLimitMiddleware} from "../../middlewares/rate-limit.middleware";
+import {authMiddleware} from "../../middlewares/auth.middleware";
+import {cookiesRefreshTokenMiddleware} from "../../middlewares/cookies-refresh-token.middleware";
 
 import {loginController} from "./controllers/login.controller";
 import {meController} from "./controllers/me.controller";

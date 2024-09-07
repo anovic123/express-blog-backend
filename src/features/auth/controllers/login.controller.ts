@@ -1,12 +1,14 @@
 import { Response } from 'express'
 
-import {usersService} from "../../users/application/users.service";
-import {securityService} from "../../security/application/security.service";
+import {usersService} from "../../users/composition-root";
 
-import {RequestWithBody} from "../../../types/common";
-import {AuthInputModel} from "../../../types/users-types";
+import {securityService} from "../../security/composition-root";
+
+import { AuthInputModel } from '../dto/input/auth-input-type';
 
 import {HTTP_STATUSES} from "../../../utils";
+
+import {RequestWithBody} from "../../../core/request-types";
 
 export const loginController = async (req: RequestWithBody<AuthInputModel>, res: Response<{ accessToken: string }>) => {
     try {

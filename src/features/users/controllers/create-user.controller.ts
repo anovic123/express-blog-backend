@@ -1,14 +1,14 @@
 import { Response } from "express";
 
-import {usersQueryRepository} from "../infra/users-query.repository";
+import { authService } from "../../auth/composition-root";
 
-import {usersService} from "../application/users.service";
-import {authService} from "../../auth/application/auth.service";
+import {RequestWithBody} from "../../../core/request-types";
 
-import {RequestWithBody} from "../../../types/common";
-import {UserInputModel} from "../../../types/users-types";
+import { UserInputModel } from "../dto";
 
 import {HTTP_STATUSES} from "../../../utils";
+
+import {usersQueryRepository, usersService} from "../composition-root";
 
 export const createUserController = async (req: RequestWithBody<UserInputModel>, res: Response) => {
     try {

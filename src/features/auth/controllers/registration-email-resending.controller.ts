@@ -1,10 +1,10 @@
 import { Response } from 'express'
 
-import {RequestWithBody} from "../../../types/common";
-
-import {authService} from "../application/auth.service";
+import { authService } from '../composition-root';
 
 import {HTTP_STATUSES} from "../../../utils";
+
+import {RequestWithBody} from "../../../core/request-types";
 
 export const registrationEmailResendingController = async (req: RequestWithBody<{ email: string }>, res: Response) => {
     try {

@@ -2,13 +2,13 @@ import {NextFunction, Response} from "express";
 
 import {body} from "express-validator";
 
-import {postsQueryRepository} from "../infra/posts-query.repository";
+import {inputCheckErrorsMiddleware} from "../../../middlewares/input-checks-errors.middleware";
 
-import {inputCheckErrorsMiddleware} from "../../../global-middlewares/input-checks-errors.middleware";
+import {authMiddleware} from "../../../middlewares/auth.middleware";
 
-import {authMiddleware} from "../../../global-middlewares/auth.middleware";
+import {postsQueryRepository} from "../composition-root";
 
-import {RequestWithParams} from "../../../types/common";
+import {RequestWithParams} from "../../../core/request-types";
 
 export const contentCommentValidator = body('content').isString().trim().isLength({ min: 20, max: 300 })
 

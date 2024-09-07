@@ -4,12 +4,12 @@ import {BlogDocument, BlogModel} from "../domain/blog.entity";
 
 import {PostModel} from "../../posts/domain/post.entity";
 
-import {BlogPostViewModel, BlogViewModel} from "../../../types/blogs-types";
-
 import {getAllBlogsHelper, getAllBlogsHelperResult, getBlogPostsHelper, GetBlogPostsHelperResult} from "../helper";
 
-export const blogsQueryRepository = {
-    async getAllBlogs(query: getAllBlogsHelperResult, blogId: BlogViewModel['id']) {
+import {BlogPostViewModel, BlogViewModel} from "../dto/output";
+
+export class BlogsQueryRepository {
+    public async getAllBlogs(query: getAllBlogsHelperResult, blogId: BlogViewModel['id']) {
         const sanitizedQuery = getAllBlogsHelper(query as { [key: string]: string | undefined })
 
         const byId = blogId ? { blogId: new ObjectId(blogId) } : {}
@@ -37,8 +37,8 @@ export const blogsQueryRepository = {
             console.log(error)
             return []
         }
-    },
-    async findBlog(id: BlogViewModel['id']): Promise<BlogViewModel | null> {
+    }
+    public async findBlog(id: BlogViewModel['id']): Promise<BlogViewModel | null> {
         try {
             const res = await BlogModel.findOne({ _id: new ObjectId(id) });
             if (!res) return null
@@ -48,8 +48,8 @@ export const blogsQueryRepository = {
             return null
         }
 
-    },
-    async getBlogPosts(query: GetBlogPostsHelperResult, blogId: string): Promise<{
+    }
+    public async getBlogPosts(query: GetBlogPostsHelperResult, blogId: string): Promise<{
         pagesCount: number,
         page: number,
         pageSize: number,
@@ -86,8 +86,8 @@ export const blogsQueryRepository = {
             console.log(error);
             return [];
         }
-    },
-    _mapPostBlog(post: BlogPostViewModel): BlogPostViewModel {
+    }
+    protected _mapPostBlog(post: BlogPostViewModel): BlogPostViewModel {
         return {
             id: post.id,
             title: post.title,
@@ -97,8 +97,8 @@ export const blogsQueryRepository = {
             blogName: post.blogName,
             createdAt: post.createdAt,
         }
-    },
-    _mapBlog(blog: BlogDocument) {
+    }
+    protected _mapBlog(blog: BlogDocument) {
         const blogForOutput: BlogViewModel = {
             id: blog._id.toString(),
             name: blog.name,

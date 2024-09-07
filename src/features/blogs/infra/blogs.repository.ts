@@ -3,14 +3,15 @@ import { Types } from 'mongoose';
 import {  BlogDocument, BlogModel } from "../domain/blog.entity";
 import {PostDbType, PostModel} from "../../posts/domain/post.entity";
 
-import { BlogInputModel, BlogPostInputModel, BlogPostViewModel, BlogViewModel } from "../../../types/blogs-types";
+import {BlogInputModel, BlogPostInputModel} from "../dto/input";
+import {BlogPostViewModel, BlogViewModel} from "../dto/output";
 
 interface PostDocument extends PostDbType, Document {
     _id: Types.ObjectId;
 }
 
-export const blogsRepository = {
-    async create(blog: BlogInputModel): Promise<BlogViewModel | null> {
+export class BlogsRepository {
+    public async create(blog: BlogInputModel): Promise<BlogViewModel | null> {
         try {
             const newBlog = new BlogModel({
                 _id: new Types.ObjectId(),
@@ -32,8 +33,8 @@ export const blogsRepository = {
             console.error(`create blog ${blog.name}`, error);
             return null;
         }
-    },
-    async findBlog(id: BlogViewModel['id']): Promise<BlogViewModel | null> {
+    }
+    public async findBlog(id: BlogViewModel['id']): Promise<BlogViewModel | null> {
         try {
             const res = await BlogModel.findById(new Types.ObjectId(id));
             if (!res) return null;
@@ -42,8 +43,8 @@ export const blogsRepository = {
             console.error(`findBlog by blog id: ${id}`, error);
             return null;
         }
-    },
-    async del(id: BlogViewModel['id']): Promise<boolean> {
+    }
+    public async del(id: BlogViewModel['id']): Promise<boolean> {
         try {
             const result = await BlogModel.deleteOne({ _id: new Types.ObjectId(id) });
             return result.deletedCount === 1;
@@ -51,8 +52,8 @@ export const blogsRepository = {
             console.error(`del blog by blogId: ${id}`, error);
             return false;
         }
-    },
-    async updateBlog(blog: BlogInputModel, id: BlogViewModel['id']): Promise<boolean> {
+    }
+    public async updateBlog(blog: BlogInputModel, id: BlogViewModel['id']): Promise<boolean> {
         try {
             const result = await BlogModel.updateOne(
                 { _id: new Types.ObjectId(id) },
@@ -69,8 +70,8 @@ export const blogsRepository = {
             console.error('updateBlog', error);
             return false;
         }
-    },
-    async createPostBlog(blogId: BlogViewModel['id'], post: BlogPostInputModel): Promise<BlogPostViewModel | null> {
+    }
+    public async createPostBlog(blogId: BlogViewModel['id'], post: BlogPostInputModel): Promise<BlogPostViewModel | null> {
         try {
             const blog = await this.findBlog(blogId);
             if (!blog) {
@@ -94,8 +95,8 @@ export const blogsRepository = {
             console.error(`createPostBlog blogId: ${blogId}`, error);
             return null;
         }
-    },
-    mapPostBlog(post: PostDocument): BlogPostViewModel {
+    }
+    public mapPostBlog(post: PostDocument): BlogPostViewModel {
         return {
             id: post._id.toString(),
             title: post.title,
@@ -105,8 +106,8 @@ export const blogsRepository = {
             blogName: post.blogName,
             createdAt: post.createdAt,
         };
-    },
-    mapBlog(blog: BlogDocument): BlogViewModel {
+    }
+    public mapBlog(blog: BlogDocument): BlogViewModel {
         return {
             id: blog._id.toString(),
             name: blog.name,
@@ -115,8 +116,8 @@ export const blogsRepository = {
             createdAt: blog.createdAt,
             isMembership: blog.isMembership
         };
-    },
-    async deleteAll(): Promise<boolean> {
+    }
+    public async deleteAll(): Promise<boolean> {
         try {
             await BlogModel.deleteMany();
             return true;
@@ -125,4 +126,4 @@ export const blogsRepository = {
             return false;
         }
     }
-};
+}

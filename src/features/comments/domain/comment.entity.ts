@@ -25,6 +25,7 @@ const commentSchema = new mongoose.Schema<CommentDBType>({
         userId: { type: String, required: true },
         userLogin: { type: String, required: true }
     },
+    createdAt: { type: String, required: true, default: new Date().toISOString() },  
     postId: { type: String, required: false },
 })
 

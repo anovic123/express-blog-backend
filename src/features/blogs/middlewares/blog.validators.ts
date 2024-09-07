@@ -1,12 +1,12 @@
 import {NextFunction, Response} from 'express'
 import { body, validationResult } from 'express-validator'
 
-import {blogsQueryRepository} from "../infra/blogs-query.repository";
+import {blogsQueryRepository} from "../composition-root";
 
-import {adminMiddleware} from "../../../global-middlewares/admin.middleware";
-import {inputCheckErrorsMiddleware} from "../../../global-middlewares/input-checks-errors.middleware";
+import {adminMiddleware} from "../../../middlewares/admin.middleware";
+import {inputCheckErrorsMiddleware} from "../../../middlewares/input-checks-errors.middleware";
 
-import {RequestWithParams} from "../../../types/common";
+import {RequestWithParams} from "../../../core/request-types";
 
 import {HTTP_STATUSES} from "../../../utils";
 
