@@ -9,6 +9,8 @@ import { CommentsQueryRepository } from "../comments/infra/comments-query.reposi
 import {PostsService} from "./application/posts.service";
 
 import { PostsController } from "./controllers/posts.controller";
+import { JwtService } from "../../core/services/jwt.service";
+import { SecurityQueryRepository } from "../security/infra/sequrity-query.repository";
 
 
 export const container = new Container()
@@ -19,3 +21,5 @@ container.bind(PostsRepository).to(PostsRepository)
 container.bind(PostsQueryRepository).to(PostsQueryRepository)
 container.bind(BlogsRepository).to(BlogsRepository)
 container.bind(CommentsQueryRepository).to(CommentsQueryRepository)
+container.bind(JwtService).to(JwtService)
+container.bind(SecurityQueryRepository).to(SecurityQueryRepository)

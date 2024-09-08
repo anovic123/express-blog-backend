@@ -67,7 +67,8 @@ export const rateLimitContainer = new Container();
 rateLimitContainer.bind(RateLimitMiddleware).to(RateLimitMiddleware);
 rateLimitContainer.bind(UsersQueryRepository).to(UsersQueryRepository);
 rateLimitContainer.bind(RateLimitService).to(RateLimitService);
-rateLimitContainer.bind(RateLimitRepository).to(RateLimitRepository)
+rateLimitContainer.bind(RateLimitRepository).to(RateLimitRepository);
+rateLimitContainer.bind(ValidatorService).to(ValidatorService);
 
 const rateLimitMiddleware = rateLimitContainer.get(RateLimitMiddleware);
 const validatorService = rateLimitContainer.get(ValidatorService);

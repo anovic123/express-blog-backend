@@ -6,6 +6,7 @@ import {BlogsQueryRepository} from "./infra/blogs-query.repository";
 import {BlogsService} from "./application/blogs.service";
 import { BlogsController } from "./controllers/blogs.controller";
 
+
 export const container = new Container()
 
 container.bind(BlogsController).to(BlogsController)

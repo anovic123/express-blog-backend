@@ -8,6 +8,8 @@ import { RequestAuthModel } from "../core/request-types";
 import { HTTP_STATUSES } from "../utils";
 import { UsersService } from "../features/users/application/users.service";
 import { SecurityQueryRepository } from "../features/security/infra/sequrity-query.repository";
+import { UsersQueryRepository } from "../features/users/infra/users-query.repository";
+import { UsersRepository } from "../features/users/infra/users.repository";
 
 @injectable()
 export class AuthMiddleware {
@@ -59,6 +61,8 @@ const container = new Container();
 
 container.bind(JwtService).to(JwtService);
 container.bind(UsersService).to(UsersService);
+container.bind(UsersRepository).to(UsersRepository)
+container.bind(UsersQueryRepository).to(UsersQueryRepository)
 container.bind(AuthMiddleware).to(AuthMiddleware);
 container.bind(SecurityQueryRepository).to(SecurityQueryRepository)
 
