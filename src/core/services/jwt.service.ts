@@ -1,8 +1,9 @@
+import "reflect-metadata"
+import { inject, injectable } from "inversify";
 import jwt, { JwtPayload, TokenExpiredError } from "jsonwebtoken";
 
 import {UserAccountDocument} from "../../features/auth/domain/auth.entity";
 
-import {securityQueryRepository} from "../../features/security/composition-root";
 import {SecurityQueryRepository} from "../../features/security/infra/sequrity-query.repository";
 
 import {SETTINGS} from "../../settings";
@@ -22,9 +23,10 @@ interface JwtTokensOutput {
     refreshTokenExp: string;
 }
 
+@injectable()
 export class JwtService {
 
-    constructor(protected securityQueryRepository: SecurityQueryRepository) {}
+    constructor(@inject(SecurityQueryRepository) protected securityQueryRepository: SecurityQueryRepository) {}
 
     public async createJWT(user: UserAccountDocument, deviceId: string): Promise<JwtTokensOutput | null> {
         const userId = user._id.toString()
@@ -56,7 +58,7 @@ export class JwtService {
             if (!decodedRefresh) return null;
 
             const { deviceId, exp: decodedExp } = decodedRefresh;
-            const deviceData = await securityQueryRepository.findUserDeviceById(deviceId);
+            const deviceData = await this.securityQueryRepository.findUserDeviceById(deviceId);
             if (!deviceData) throw new Error(`No device data found for the given deviceId: ${deviceId}`);
 
             const isTokenExpired = decodedExp && new Date(decodedExp * 1000) < new Date(deviceData.lastActiveDate);
@@ -96,7 +98,7 @@ export class JwtService {
             if (!decodedRefresh) return null;
 
             const { deviceId, exp: decodedExp } = decodedRefresh;
-            const deviceData = await securityQueryRepository.findUserDeviceById(deviceId);
+            const deviceData = await this.securityQueryRepository.findUserDeviceById(deviceId);
             if (!deviceData) throw new Error(`No device data found for the given deviceId: ${deviceId}`);
 
             const isTokenExpired = decodedExp && new Date(decodedExp * 1000) < new Date(deviceData.lastActiveDate);
@@ -121,7 +123,7 @@ export class JwtService {
         try {
             const decodedToken = jwt.verify(token, SETTINGS.JWT_SECRET) as T;
 
-            const isDeviceValid = await securityQueryRepository.checkUserDeviceById(decodedToken.userId, decodedToken.deviceId);
+            const isDeviceValid = await this.securityQueryRepository.checkUserDeviceById(decodedToken.userId, decodedToken.deviceId);
             if (!isDeviceValid) return null;
 
             if (decodedToken.exp && Date.now() >= decodedToken.exp * 1000) {
@@ -135,5 +137,3 @@ export class JwtService {
         }
     }
 }
-
-export const jwtService = new JwtService(securityQueryRepository)

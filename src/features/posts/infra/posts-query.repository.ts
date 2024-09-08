@@ -1,3 +1,5 @@
+import "reflect-metadata"
+import { injectable } from "inversify";
 import {ObjectId, WithId} from "mongodb";
 
 import {getAllPostsHelper, GetAllPostsHelperResult} from "../helper";
@@ -10,6 +12,7 @@ import { LikeModel, LikeStatus } from "../../comments/domain/like.entity";
 import {BlogViewModel} from "../../blogs/dto/output";
 import {PostViewModel} from "../dto/output";
 
+@injectable()
 export class PostsQueryRepository {
     public async getMappedPostById(id: PostViewModel['id']): Promise<PostViewModel | null> {
         return await this.findPostsAndMap(id)
@@ -142,3 +145,5 @@ export class PostsQueryRepository {
         return commentForOutput
     }
 }
+
+export const postsQueryRepository = new PostsQueryRepository()

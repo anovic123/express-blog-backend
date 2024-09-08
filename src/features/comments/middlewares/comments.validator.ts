@@ -2,14 +2,13 @@ import { Types, ObjectId } from "mongoose";
 import {NextFunction, Response} from "express";
 import {body, param} from "express-validator";
 
-import {commentsQueryRepository} from "../composition-root";
+import { commentsQueryRepository } from "../infra/comments-query.repository";
 
-import {authMiddleware} from "../../../middlewares/auth.middleware";
+import {AuthMiddleware, container} from "../../../middlewares/auth.middleware";
 import {inputCheckErrorsMiddleware} from "../../../middlewares/input-checks-errors.middleware";
 
 import {HTTP_STATUSES} from "../../../utils";
 
-import {RequestUserStatusCommentModelWithParams, RequestWithParams} from "../../../core/request-types";
 import { LikeStatus } from "../domain/like.entity";
 
 const contentValidator = body('content').isString().trim().isLength({ min: 20, max: 300 })
@@ -35,8 +34,10 @@ export const findCommentsValidator = async (req: any, res: Response, next: NextF
     next()
 }
 
+const authMiddleware = container.get(AuthMiddleware);
+
 export const putCommentValidator = [
-    authMiddleware,
+    authMiddleware.use.bind(authMiddleware),
     findCommentsValidator,
     contentValidator,
     inputCheckErrorsMiddleware
@@ -45,7 +46,7 @@ export const putCommentValidator = [
 const commentIdValidator = param('commentId').isString().trim()
 
 export const deleteCommentValidator = [
-    authMiddleware,
+    authMiddleware.use.bind(authMiddleware),
     commentIdValidator,
     findCommentsValidator,
     inputCheckErrorsMiddleware
@@ -56,7 +57,7 @@ const likeStatusValidator = body('likeStatus')
     .isIn(Object.values(LikeStatus))
 
 export const putLikeCommentValidator = [
-    authMiddleware,
+    authMiddleware.use.bind(authMiddleware),
     likeStatusValidator,
     findCommentsValidator,
     inputCheckErrorsMiddleware

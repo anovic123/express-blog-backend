@@ -1,3 +1,4 @@
+import { inject, injectable } from 'inversify';
 import { Types } from 'mongoose';
 
 import {PostDbType, PostModel} from "../domain/post.entity";
@@ -8,9 +9,13 @@ import {CommentViewModel} from "../../comments/dto/output";
 import {PostViewModel} from "../dto/output";
 import {PostInputModel} from "../dto/input";
 
-import {blogsRepository} from "../../blogs/composition-root";
+import { BlogsRepository } from '../../blogs/infra/blogs.repository';
 
+@injectable()
 export class PostsRepository {
+    constructor(
+        @inject(BlogsRepository) protected blogsRepository: BlogsRepository
+    ) {}
     public async createPost(post: PostDbType): Promise<boolean> {
         try {
             const newPost = await PostModel.create(post);
@@ -53,7 +58,7 @@ export class PostsRepository {
 
     public async putPost(post: PostInputModel, id: string): Promise<boolean> {
         try {
-            const blog = await blogsRepository.findBlog(post.blogId);
+            const blog = await this.blogsRepository.findBlog(post.blogId);
             if (!blog) return false;
 
             const result = await PostModel.updateOne(

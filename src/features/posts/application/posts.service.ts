@@ -1,13 +1,12 @@
+import { inject, injectable } from 'inversify';
 import { Types } from 'mongoose';
-
-import {blogsRepository} from "../../blogs/composition-root";
 
 import { UserAccountDBType } from "../../auth/domain/auth.entity";
 
 import {PostsRepository} from "../infra/posts.repository";
 import {PostsQueryRepository} from "../infra/posts-query.repository";
-
-import {commentsQueryRepository} from "../../comments/composition-root";
+import { BlogsRepository } from '../../blogs/infra/blogs.repository';
+import { CommentsQueryRepository } from '../../comments/infra/comments-query.repository';
 
 import {PostInputModel} from "../dto/input";
 import {PostViewModel} from "../dto/output";
@@ -20,12 +19,18 @@ interface NewPost extends Omit<PostDbType, '_id'> {
     _id: Types.ObjectId;
 }
 
+@injectable()
 export class PostsService {
 
-    constructor(protected postsRepository: PostsRepository, protected postsQueryRepository: PostsQueryRepository) {}
+    constructor(
+        @inject(PostsRepository) protected postsRepository: PostsRepository, 
+        @inject(PostsQueryRepository) protected postsQueryRepository: PostsQueryRepository,
+        @inject(BlogsRepository) protected blogsRepository: BlogsRepository,
+        @inject(CommentsQueryRepository) protected commentsQueryRepository: CommentsQueryRepository
+    ) {}
 
     public async createPost(post: PostInputModel): Promise<PostViewModel | null> {
-        const blog = await blogsRepository.findBlog(post.blogId);
+        const blog = await this.blogsRepository.findBlog(post.blogId);
         if (!blog) return null;
 
         const newPost: NewPost = {
@@ -58,7 +63,7 @@ export class PostsService {
         };
 
         const createdComment = await this.postsRepository.createPostComment(newComment);
-        return commentsQueryRepository.mapPostCommentsOutput(newComment);
+        return this.commentsQueryRepository.mapPostCommentsOutput(newComment);
     }
 
     public async delPostById(id: PostViewModel['id']): Promise<boolean> {

@@ -1,8 +1,10 @@
 import { Types } from 'mongoose'
 import {add} from 'date-fns'
+import { injectable } from 'inversify';
 
 import { UserAccountDBType, UserAccountModel } from "../../auth/domain/auth.entity";
 
+@injectable()
 export class UsersRepository {
     public async createUser(user: UserAccountDBType): Promise<UserAccountDBType | null> {
         try {

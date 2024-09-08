@@ -1,9 +1,11 @@
+import { injectable } from 'inversify';
 import { Types } from 'mongoose'
 
 import {AuthDevicesDB, AuthDevicesModel} from "../domain/device.entity";
 
 import { DevicesSessionViewModel } from '../dto/output';
 
+@injectable()
 export class SecurityRepository {
     public async insertNewUserDevice (inputData: AuthDevicesDB): Promise<boolean> {
         try {

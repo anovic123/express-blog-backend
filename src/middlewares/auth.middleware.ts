@@ -1,44 +1,65 @@
-import {NextFunction, Response} from "express";
+import "reflect-metadata"
+import { injectable, inject, Container } from "inversify";
 
-import {usersService} from "../features/users/composition-root";
+import { NextFunction, Response } from "express";
+import { JwtService } from "../core/services/jwt.service";
 
-import {jwtService} from "../core/services/jwt.service";
-import {RequestAuthModel} from "../core/request-types";
+import { RequestAuthModel } from "../core/request-types";
+import { HTTP_STATUSES } from "../utils";
+import { UsersService } from "../features/users/application/users.service";
+import { SecurityQueryRepository } from "../features/security/infra/sequrity-query.repository";
 
-import {HTTP_STATUSES} from "../utils";
+@injectable()
+export class AuthMiddleware {
+  constructor(
+    @inject(JwtService) private jwtService: JwtService,
+    @inject(UsersService) private usersService: UsersService
+  ) {}
 
-export const authMiddleware = async (req: RequestAuthModel, res: Response, next: NextFunction): Promise<void> => {
+  public async use(req: RequestAuthModel, res: Response, next: NextFunction): Promise<void> {
     try {
-        const authHeaders = req.headers.authorization;
+      const authHeader = req.headers.authorization;
 
-        if (!authHeaders) {
-            res.status(HTTP_STATUSES.UNAUTHORIZED_401).json('Authorization header is missing');
-            return;
-        }
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        res.status(HTTP_STATUSES.UNAUTHORIZED_401).json({ message: 'Authorization header is missing or malformed' });
+        return 
+      }
 
-        const token = authHeaders.split(' ')[1];
-        if (!token) {
-            res.status(HTTP_STATUSES.UNAUTHORIZED_401).json('Token is missing');
-            return;
-        }
+      const token = authHeader.split(' ')[1];
 
-        const userId = await jwtService.getUserIdByToken(token);
-        if (!userId) {
-            res.status(HTTP_STATUSES.UNAUTHORIZED_401).json('Invalid token');
-            return;
-        }
+      if (!token) {
+        res.status(HTTP_STATUSES.UNAUTHORIZED_401).json({ message: 'Token is missing' });
+        return 
+      }
 
-        const findedUser = await usersService.findUserById(userId);
-        if (!findedUser) {
-            res.status(HTTP_STATUSES.UNAUTHORIZED_401).json('User not found');
-            return;
-        }
+      const userId = await this.jwtService.getUserIdByToken(token);
 
-        req.user = findedUser;
-        next();
+      if (!userId) {
+        res.status(HTTP_STATUSES.UNAUTHORIZED_401).json({ message: 'Invalid or expired token' });
+        return 
+      }
+
+      const foundUser = await this.usersService.findUserById(userId);
+      if (!foundUser) {
+        res.status(HTTP_STATUSES.UNAUTHORIZED_401).json({ message: 'User not found' });
+        return 
+      }
+
+      req.user = foundUser;
+      next();
+
     } catch (error) {
-        console.log('Error in authMiddleware:', error);
-        res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
-        return;
+      console.error('Error in AuthMiddleware:', error);
+      res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401); 
     }
-};
+  }
+}
+
+const container = new Container();
+
+container.bind(JwtService).to(JwtService);
+container.bind(UsersService).to(UsersService);
+container.bind(AuthMiddleware).to(AuthMiddleware);
+container.bind(SecurityQueryRepository).to(SecurityQueryRepository)
+
+export { container };

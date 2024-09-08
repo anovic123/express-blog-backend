@@ -1,8 +1,21 @@
+import "reflect-metadata"
+import { Container } from 'inversify'
+
 import {PostsRepository} from "./infra/posts.repository";
+import { BlogsRepository } from "../blogs/infra/blogs.repository";
 import {PostsQueryRepository} from "./infra/posts-query.repository";
+import { CommentsQueryRepository } from "../comments/infra/comments-query.repository";
+
 import {PostsService} from "./application/posts.service";
 
-export const postsRepository = new PostsRepository()
-export const postsQueryRepository = new PostsQueryRepository()
+import { PostsController } from "./controllers/posts.controller";
 
-export const postsService = new PostsService(postsRepository, postsQueryRepository)
+
+export const container = new Container()
+
+container.bind(PostsController).to(PostsController)
+container.bind(PostsService).to(PostsService)
+container.bind(PostsRepository).to(PostsRepository)
+container.bind(PostsQueryRepository).to(PostsQueryRepository)
+container.bind(BlogsRepository).to(BlogsRepository)
+container.bind(CommentsQueryRepository).to(CommentsQueryRepository)

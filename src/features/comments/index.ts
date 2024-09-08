@@ -1,16 +1,16 @@
-import { Router, Request, Response } from 'express'
+import { Router } from 'express'
 
 import {deleteCommentValidator, findCommentsValidator, putCommentValidator, putLikeCommentValidator} from "./middlewares/comments.validator";
 
-import {getCommentsByIdController} from "./controllers/get-comments-by-id.controller";
-import {putCommentController} from "./controllers/put-comment.controller";
-import {deleteCommentController} from "./controllers/delete-comment.controller";
-import {putLikeController} from "./controllers/put-like-controller";
-import { commentsRepository } from './composition-root';
+import { container } from './composition-root';
+
+import { CommentsController } from './controllers/comments.controller';
+
+export const commentsController = container.resolve<CommentsController>(CommentsController)
 
 export const commentsRouter = Router()
 
-commentsRouter.get('/:commentId', getCommentsByIdController)
-commentsRouter.put('/:commentId', ...putCommentValidator, putCommentController)
-commentsRouter.delete('/:commentId', ...deleteCommentValidator, deleteCommentController)
-commentsRouter.put('/:commentId/like-status', ...putLikeCommentValidator, putLikeController)
+commentsRouter.get('/:commentId', commentsController.getCommentsById.bind(commentsController))
+commentsRouter.put('/:commentId', ...putCommentValidator, commentsController.putComment.bind(commentsController))
+commentsRouter.delete('/:commentId', ...deleteCommentValidator, commentsController.deleteComment.bind(commentsController))
+commentsRouter.put('/:commentId/like-status', ...putLikeCommentValidator, commentsController.putLike.bind(commentsController))

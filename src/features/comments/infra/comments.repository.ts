@@ -1,8 +1,12 @@
+import "reflect-metadata"
+import { injectable } from "inversify";
+
 import {CommentModel} from "../domain/comment.entity";
 import {LikeModel, LikeStatus} from "../domain/like.entity";
 
 import {PostViewModel} from "../../posts/dto/output";
 
+@injectable()
 export class CommentsRepository {
     public async updateComment(commentId: string, content: string): Promise<boolean> {
         try {

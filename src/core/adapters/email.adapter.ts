@@ -1,5 +1,8 @@
+import "reflect-metadata"
+import { injectable } from "inversify"
 import nodemailer from "nodemailer"
 
+@injectable()
 export class EmailAdapter {
     public async sendEmail (email: string, subject: string, message: string) {
         const transporter = nodemailer.createTransport({
@@ -61,5 +64,3 @@ export class EmailAdapter {
         }
     }
 }
-
-export const emailAdapter = new EmailAdapter()

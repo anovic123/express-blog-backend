@@ -1,10 +1,11 @@
+import { inject, injectable } from 'inversify';
 import { v4 as uuidv4 } from 'uuid'
 import {Types} from "mongoose";
 
 import { UserAccountDocument } from "../../auth/domain/auth.entity";
 import {AuthDevicesDB} from "../domain/device.entity";
 
-import {jwtService} from "../../../core/services/jwt.service";
+import {JwtService} from "../../../core/services/jwt.service";
 
 import {SecurityRepository} from "../infra/security.repository";
 import {SecurityQueryRepository} from "../infra/sequrity-query.repository";
@@ -18,14 +19,19 @@ interface TokensResponse {
     refreshToken: string
 }
 
+@injectable()
 export class SecurityService {
-    constructor (protected securityRepository: SecurityRepository, protected securityQueryRepository: SecurityQueryRepository) {}
+    constructor (
+        @inject(SecurityRepository) protected securityRepository: SecurityRepository, 
+        @inject(SecurityQueryRepository) protected securityQueryRepository: SecurityQueryRepository,
+        @inject(JwtService) protected jwtService: JwtService
+    ) {}
 
     public async addNewUserDevice(user: UserAccountDocument, ip: string = '0.0.0.0', userAgent: string = 'Unknown'): Promise<RequestResult<TokensResponse | null>> {
         try {
             const deviceId = uuidv4()
 
-            const tokens = await jwtService.createJWT(user, deviceId)
+            const tokens = await this.jwtService.createJWT(user, deviceId)
             if (!tokens) {
                 return {
                     statusCode: HTTP_STATUSES.UNAUTHORIZED_401,
@@ -65,7 +71,7 @@ export class SecurityService {
     }
     public async updateSessionUser(requestRefreshToken: string): Promise<RequestResult<TokensResponse | false>> {
         try {
-            const newTokens = await jwtService.refreshTokensJWT(requestRefreshToken)
+            const newTokens = await this.jwtService.refreshTokensJWT(requestRefreshToken)
 
             if (!newTokens) {
                 return {
@@ -76,7 +82,7 @@ export class SecurityService {
 
             const { accessToken, refreshToken, refreshTokenExp } = newTokens
 
-            const refreshTokenData = await jwtService.getDataFromRefreshToken(refreshToken)
+            const refreshTokenData = await this.jwtService.getDataFromRefreshToken(refreshToken)
 
             if (!refreshTokenData) {
                 return {

@@ -1,6 +1,10 @@
+import "reflect-metadata"
+import { injectable } from "inversify";
 import {RateLimitDbType, RateLimitModel} from "../../features/security/domain/rate.entity";
 
+@injectable()
 export class RateLimitRepository {
+    constructor() {}
     public async getAttemptCountSinceDate(ip: string, url: string, sinceDate: Date): Promise<number> {
         return RateLimitModel.countDocuments({
             ip,
@@ -27,5 +31,3 @@ export class RateLimitRepository {
         }
     }
 }
-
-export const rateLimitRepository = new RateLimitRepository()

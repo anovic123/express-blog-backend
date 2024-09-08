@@ -1,3 +1,4 @@
+import { injectable } from 'inversify';
 import { Types } from 'mongoose';
 
 import {  BlogDocument, BlogModel } from "../domain/blog.entity";
@@ -10,6 +11,7 @@ interface PostDocument extends PostDbType, Document {
     _id: Types.ObjectId;
 }
 
+@injectable()
 export class BlogsRepository {
     public async create(blog: BlogInputModel): Promise<BlogViewModel | null> {
         try {

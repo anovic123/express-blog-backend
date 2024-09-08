@@ -1,12 +1,15 @@
+import "reflect-metadata"
+import { inject, injectable } from "inversify";
+
 import {CommentsRepository} from "../infra/comments.repository";
-import {CommentsQueryRepository} from "../infra/comments-query.repository";
 
 import {CommentLikesViewModel} from "../dto/output";
 
 import {LikeStatus} from "../domain/like.entity";
 
+@injectable()
 export class CommentsService {
-    constructor(protected commentsRepository: CommentsRepository, protectedRepository: CommentsQueryRepository) {}
+    constructor(@inject(CommentsRepository) protected commentsRepository: CommentsRepository) {}
 
     public async deleteComment(commentId: string) {
         return await this.commentsRepository.deleteComment(commentId)

@@ -1,4 +1,5 @@
-import { Types } from "mongoose";
+import "reflect-metadata"
+import { injectable } from "inversify";
 
 import { CommentDBType, CommentModel } from "../domain/comment.entity";
 import { LikeDBType, LikeModel, LikeStatus } from "../domain/like.entity";
@@ -7,6 +8,7 @@ import { UserAccountDBType } from "../../auth/domain/auth.entity";
 
 import { CommentViewModel } from "../dto/output";
 
+@injectable()
 export class CommentsQueryRepository {
     async getCommentById(id: CommentViewModel['id'], userId?: string | null | undefined): Promise<CommentViewModel | null> {
         try {
@@ -58,3 +60,4 @@ export class CommentsQueryRepository {
     }
 }
 
+export const commentsQueryRepository = new CommentsQueryRepository()

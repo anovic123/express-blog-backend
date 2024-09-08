@@ -4,9 +4,9 @@ import {body} from "express-validator";
 
 import {inputCheckErrorsMiddleware} from "../../../middlewares/input-checks-errors.middleware";
 
-import {authMiddleware} from "../../../middlewares/auth.middleware";
+import {AuthMiddleware, container} from "../../../middlewares/auth.middleware";
 
-import {postsQueryRepository} from "../composition-root";
+import { postsQueryRepository } from "../infra/posts-query.repository";
 
 import {RequestWithParams} from "../../../core/request-types";
 
@@ -23,6 +23,8 @@ export const findPostsValidator = async (req: RequestWithParams<{ postId: string
     next()
 }
 
+const authMiddleware = container.get(AuthMiddleware);
+
 export const postCommentValidator = [
-    authMiddleware, findPostsValidator, contentCommentValidator, inputCheckErrorsMiddleware
+    authMiddleware.use.bind(authMiddleware), findPostsValidator, contentCommentValidator, inputCheckErrorsMiddleware
 ]

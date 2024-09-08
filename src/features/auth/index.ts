@@ -1,36 +1,40 @@
 import { Router } from 'express'
 
-import {rateLimitMiddleware} from "../../middlewares/rate-limit.middleware";
-import {authMiddleware} from "../../middlewares/auth.middleware";
-import {cookiesRefreshTokenMiddleware} from "../../middlewares/cookies-refresh-token.middleware";
+import {RateLimitMiddleware} from "../../middlewares/rate-limit.middleware";
 
-import {loginController} from "./controllers/login.controller";
-import {meController} from "./controllers/me.controller";
-import {registrationController} from "./controllers/registration.controller";
-import {registrationConfirmationController} from "./controllers/registration-confirmation.controller";
-import {registrationEmailResendingController} from "./controllers/registration-email-resending.controller";
-import {refreshTokenController} from "./controllers/refresh-token.controller";
-import {logoutController} from "./controllers/logout.controller";
-import {passwordRecoveryController} from "./controllers/password-recovery.controller";
-import {newPasswordController} from "./controllers/new-password.controller";
+import {AuthMiddleware, container as authContainer} from "../../middlewares/auth.middleware";
+import {cookiesRefreshTokenMiddleware} from "../../middlewares/cookies-refresh-token.middleware";
 
 import {
     createUserValidator, newPasswordValidator, passwordRecoveryValidator,
+    rateLimitContainer,
     registrationConfirmationValidator,
     registrationResendingValidator
 } from "./middlewares/auth.validators";
 
+import { AuthController } from './controllers/auth.controller';
+
+import { container } from './composition-root';
+
+const authController = container.resolve<AuthController>(AuthController)
+
 export const authRouter = Router({})
 
-authRouter.post('/login', rateLimitMiddleware, loginController)
-authRouter.get('/me', authMiddleware, meController)
+const authMiddleware = authContainer.get(AuthMiddleware);
 
-authRouter.post('/registration', ...createUserValidator, registrationController)
-authRouter.post('/registration-confirmation', ...registrationConfirmationValidator, registrationConfirmationController)
-authRouter.post('/registration-email-resending', ...registrationResendingValidator, registrationEmailResendingController)
+const rateLimitMiddleware = rateLimitContainer.get(RateLimitMiddleware);
 
-authRouter.post('/password-recovery', ...passwordRecoveryValidator, passwordRecoveryController)
-authRouter.post('/new-password', ...newPasswordValidator, newPasswordController)
+rateLimitMiddleware.use.bind(rateLimitMiddleware),
 
-authRouter.post('/refresh-token', cookiesRefreshTokenMiddleware, refreshTokenController)
-authRouter.post('/logout', cookiesRefreshTokenMiddleware, logoutController)
+authRouter.post('/login', rateLimitMiddleware.use.bind(rateLimitMiddleware), authController.loginUser.bind(authController))
+authRouter.get('/me', authMiddleware.use.bind(authMiddleware), authController.me.bind(authController))
+
+authRouter.post('/registration', ...createUserValidator, authController.registerUser.bind(authController))
+authRouter.post('/registration-confirmation', ...registrationConfirmationValidator, authController.registrationConfirmation.bind(authController))
+authRouter.post('/registration-email-resending', ...registrationResendingValidator, authController.regestrationEmailResending.bind(authController))
+
+authRouter.post('/password-recovery', ...passwordRecoveryValidator, authController.passwordRecovery.bind(authController))
+authRouter.post('/new-password', ...newPasswordValidator, authController.newPassword.bind(authController))
+
+authRouter.post('/refresh-token', cookiesRefreshTokenMiddleware, authController.refreshToken.bind(authController))
+authRouter.post('/logout', cookiesRefreshTokenMiddleware, authController.logoutUser.bind(authController))

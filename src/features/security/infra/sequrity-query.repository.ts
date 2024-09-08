@@ -1,7 +1,11 @@
+import "reflect-metadata"
+import { injectable } from "inversify";
+
 import { DevicesSessionViewModel } from "../dto/output";
 
 import {AuthDevicesDB, AuthDevicesModel} from "../domain/device.entity";
 
+@injectable()
 export class SecurityQueryRepository {
     public async getAllDevicesSessions(userId: string): Promise<DevicesSessionViewModel[]> {
         try {
@@ -43,3 +47,5 @@ export class SecurityQueryRepository {
         };
     }
 }
+
+export const securityQueryRepository = new SecurityQueryRepository()

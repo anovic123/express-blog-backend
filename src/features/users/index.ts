@@ -3,12 +3,14 @@ import { Router } from 'express'
 import {createUserValidator} from "./middlewares/users.validators";
 import {adminMiddleware} from "../../middlewares/admin.middleware";
 
-import {createUserController} from "./controllers/create-user.controller";
-import {deleteUserController} from "./controllers/delete-user.controller";
-import {getUsersController} from "./controllers/get-users.controller";
+import { UsersController } from './controllers/user.controller';
+
+import { container } from './composition-root';
+
+const usersController = container.resolve<UsersController>(UsersController)
 
 export const usersRouter = Router()
 
-usersRouter.post('/', adminMiddleware, ...createUserValidator, createUserController)
-usersRouter.delete('/:id', adminMiddleware, deleteUserController)
-usersRouter.get('/', adminMiddleware, getUsersController)
+usersRouter.post('/', adminMiddleware, ...createUserValidator, usersController.createUser.bind(usersController))
+usersRouter.delete('/:id', adminMiddleware, usersController.deleteUser.bind(usersController))
+usersRouter.get('/', adminMiddleware, usersController.getUsers.bind(usersController))

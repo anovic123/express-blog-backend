@@ -1,3 +1,5 @@
+import "reflect-metadata"
+import { injectable } from "inversify";
 import {ObjectId} from "mongodb";
 
 import {BlogDocument, BlogModel} from "../domain/blog.entity";
@@ -8,6 +10,7 @@ import {getAllBlogsHelper, getAllBlogsHelperResult, getBlogPostsHelper, GetBlogP
 
 import {BlogPostViewModel, BlogViewModel} from "../dto/output";
 
+@injectable()
 export class BlogsQueryRepository {
     public async getAllBlogs(query: getAllBlogsHelperResult, blogId: BlogViewModel['id']) {
         const sanitizedQuery = getAllBlogsHelper(query as { [key: string]: string | undefined })
@@ -110,3 +113,5 @@ export class BlogsQueryRepository {
         return blogForOutput
     }
 }
+
+export const blogsQueryRepository = new BlogsQueryRepository()
