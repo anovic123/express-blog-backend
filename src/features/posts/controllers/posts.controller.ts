@@ -13,6 +13,7 @@ import {
 } from "../../../core/request-types";
 
 import { PostsQueryRepository } from "../infra/posts-query.repository";
+import {UsersQueryRepository} from "../../users/infra/users-query.repository";
 
 import { PostsService } from "../application/posts.service";
 import { JwtService } from "../../../core/services/jwt.service";
@@ -23,7 +24,6 @@ import { PostViewModel } from "../dto/output";
 import { GetAllPostsHelperResult } from "../helper";
 
 import { HTTP_STATUSES } from "../../../utils";
-import {UsersQueryRepository} from "../../users/infra/users-query.repository";
 
 @injectable()
 export class PostsController {
@@ -88,7 +88,7 @@ export class PostsController {
 
   public async findPost (req: RequestWithParams<{id: PostViewModel['id']}>, res: Response<PostViewModel | {}>) {
     try {
-        const accessToken = req.headers.authorization?.split(' ')[1];
+        const accessToken = req.cookies['refreshToken'];
           
         const accessTokenUserId = await this.jwtService.getUserIdByToken(accessToken!);
 

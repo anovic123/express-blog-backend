@@ -17,6 +17,7 @@ import {Types} from "mongoose";
 @injectable()
 export class PostsQueryRepository {
     public async getMappedPostById(id: PostViewModel['id'], userId: string | null | undefined): Promise<PostViewModel | null> {
+        console.log(userId)
         try {
             return await this.findPostsAndMap(id, userId)
         } catch (error) {
