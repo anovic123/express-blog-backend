@@ -83,20 +83,15 @@ export class PostsService {
         userLogin: string
     ): Promise<boolean> {
         if (!userId) return false;
-        console.log('likesInfo', likesInfo)
-        console.log('likesStatus', likesStatus)
-        console.log('userLogin', userLogin)
         if (likesInfo?.myStatus === likesStatus && likesInfo?.myStatus !== LikePostStatus.NONE) {
             return false;
         }
-
         switch (likesStatus) {
             case LikePostStatus.NONE:
                 if (likesInfo?.myStatus === LikePostStatus.DISLIKE || likesInfo?.myStatus === LikePostStatus.LIKE) {
-                    console.log(123)
                     await this.postsRepository.noneStatusPost(userId, postId, userLogin);
                 } else if (likesInfo?.myStatus === LikePostStatus.NONE) {
-                    console.log(1234)
+
                     await this.postsRepository.likePost(userId, postId, userLogin);
                 }
 

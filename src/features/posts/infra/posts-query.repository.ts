@@ -43,12 +43,14 @@ export class PostsQueryRepository {
 
             const totalCount = await PostModel.countDocuments(filter)
 
+            const mappedItems = await Promise.all(items.map((i: any) => this.mapPostOutput(i, userId)));
+
             return {
                 pagesCount: Math.ceil(totalCount / (query.pageSize ?? 10)),
                 page: sanitizedQuery.pageNumber,
                 pageSize: sanitizedQuery.pageSize,
                 totalCount,
-                items: items.map((i: any) => this.mapPostOutput(i, userId))
+                items: mappedItems
             }
         } catch (error) {
             console.log(error)
