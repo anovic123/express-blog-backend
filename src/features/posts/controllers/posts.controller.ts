@@ -125,7 +125,10 @@ export class PostsController {
 
   public async getPosts (req: RequestWithQueryAndParams<GetAllPostsHelperResult, { id: PostViewModel['id'] }>, res: Response<any>) {
     try {
-        const posts = await this.postsQueryRepository.getAllPosts(req.query, req.params.id)
+        const accessToken = req.cookies['refreshToken'];
+          
+        const accessTokenUserId = await this.jwtService.getUserIdByToken(accessToken!);
+        const posts = await this.postsQueryRepository.getAllPosts(req.query, req.params.id, accessTokenUserId)
         res.status(HTTP_STATUSES.OKK_200).json(posts)
     } catch (error) {
         console.error('getPostsController', error)
