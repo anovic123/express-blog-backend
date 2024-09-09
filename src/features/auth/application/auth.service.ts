@@ -1,4 +1,5 @@
-import { usersRepository } from "./../../users/composition-root";
+import "reflect-metadata"
+import { inject, injectable } from "inversify";
 import bcrypt from 'bcrypt'
 import {v4 as uuidv4} from 'uuid'
 import {add} from 'date-fns'
@@ -14,13 +15,14 @@ import { UsersQueryRepository } from "../../users/infra/users-query.repository";
 
 import { SecurityService } from "../../security/application/security.service";
 
+@injectable()
 export class AuthService {
     constructor(
-        protected usersRepository: UsersRepository, 
-        protected usersQueryRepository: UsersQueryRepository,
-        protected emailAdapter: EmailAdapter,
-        protected emailsManager: EmailsManager,
-        protected securityService: SecurityService
+        @inject(UsersRepository) protected usersRepository: UsersRepository, 
+        @inject(UsersQueryRepository) protected usersQueryRepository: UsersQueryRepository,
+        @inject(EmailAdapter) protected emailAdapter: EmailAdapter,
+        @inject(EmailsManager) protected emailsManager: EmailsManager,
+        @inject(SecurityService) protected securityService: SecurityService
     ) {}
     public async createUser (login: string, email: string, password: string): Promise<UserAccountDBType | null> {
         const passwordHash = await this._generateHash(password)
@@ -41,7 +43,7 @@ export class AuthService {
                 isConfirmed: false
             }
         }
-        const createdResult = usersRepository.createUser(user)
+        const createdResult = this.usersRepository.createUser(user)
         try {
             await this.emailsManager.sendConfirmationMessage({
                 email: user.accountData.email,
@@ -85,7 +87,7 @@ export class AuthService {
             if (user.emailConfirmation.isConfirmed) return false
             if (user.emailConfirmation.confirmationCode !== code) return false
             if (user.emailConfirmation.expirationDate < new Date()) return false
-            return await usersRepository.updateConfirmation(user._id.toString())
+            return await this.usersRepository.updateConfirmation(user._id.toString())
         } catch (error) {
             console.error(`Error in the confirmEmail:`, error);
             return false
@@ -104,7 +106,7 @@ export class AuthService {
 
            const newPasswordHash = await this._generateHash(newPassword)
 
-           const newPasswordHashRes = await usersRepository.updateUserPasswordHash(user._id, newPasswordHash)
+           const newPasswordHashRes = await this.usersRepository.updateUserPasswordHash(user._id, newPasswordHash)
 
            if (!newPasswordHash) return false
 
@@ -121,7 +123,7 @@ export class AuthService {
         if (!user) return false
         try {
             const newCode = uuidv4()
-            const createdResult = await usersRepository.updateUserConfirmationCode(user._id.toString(), newCode)
+            const createdResult = await this.usersRepository.updateUserConfirmationCode(user._id.toString(), newCode)
             await this.emailsManager.sendConfirmationMessage({
                 email: user.accountData.email,
                 confirmationCode: newCode
@@ -145,7 +147,7 @@ export class AuthService {
 
             if (!user) return true
 
-            const createdResult = await usersRepository.updateUserConfirmationCode(user._id.toString(), newCode)
+            const createdResult = await this.usersRepository.updateUserConfirmationCode(user._id.toString(), newCode)
             return true
         } catch (error) {
             console.error('resendCodeForRecoveryPassword', error)

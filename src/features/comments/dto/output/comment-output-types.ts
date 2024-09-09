@@ -1,5 +1,5 @@
 import {CommentOutputCommentatorInfoModel} from "../../domain/comment.entity";
-import {LikeStatus} from "../../domain/like.entity";
+import {LikeCommentStatus} from "../../domain/like.entity";
 
 export interface CommentViewModel {
     id: string
@@ -12,5 +12,5 @@ export interface CommentViewModel {
 export interface CommentLikesViewModel {
     likesCount: number
     dislikesCount: number
-    myStatus: LikeStatus
+    myStatus: LikeCommentStatus
 }

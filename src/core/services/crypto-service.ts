@@ -1,5 +1,8 @@
+import "reflect-metadata"
+import { injectable } from "inversify";
 import bcrypt from "bcrypt";
 
+@injectable()
 export class CryptoService {
     constructor() {}
 
@@ -13,5 +16,3 @@ export class CryptoService {
         return bcrypt.compare(password, passwordHash);
     }
 }
-
-export const cryptoService = new CryptoService()

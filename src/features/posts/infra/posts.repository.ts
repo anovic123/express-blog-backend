@@ -1,16 +1,23 @@
+import { inject, injectable } from 'inversify';
 import { Types } from 'mongoose';
 
 import {PostDbType, PostModel} from "../domain/post.entity";
 import {CommentDBType, CommentModel} from "../../comments/domain/comment.entity";
-import { LikeStatus} from "../../comments/domain/like.entity";
+import {LikeCommentModel, LikeCommentStatus} from "../../comments/domain/like.entity";
 
 import {CommentViewModel} from "../../comments/dto/output";
 import {PostViewModel} from "../dto/output";
 import {PostInputModel} from "../dto/input";
 
-import {blogsRepository} from "../../blogs/composition-root";
+import { BlogsRepository } from '../../blogs/infra/blogs.repository';
+import {ObjectId, WithId} from "mongodb";
+import {LikePostDBType, LikePostModel, LikePostStatus} from "../domain/post-like.entity";
 
+@injectable()
 export class PostsRepository {
+    constructor(
+        @inject(BlogsRepository) protected blogsRepository: BlogsRepository
+    ) {}
     public async createPost(post: PostDbType): Promise<boolean> {
         try {
             const newPost = await PostModel.create(post);
@@ -53,7 +60,7 @@ export class PostsRepository {
 
     public async putPost(post: PostInputModel, id: string): Promise<boolean> {
         try {
-            const blog = await blogsRepository.findBlog(post.blogId);
+            const blog = await this.blogsRepository.findBlog(post.blogId);
             if (!blog) return false;
 
             const result = await PostModel.updateOne(
@@ -95,9 +102,117 @@ export class PostsRepository {
             likesInfo: {
                 likesCount: 0,
                 dislikesCount: 0,
-                myStatus: LikeStatus.NONE
+                myStatus: LikeCommentStatus.NONE
             }
         }
         return commentForOutput
+    }
+
+    public async likePost(userId: string, postId: string, userLogin: string): Promise<boolean> {
+        try {
+            await LikePostModel.findOneAndUpdate(
+                { postId, authorId: userId },
+                {
+                    status: LikePostStatus.LIKE,
+                    postId,
+                    updatedAt: new Date(),
+                    login: userLogin
+                },
+                {
+                    upsert: true,
+                    new: true,
+                    runValidators: true
+                }
+            );
+            return true;
+        } catch (error) {
+            console.error(`Error liking post ${postId}:`, error);
+            return false;
+        }
+    }
+
+    public async dislikePost(userId: string, postId: string, userLogin: string): Promise<boolean> {
+        try {
+            await LikePostModel.findOneAndUpdate(
+                { postId, authorId: userId },
+                {
+                    status: LikePostStatus.DISLIKE,
+                    postId,
+                    updatedAt: new Date(),
+                    login: userLogin
+                },
+                {
+                    upsert: true,
+                    new: true,
+                    runValidators: true
+                }
+            );
+            return true;
+        } catch (error) {
+            console.error(`Error disliking post ${postId}:`, error);
+            return false;
+        }
+    }
+
+    public async noneStatusPost(userId: string, postId: string, userLogin: string): Promise<boolean> {
+        try {
+            await LikePostModel.findOneAndUpdate({
+                postId, authorId: userId
+            }, {
+                status: LikePostStatus.NONE,
+                postId,
+                updatedAt: new Date(),
+                login: userLogin
+            }, {
+                upsert: true,
+                new: true,
+                runValidators: true
+            })
+
+            return true
+        } catch (error) {
+            console.error(`Error none status comment ${postId}:`, error)
+            return false
+        }
+    }
+
+
+    public async mapPostOutput(post: WithId<PostDbType>, userId?: string | null | undefined): Promise<PostViewModel> {
+
+        const likes = await LikePostModel.find({ postId: new Types.ObjectId(post._id).toString() });
+        const userLike = userId ? likes.find(like => like.authorId === userId) : null;
+
+        const likesCount = likes.filter(l => l.status === LikePostStatus.LIKE).length;
+        const dislikesCount = likes.filter(l => l.status === LikePostStatus.DISLIKE).length;
+        const myStatus = userLike?.status ?? LikePostStatus.NONE;
+
+
+        const newestLikes = likes
+            .filter(l => l.status === LikePostStatus.LIKE)
+            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+            .slice(0, 3)
+            .map(l => ({
+                addedAt: l.createdAt,
+                userId: l.authorId,
+                login: l.authorId
+            }));
+
+        const postForOutput: PostViewModel = {
+            id: new ObjectId(post._id).toString(),
+            title: post.title,
+            shortDescription: post.shortDescription,
+            content: post.content,
+            blogId: post.blogId,
+            blogName: post.blogName,
+            createdAt: post.createdAt,
+            extendedLikesInfo: {
+                likesCount,
+                dislikesCount,
+                myStatus,
+                newestLikes: newestLikes.length > 0 ? newestLikes : []
+            }
+        };
+
+        return postForOutput;
     }
 };

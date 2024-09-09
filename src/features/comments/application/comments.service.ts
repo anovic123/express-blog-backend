@@ -1,12 +1,15 @@
+import "reflect-metadata"
+import { inject, injectable } from "inversify";
+
 import {CommentsRepository} from "../infra/comments.repository";
-import {CommentsQueryRepository} from "../infra/comments-query.repository";
 
 import {CommentLikesViewModel} from "../dto/output";
 
-import {LikeStatus} from "../domain/like.entity";
+import {LikeCommentStatus} from "../domain/like.entity";
 
+@injectable()
 export class CommentsService {
-    constructor(protected commentsRepository: CommentsRepository, protectedRepository: CommentsQueryRepository) {}
+    constructor(@inject(CommentsRepository) protected commentsRepository: CommentsRepository) {}
 
     public async deleteComment(commentId: string) {
         return await this.commentsRepository.deleteComment(commentId)
@@ -17,7 +20,7 @@ export class CommentsService {
     public async likeComment(
         commentId: string,
         likesInfo: CommentLikesViewModel | null,
-        likeStatus: LikeStatus,
+        likeStatus: LikeCommentStatus,
         userId: string | undefined
     ): Promise<boolean> {
         if (!userId) return false;
@@ -30,18 +33,18 @@ export class CommentsService {
         if (!postId) return false;
 
         switch (likeStatus) {
-            case LikeStatus.NONE:
-                if (likesInfo?.myStatus === LikeStatus.DISLIKE || likesInfo?.myStatus === LikeStatus.LIKE) {
+            case LikeCommentStatus.NONE:
+                if (likesInfo?.myStatus === LikeCommentStatus.DISLIKE || likesInfo?.myStatus === LikeCommentStatus.LIKE) {
                     await this.commentsRepository.noneStatusComment(commentId, userId, postId);
-                } else if (likesInfo?.myStatus === LikeStatus.NONE) {
+                } else if (likesInfo?.myStatus === LikeCommentStatus.NONE) {
                     await this.commentsRepository.likeComment(commentId, userId, postId);
                 }
                 
                 break;
-            case LikeStatus.LIKE:
+            case LikeCommentStatus.LIKE:
                 await this.commentsRepository.likeComment(commentId, userId, postId);
                 break;
-            case LikeStatus.DISLIKE:
+            case LikeCommentStatus.DISLIKE:
                 await this.commentsRepository.dislikeComment(commentId, userId, postId);
                 break;
             default:

@@ -1,21 +1,33 @@
-import {rateLimitRepository} from "../../../core/infra/rate-limit.repository";
-import {usersRepository} from "../../users/composition-root";
-import {blogsRepository} from "../../blogs/composition-root";
-import {commentsRepository} from "../../comments/composition-root";
-import {postsRepository} from "../../posts/composition-root";
-import {securityRepository} from "../../security/composition-root";
+import "reflect-metadata"
+import { inject, injectable } from "inversify";
 
+import { UsersRepository } from "../../users/infra/users.repository";
+import { BlogsRepository } from "../../blogs/infra/blogs.repository";
+import { PostsRepository } from "../../posts/infra/posts.repository";
+import { CommentsRepository } from "../../comments/infra/comments.repository";
+import { RateLimitRepository } from "../../../core/infra/rate-limit.repository";
+import { SecurityRepository } from "../../security/infra/security.repository";
+
+@injectable()
 export class TestingService {
+    constructor(
+        @inject(UsersRepository) protected usersRepository: UsersRepository,
+        @inject(BlogsRepository) protected blogsRepository: BlogsRepository,
+        @inject(PostsRepository) protected postsRepository: PostsRepository,
+        @inject(CommentsRepository) protected commentsRepository: CommentsRepository,
+        @inject(RateLimitRepository) protected rateLimitRepository: RateLimitRepository,
+        @inject(SecurityRepository) protected securityRepository: SecurityRepository
+    ) {}
     public async clearAllDB(): Promise<boolean> {
         try {
             await Promise.all([
-                blogsRepository.deleteAll(),
-                postsRepository.deleteAll(),
-                usersRepository.deleteAll(),
-                commentsRepository.deleteAll(),
-                commentsRepository.deleteAll(),
-                rateLimitRepository.deleteAll(),
-                securityRepository.deleteAll(),
+                this.blogsRepository.deleteAll(),
+                this.postsRepository.deleteAll(),
+                this.usersRepository.deleteAll(),
+                this.commentsRepository.deleteAll(),
+                this.commentsRepository.deleteAll(),
+                this.rateLimitRepository.deleteAll(),
+                this.securityRepository.deleteAll(),
             ]);
             return true;
         } catch (error) {
@@ -25,4 +37,3 @@ export class TestingService {
     }
 }
 
-export const testingService = new TestingService()

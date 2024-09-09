@@ -1,8 +1,12 @@
+import "reflect-metadata"
+import { injectable } from "inversify";
+
 import {CommentModel} from "../domain/comment.entity";
-import {LikeModel, LikeStatus} from "../domain/like.entity";
+import {LikeCommentModel, LikeCommentStatus} from "../domain/like.entity";
 
 import {PostViewModel} from "../../posts/dto/output";
 
+@injectable()
 export class CommentsRepository {
     public async updateComment(commentId: string, content: string): Promise<boolean> {
         try {
@@ -29,10 +33,10 @@ export class CommentsRepository {
 
     public async likeComment(commentId: string, userId: string, postId: string): Promise<boolean> {
         try {
-            await LikeModel.findOneAndUpdate(
+            await LikeCommentModel.findOneAndUpdate(
                 { commentId, authorId: userId },
                 { 
-                    status: LikeStatus.LIKE,
+                    status: LikeCommentStatus.LIKE,
                     postId,
                     updatedAt: new Date()
                 },
@@ -51,10 +55,10 @@ export class CommentsRepository {
     
     public async dislikeComment(commentId: string, userId: string, postId: string): Promise<boolean> {
         try {
-            await LikeModel.findOneAndUpdate(
+            await LikeCommentModel.findOneAndUpdate(
                 { commentId, authorId: userId },
                 { 
-                    status: LikeStatus.DISLIKE,
+                    status: LikeCommentStatus.DISLIKE,
                     postId,
                     updatedAt: new Date()
                 },
@@ -73,10 +77,10 @@ export class CommentsRepository {
     
     public async noneStatusComment(commentId: string, userId: string, postId: string): Promise<boolean> {
         try {
-            await LikeModel.findOneAndUpdate({
+            await LikeCommentModel.findOneAndUpdate({
                 commentId, authorId: userId
             }, {
-                status: LikeStatus.NONE,
+                status: LikeCommentStatus.NONE,
                 postId,
                 updatedAt: new Date()
             }, {
@@ -117,7 +121,7 @@ export class CommentsRepository {
 
     public async deleteAllLikes(): Promise<boolean> {
         try {
-            const result = await LikeModel.deleteMany({})
+            const result = await LikeCommentModel.deleteMany({})
             return result.deletedCount > 0
         } catch (error) {
             console.error(`Error deleting all likes`, error)

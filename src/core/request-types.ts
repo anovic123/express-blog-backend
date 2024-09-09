@@ -4,6 +4,7 @@ import {UserAccountDBType} from "../features/auth/domain/auth.entity";
 
 import { HttpStatusType } from "../utils";
 import {CommentLikesViewModel} from "../features/comments/dto/output";
+import {PostLikesViewModel} from "../features/posts/dto/output";
 
 export type RequestWithBody<T> = Request<{}, {}, T>
 export type RequestWithQuery<T> = Request<{}, {}, {}, T>
@@ -24,10 +25,20 @@ export type RequestResult<T> = {
     data: T
 }
 
+// =====================================================
+
 export interface RequestUserStatusCommentModel extends Request {
     likesInfo?: CommentLikesViewModel | null
+    user?: UserAccountDBType | null
 }
 
 export type RequestUserStatusCommentModelWithParams<T> = RequestUserStatusCommentModel & RequestWithParams<T>
 
-export type RequestUserStatusCommentModelWithParamsAndBody<T, B> = RequestUserStatusCommentModel & RequestWithParamsAndBody<T, B>;
+// =====================================================
+
+export interface RequestUserStatusPostModel extends Request {
+    likesInfo?: PostLikesViewModel | null
+    user?: UserAccountDBType | null
+}
+
+export type RequestUserStatusPostModelWithParams<T> = RequestUserStatusPostModel & RequestWithParams<T>

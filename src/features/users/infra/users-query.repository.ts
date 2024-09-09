@@ -1,7 +1,10 @@
+import "reflect-metadata"
+import { injectable } from "inversify";
 import {UserAccountDBType, UserAccountDocument, UserAccountModel} from "../../auth/domain/auth.entity";
 
 import { UserOutputType } from "../dto";
 
+@injectable()
 export class UsersQueryRepository {
     public async allUsers(query: any): Promise<{
         pagesCount: number;
@@ -86,3 +89,5 @@ export class UsersQueryRepository {
         };
     }
 }
+
+export const usersQueryRepository = new UsersQueryRepository()

@@ -1,3 +1,5 @@
+import "reflect-metadata"
+import { inject, injectable } from "inversify";
 import bcrypt from "bcrypt";
 
 import {UserAccountDBType, UserAccountDocument} from "../../auth/domain/auth.entity";
@@ -5,18 +7,27 @@ import {UserAccountDBType, UserAccountDocument} from "../../auth/domain/auth.ent
 import {UsersQueryRepository} from "../infra/users-query.repository";
 import {UsersRepository} from "../infra/users.repository";
 
+import { UserOutputType } from "../dto";
+
+@injectable()
 export class UsersService {
-    constructor(protected usersQueryRepository: UsersQueryRepository, protected usersRepository: UsersRepository) {}
+    constructor(@inject(UsersQueryRepository) protected usersQueryRepository: UsersQueryRepository, @inject(UsersRepository) protected usersRepository: UsersRepository) {}
 
     public async findUserById(id: string): Promise<UserAccountDBType | null> {
         return await this.usersQueryRepository.findUserById(id)
     }
 
-    public async deleteUser(id: string) {
+    public async deleteUser(id: string): Promise<boolean> {
         return await this.usersRepository.deleteUser(id)
     }
 
-    public async allUsers(query: any) {
+    public async allUsers(query: any): Promise<{
+        pagesCount: number;
+        page: number;
+        pageSize: number;
+        totalCount: number;
+        items: UserOutputType[];
+    } | null> {
         return await this.usersQueryRepository.allUsers(query)
     }
 

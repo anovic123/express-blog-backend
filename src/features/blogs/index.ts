@@ -9,20 +9,18 @@ import {
 
 import {adminMiddleware} from "../../middlewares/admin.middleware";
 
-import {createBlogController} from "./controllers/create-blog.controller";
-import {getBlogsController} from "./controllers/get-blogs.controller";
-import {findBlogController} from "./controllers/find-blog.controller";
-import {deleteBlogController} from "./controllers/delete-blog.controller";
-import {putBlogController} from "./controllers/put-blogs.controller";
-import {createBlogPostController} from "./controllers/create-blog-post.controller";
-import {getBlogPostsController} from "./controllers/get-blog-posts.controller";
+import { container } from './composition-root';
+
+import { BlogsController } from './controllers/blogs.controller';
+
+export const blogsController = container.resolve<BlogsController>(BlogsController)
 
 export const blogsRouter = Router()
 
-blogsRouter.post('/', ...blogValidators, createBlogController)
-blogsRouter.get('/', getBlogsController)
-blogsRouter.get('/:id', findBlogValidator, findBlogController)
-blogsRouter.delete('/:id', adminMiddleware, deleteBlogController)
-blogsRouter.put('/:id', findBlogValidator, ...blogValidators, putBlogController)
-blogsRouter.post('/:blogId/posts', ...createBlogPostValidator, createBlogPostController)
-blogsRouter.get('/:blogId/posts', findBlogPostValidator, getBlogPostsController)
+blogsRouter.post('/', ...blogValidators, blogsController.createBlog.bind(blogsController))
+blogsRouter.get('/', blogsController.getBlogs.bind(blogsController))
+blogsRouter.get('/:id', findBlogValidator, blogsController.findBlog.bind(blogsController))
+blogsRouter.delete('/:id', adminMiddleware, blogsController.deleteBlog.bind(blogsController))
+blogsRouter.put('/:id', findBlogValidator, ...blogValidators, blogsController.putBlogs.bind(blogsController))
+blogsRouter.post('/:blogId/posts', ...createBlogPostValidator, blogsController.createBlogsPost.bind(blogsController))
+blogsRouter.get('/:blogId/posts', findBlogPostValidator, blogsController.getBlogPosts.bind(blogsController))

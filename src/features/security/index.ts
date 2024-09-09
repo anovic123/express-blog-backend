@@ -2,14 +2,18 @@ import { Router } from 'express'
 
 import {cookiesRefreshTokenMiddleware} from "../../middlewares/cookies-refresh-token.middleware";
 
-import {deleteDeviceByIdValidator} from "./middlewares/security.validator";
+import {containerDeleteDevice, DeleteDeviceByIdValidator} from "./middlewares/security.validator";
 
-import {getDevicesController} from "./controllers/get-devices.controller";
-import {deleteAllOtherDevicesController} from "./controllers/delete-all-other-devices.controller";
-import {deleteDeviceByIdController} from "./controllers/delete-devicy-by-id.controller";
+import { SecurityController } from './controllers/security.controller';
+
+import { container } from './composition-root';
+
+const securityController = container.resolve<SecurityController>(SecurityController)
 
 export const securityRouter = Router()
 
-securityRouter.get('/devices', cookiesRefreshTokenMiddleware, getDevicesController)
-securityRouter.delete('/devices', cookiesRefreshTokenMiddleware, deleteAllOtherDevicesController)
-securityRouter.delete('/devices/:deviceId', deleteDeviceByIdValidator, deleteDeviceByIdController)
+export const deleteDeviceByIdValidator = containerDeleteDevice.get(DeleteDeviceByIdValidator)
+
+securityRouter.get('/devices', cookiesRefreshTokenMiddleware, securityController.getDevices.bind(securityController))
+securityRouter.delete('/devices', cookiesRefreshTokenMiddleware, securityController.deleteAllOtherDevices.bind(securityController))
+securityRouter.delete('/devices/:deviceId', deleteDeviceByIdValidator.getMiddleware(), securityController.deleteDeviceById.bind(securityController))

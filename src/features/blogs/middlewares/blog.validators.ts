@@ -1,7 +1,7 @@
 import {NextFunction, Response} from 'express'
 import { body, validationResult } from 'express-validator'
 
-import {blogsQueryRepository} from "../composition-root";
+import { blogsQueryRepository } from '../infra/blogs-query.repository';
 
 import {adminMiddleware} from "../../../middlewares/admin.middleware";
 import {inputCheckErrorsMiddleware} from "../../../middlewares/input-checks-errors.middleware";

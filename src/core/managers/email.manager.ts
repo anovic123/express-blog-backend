@@ -1,17 +1,20 @@
-import {emailAdapter} from "../adapters/email.adapter";
+import "reflect-metadata"
+import { inject, injectable } from "inversify";
+import { EmailAdapter } from "../adapters/email.adapter";
 
 type EmailDto = {
     email: string
     confirmationCode: string
 }
 
+@injectable()
 export class EmailsManager  {
+    constructor(@inject(EmailAdapter) protected emailAdapter: EmailAdapter) {}
     public async sendConfirmationMessage({ email, confirmationCode }: EmailDto) {
-        await emailAdapter.sendEmail(email, "confirmation code", confirmationCode)
+        await this.emailAdapter.sendEmail(email, "confirmation code", confirmationCode)
     }
     public async sendRecoveryMessage({ email, confirmationCode }: EmailDto) {
-        return await emailAdapter.sendRecoveryEmail(email, "recoveryMessage", confirmationCode)
+        return await this.emailAdapter.sendRecoveryEmail(email, "recoveryMessage", confirmationCode)
     }
 }
 
-export const emailManager = new EmailsManager()

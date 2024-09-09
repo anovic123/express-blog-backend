@@ -1,92 +1,111 @@
-import { Response, NextFunction } from 'express'
-import { body } from 'express-validator'
+import "reflect-metadata";
+import { Response, NextFunction } from 'express';
+import { body, validationResult } from 'express-validator';
+import { injectable, inject, Container } from "inversify";
+import { RequestWithBody } from "../../../core/request-types";
+import { UsersQueryRepository } from "../../users/infra/users-query.repository";
+import { RateLimitMiddleware } from "../../../middlewares/rate-limit.middleware";
+import { RateLimitService } from "../../../core/services/rate-limit.service";
+import { RateLimitRepository } from "../../../core/infra/rate-limit.repository";
+import { inputCheckErrorsMiddleware } from "../../../middlewares/input-checks-errors.middleware";
 
-import {usersQueryRepository} from "../../users/composition-root";
+const loginValidator = body('login').trim().isString().isLength({ min: 3, max: 10 });
+const passwordValidator = body('password').trim().isString().isLength({ min: 6, max: 20 });
+const emailValidator = body('email').trim().isEmail();
+const newPasswordBodyValidator = body('newPassword').trim().isString().isLength({ min: 6, max: 20 });
+const recoveryCodeValidator = body('recoveryCode').trim().isString();
+const codeValidator = body('code').trim().isString();
 
-import {rateLimitMiddleware} from "../../../middlewares/rate-limit.middleware";
-import {inputCheckErrorsMiddleware} from "../../../middlewares/input-checks-errors.middleware";
+@injectable()
+class ValidatorService {
+    constructor(@inject(UsersQueryRepository) private usersQueryRepository: UsersQueryRepository) {}
 
-import { HTTP_STATUSES } from "../../../utils";
+    public async findExistedUserValidator(req: RequestWithBody<{ email: string, login: string }>, res: Response, next: NextFunction) {
+        const { email, login } = req.body;
+        const errors = validationResult(req);
 
-import {RequestWithBody} from "../../../core/request-types";
+        const existingUser = await this.usersQueryRepository.findUserByLoginOrEmail(email);
+        if (existingUser) {
+            res.status(400).json({ errorsMessages: [{ message: "Email already exists", field: "email" }] });
+            return;
+        }
 
-const loginValidator = body('login').trim().isString().isLength({ min: 3, max: 10 })
-const passwordValidator = body('password').trim().isString().isLength({ min: 6, max: 20 })
-const emailValidator = body('email').trim().isEmail()
-const newPasswordBodyValidator = body('newPassword').trim().isString().isLength({ min: 6, max: 20 })
-const recoveryCodeValidator = body('recoveryCode').trim().isString()
+        const existingLogin = await this.usersQueryRepository.findUserByLoginOrEmail(login);
+        if (existingLogin) {
+            res.status(400).json({ errorsMessages: [{ message: "Login already exists", field: "login" }] });
+            return;
+        }
 
-const codeValidator = body('code').trim().isString()
+        if (!errors.isEmpty()) {
+            res.status(400).json({ errors: errors.array() });
+            return;
+        }
 
-const findExistedUserValidator = async (req: RequestWithBody<{ email: string, login: string }>, res: Response, next: NextFunction) => {
-    const { email, login } = req.body;
-
-    const existingUser = await usersQueryRepository.findUserByLoginOrEmail(email);
-    if (existingUser) {
-        res.status(HTTP_STATUSES.BAD_REQUEST_400).json({ errorsMessages: [{ message: "Email already exists", field: "email" }] });
-        return
+        next();
     }
 
-    const existingLogin = await usersQueryRepository.findUserByLoginOrEmail(login);
-    if (existingLogin) {
-        res.status(HTTP_STATUSES.BAD_REQUEST_400).json({ errorsMessages: [{ message: "Login already exists", field: "login" }] });
-        return
-    }
+    public async findExistedUserByEmailAndConfirmedValidator(req: RequestWithBody<{ email: string }>, res: Response, next: NextFunction) {
+        const { email } = req.body;
+        const errors = validationResult(req);
 
-    next()
+        const existingUser = await this.usersQueryRepository.findUserByLoginOrEmail(email);
+        if (!existingUser || existingUser.emailConfirmation.isConfirmed) {
+            res.status(400).json({ errorsMessages: [{ message: 'Wrong email', field: "email" }] });
+            return;
+        }
+
+        if (!errors.isEmpty()) {
+            res.status(400).json({ errors: errors.array() });
+            return;
+        }
+
+        next();
+    }
 }
 
-const findExistedUserByEmailAndConfirmedValidator = async (req: RequestWithBody<{ email: string }>, res: Response, next: NextFunction) => {
-    const { email } = req.body
+export const rateLimitContainer = new Container();
+rateLimitContainer.bind(RateLimitMiddleware).to(RateLimitMiddleware);
+rateLimitContainer.bind(UsersQueryRepository).to(UsersQueryRepository);
+rateLimitContainer.bind(RateLimitService).to(RateLimitService);
+rateLimitContainer.bind(RateLimitRepository).to(RateLimitRepository);
+rateLimitContainer.bind(ValidatorService).to(ValidatorService);
 
-    const existingUser = await usersQueryRepository.findUserByLoginOrEmail(email)
-
-    if (!existingUser) {
-        res.status(HTTP_STATUSES.BAD_REQUEST_400).json({ errorsMessages: [{ message: 'Wrong email', field: "email" }] })
-        return
-    }
-
-    if (existingUser.emailConfirmation.isConfirmed) {
-        res.status(HTTP_STATUSES.BAD_REQUEST_400).json({ errorsMessages: [{ message: 'Wrong email', field: "email" }] });
-        return
-    }
-
-    next()
-}
+const rateLimitMiddleware = rateLimitContainer.get(RateLimitMiddleware);
+const validatorService = rateLimitContainer.get(ValidatorService);
 
 export const registrationConfirmationValidator = [
-    rateLimitMiddleware,
+    rateLimitMiddleware.use.bind(rateLimitMiddleware),
     codeValidator,
     inputCheckErrorsMiddleware
-]
+];
 
 export const createUserValidator = [
-    rateLimitMiddleware,
+    rateLimitMiddleware.use.bind(rateLimitMiddleware),
     loginValidator,
     passwordValidator,
     emailValidator,
-    findExistedUserValidator,
+    validatorService.findExistedUserValidator.bind(validatorService),
     inputCheckErrorsMiddleware
-]
+];
 
 export const registrationResendingValidator = [
-    rateLimitMiddleware,
+    rateLimitMiddleware.use.bind(rateLimitMiddleware),
     emailValidator,
-    findExistedUserByEmailAndConfirmedValidator,
+    validatorService.findExistedUserByEmailAndConfirmedValidator.bind(validatorService),
     inputCheckErrorsMiddleware
-]
+];
 
-const emailCustomValidator = body('email').trim().isString()
+const emailCustomValidator = body('email').trim().isString();
 
 export const passwordRecoveryValidator = [
-    rateLimitMiddleware,
+    rateLimitMiddleware.use.bind(rateLimitMiddleware),
     emailCustomValidator,
     inputCheckErrorsMiddleware
-]
+];
 
 export const newPasswordValidator = [
-    rateLimitMiddleware,
+    rateLimitMiddleware.use.bind(rateLimitMiddleware),
     newPasswordBodyValidator,
     recoveryCodeValidator,
     inputCheckErrorsMiddleware
-]
+];
