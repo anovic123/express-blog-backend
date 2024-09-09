@@ -16,9 +16,9 @@ import {Types} from "mongoose";
 
 @injectable()
 export class PostsQueryRepository {
-    public async getMappedPostById(id: PostViewModel['id']): Promise<PostViewModel | null> {
+    public async getMappedPostById(id: PostViewModel['id'], userId: string | null | undefined): Promise<PostViewModel | null> {
         try {
-            return await this.findPostsAndMap(id)
+            return await this.findPostsAndMap(id, userId)
         } catch (error) {
             console.error('getMappedPostById', error)
             return null
@@ -47,7 +47,7 @@ export class PostsQueryRepository {
                 page: sanitizedQuery.pageNumber,
                 pageSize: sanitizedQuery.pageSize,
                 totalCount,
-                items: items.map((i: any) => this.mapPostOutput(i))
+                items: items.map((i: any) => this.mapPostOutput(i, userId))
             }
         } catch (error) {
             console.log(error)
@@ -113,12 +113,12 @@ export class PostsQueryRepository {
     public async mapPostOutput(post: WithId<PostDbType>, userId?: string | null | undefined): Promise<PostViewModel> {
 
         const likes = await LikePostModel.find({ postId: new Types.ObjectId(post._id).toString() });
+
         const userLike = userId ? likes.find(like => like.authorId === userId) : null;
 
         const likesCount = likes.filter(l => l.status === LikePostStatus.LIKE).length;
         const dislikesCount = likes.filter(l => l.status === LikePostStatus.DISLIKE).length;
         const myStatus = userLike?.status ?? LikePostStatus.NONE;
-
 
         const newestLikes = likes
             .filter(l => l.status === LikePostStatus.LIKE)
@@ -127,7 +127,7 @@ export class PostsQueryRepository {
             .map(l => ({
                 addedAt: l.createdAt,
                 userId: l.authorId,
-                login: l.authorId
+                login: l.login
             }));
 
         const postForOutput: PostViewModel = {

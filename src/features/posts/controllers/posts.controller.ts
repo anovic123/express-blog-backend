@@ -88,7 +88,11 @@ export class PostsController {
 
   public async findPost (req: RequestWithParams<{id: PostViewModel['id']}>, res: Response<PostViewModel | {}>) {
     try {
-        const blogById = await this.postsQueryRepository.getMappedPostById(req.params.id)
+        const accessToken = req.headers.authorization?.split(' ')[1];
+          
+        const accessTokenUserId = await this.jwtService.getUserIdByToken(accessToken!);
+
+        const blogById = await this.postsQueryRepository.getMappedPostById(req.params.id, accessTokenUserId)
 
         if (!blogById) {
             res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
