@@ -7,21 +7,24 @@ import {getAllPostsHelper, GetAllPostsHelperResult} from "../helper";
 import {PostDbType, PostModel} from "../domain/post.entity";
 
 import {CommentDBType, CommentModel} from "../../comments/domain/comment.entity";
-import { LikeModel, LikeStatus } from "../../comments/domain/like.entity";
+import { LikeCommentModel, LikeCommentStatus } from "../../comments/domain/like.entity";
 
 import {BlogViewModel} from "../../blogs/dto/output";
 import {PostViewModel} from "../dto/output";
+import {LikePostDBType, LikePostModel, LikePostStatus} from "../domain/post-like.entity";
+import {Types} from "mongoose";
 
 @injectable()
 export class PostsQueryRepository {
     public async getMappedPostById(id: PostViewModel['id']): Promise<PostViewModel | null> {
-        return await this.findPostsAndMap(id)
+        try {
+            return await this.findPostsAndMap(id)
+        } catch (error) {
+            console.error('getMappedPostById', error)
+            return null
+        }
     }
-    public async getPostsCommentsLength(id: string): Promise<number> {
-        const commentsRes = await CommentModel.find({ _id: new ObjectId(id) }).exec()
-        return commentsRes.length
-    }
-    public async getAllPosts(query: GetAllPostsHelperResult, blogId: BlogViewModel['id']) {
+    public async getAllPosts(query: GetAllPostsHelperResult, blogId: BlogViewModel['id'], userId?: string | null | undefined) {
         const sanitizedQuery = getAllPostsHelper(query)
 
         const byId = blogId ? { blogId: new ObjectId(blogId) } : {}
@@ -91,24 +94,42 @@ export class PostsQueryRepository {
             throw new Error('Could not fetch post comments');
         }
     }
-    
-    public async findPostsAndMap(id: PostViewModel['id']): Promise<PostViewModel | null> {
-        const post = await this.findPost(id)
-        if (!post) {
+
+    public async findPostsAndMap(id: PostViewModel['id'], userId?: string | null | undefined): Promise<PostViewModel | null> {
+        try {
+            const findedPost = await PostModel.findOne({ _id: new ObjectId(id) })
+
+            if (!findedPost) {
+                return null
+            }
+
+            return this.mapPostOutput(findedPost, userId)
+        } catch (error) {
+            console.error('findPost', error)
             return null
         }
-        return this.mapPostOutput(post)
     }
-    public async findPost(id: PostViewModel['id']): Promise<WithId<PostDbType> | null> {
-        const res = await PostModel.findOne({ _id: new ObjectId(id) })
 
-        if (!res) {
-            return null
-        }
+    public async mapPostOutput(post: WithId<PostDbType>, userId?: string | null | undefined): Promise<PostViewModel> {
 
-        return res
-    }
-    protected mapPostOutput(post: WithId<PostDbType>) {
+        const likes = await LikePostModel.find({ postId: new Types.ObjectId(post._id).toString() });
+        const userLike = userId ? likes.find(like => like.authorId === userId) : null;
+
+        const likesCount = likes.filter(l => l.status === LikePostStatus.LIKE).length;
+        const dislikesCount = likes.filter(l => l.status === LikePostStatus.DISLIKE).length;
+        const myStatus = userLike?.status ?? LikePostStatus.NONE;
+
+
+        const newestLikes = likes
+            .filter(l => l.status === LikePostStatus.LIKE)
+            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+            .slice(0, 3)
+            .map(l => ({
+                addedAt: l.createdAt,
+                userId: l.authorId,
+                login: l.authorId
+            }));
+
         const postForOutput: PostViewModel = {
             id: new ObjectId(post._id).toString(),
             title: post.title,
@@ -116,33 +137,47 @@ export class PostsQueryRepository {
             content: post.content,
             blogId: post.blogId,
             blogName: post.blogName,
-            createdAt: post.createdAt
-        }
-        return postForOutput
-    }
-    protected async mapPostCommentsOutput(comment: CommentDBType, userId: string | null | undefined) {
-        const likes = await LikeModel.find({ commentId: comment.id });
-        const userLike = userId ? likes.find(like => like.authorId === userId) : null;
-
-        const likesCount = likes.filter(l => l.status === LikeStatus.LIKE).length;
-        const dislikesCount = likes.filter(l => l.status === LikeStatus.DISLIKE).length;
-        const myStatus = userLike?.status ?? LikeStatus.NONE;
-        
-        const commentForOutput = {
-            id: comment.id,
-            content: comment.content,
-            commentatorInfo: {
-                userId: comment.commentatorInfo.userId,
-                userLogin: comment.commentatorInfo.userLogin
-            },
-            createdAt: comment.createdAt,
-            likesInfo: {
+            createdAt: post.createdAt,
+            extendedLikesInfo: {
                 likesCount,
                 dislikesCount,
                 myStatus,
-            },
+                newestLikes: newestLikes.length > 0 ? newestLikes : []
+            }
+        };
+
+        return postForOutput;
+    }
+
+    protected async mapPostCommentsOutput(comment: CommentDBType, userId: string | null | undefined) {
+        try  {
+            const likes = await LikeCommentModel.find({ commentId: comment.id });
+            const userLike = userId ? likes.find(like => like.authorId === userId) : null;
+
+            const likesCount = likes.filter(l => l.status === LikeCommentStatus.LIKE).length;
+            const dislikesCount = likes.filter(l => l.status === LikeCommentStatus.DISLIKE).length;
+            const myStatus = userLike?.status ?? LikeCommentStatus.NONE;
+
+            const commentForOutput = {
+                id: comment.id,
+                content: comment.content,
+                commentatorInfo: {
+                    userId: comment.commentatorInfo.userId,
+                    userLogin: comment.commentatorInfo.userLogin
+                },
+                createdAt: comment.createdAt,
+                likesInfo: {
+                    likesCount,
+                    dislikesCount,
+                    myStatus,
+                },
+            }
+            return commentForOutput
+        } catch (error) {
+            console.error('mapPostCommentsOutput', error)
+            return null
         }
-        return commentForOutput
+
     }
 }
 

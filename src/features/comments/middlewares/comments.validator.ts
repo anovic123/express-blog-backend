@@ -9,17 +9,18 @@ import {inputCheckErrorsMiddleware} from "../../../middlewares/input-checks-erro
 
 import {HTTP_STATUSES} from "../../../utils";
 
-import { LikeStatus } from "../domain/like.entity";
+import { LikeCommentStatus } from "../domain/like.entity";
+import {RequestUserStatusCommentModelWithParams} from "../../../core/request-types";
 
 const contentValidator = body('content').isString().trim().isLength({ min: 20, max: 300 })
 
-export const findCommentsValidator = async (req: any, res: Response, next: NextFunction): Promise<void> => {
+export const findCommentsValidator = async (req: RequestUserStatusCommentModelWithParams<{ commentId: string }>, res: Response, next: NextFunction): Promise<void> => {
     if (!req.params.commentId) {
         res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
         return
     }
 
-    const comment = await commentsQueryRepository.getCommentById(req.params.commentId, new Types.ObjectId(req.user._id).toString())
+    const comment = await commentsQueryRepository.getCommentById(req.params.commentId, new Types.ObjectId(req?.user?._id!).toString())
 
     if (!comment) {
         res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
@@ -30,7 +31,7 @@ export const findCommentsValidator = async (req: any, res: Response, next: NextF
         likesCount: comment.likesInfo.likesCount,
         dislikesCount: comment.likesInfo.dislikesCount,
         myStatus: comment.likesInfo.myStatus
-    } as any
+    }
     next()
 }
 
@@ -54,7 +55,7 @@ export const deleteCommentValidator = [
 
 const likeStatusValidator = body('likeStatus')
     .isString()
-    .isIn(Object.values(LikeStatus))
+    .isIn(Object.values(LikeCommentStatus))
 
 export const putLikeCommentValidator = [
     authMiddleware.use.bind(authMiddleware),

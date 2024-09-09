@@ -3,7 +3,7 @@ import { Router } from 'express'
 import {adminMiddleware} from "../../middlewares/admin.middleware";
 
 import {findPostValidator, postValidators, putValidators} from "./middlewares/post.validator";
-import {findPostsValidator, postCommentValidator} from "./middlewares/post-comment.validators";
+import {findPostsValidator, postCommentValidator, putLikeStatusValidator} from "./middlewares/post-comment.validators";
 
 import { PostsController } from './controllers/posts.controller';
 
@@ -20,3 +20,4 @@ postsRouter.delete('/:id', adminMiddleware, findPostValidator, postsController.d
 postsRouter.put('/:id', ...putValidators, postsController.putPosts.bind(postsController))
 postsRouter.post('/:postId/comments', ...postCommentValidator, postsController.createPostComment.bind(postsController))
 postsRouter.get('/:postId/comments', findPostsValidator, postsController.getPostsComments.bind(postsController))
+postsRouter.put('/:postId/like-status', ...putLikeStatusValidator, postsController.putPostLike.bind(postsController))

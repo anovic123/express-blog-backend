@@ -1,9 +1,16 @@
 import "reflect-metadata"
 import { inject, injectable } from "inversify";
 import { Types } from "mongoose";
-import { Response } from "express";
+import { Response, Request } from "express";
 
-import { RequestAuthModelWithParamsAndBody, RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQueryAndParams } from "../../../core/request-types";
+import {
+    RequestAuthModelWithParamsAndBody,
+    RequestUserStatusPostModelWithParams,
+    RequestWithBody,
+    RequestWithParams,
+    RequestWithParamsAndBody,
+    RequestWithQueryAndParams
+} from "../../../core/request-types";
 
 import { PostsQueryRepository } from "../infra/posts-query.repository";
 
@@ -16,13 +23,15 @@ import { PostViewModel } from "../dto/output";
 import { GetAllPostsHelperResult } from "../helper";
 
 import { HTTP_STATUSES } from "../../../utils";
+import {UsersQueryRepository} from "../../users/infra/users-query.repository";
 
 @injectable()
 export class PostsController {
   constructor(
     @inject(PostsQueryRepository) protected postsQueryRepository: PostsQueryRepository,
     @inject(PostsService) protected postsService: PostsService,
-    @inject(JwtService) protected jwtService: JwtService
+    @inject(JwtService) protected jwtService: JwtService,
+    @inject(UsersQueryRepository) protected usersQueryRepository: UsersQueryRepository
   ) {}
 
   public async createPostComment (req: RequestAuthModelWithParamsAndBody<{ postId: string }, { content: string }>, res: Response) {
@@ -121,13 +130,56 @@ export class PostsController {
   }
 
   public async putPosts (req: RequestWithParamsAndBody<{id: string}, PostInputModel>, res: Response) {
-    const putRes = await this.postsService.putPostById(req.body, req.params.id)
+      try {
+          const putRes = await this.postsService.putPostById(req.body, req.params.id)
 
-    if (!putRes) {
-        res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
-        return
-    }
+          if (!putRes) {
+              res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
+              return
+          }
 
-    res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+          res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+      } catch (error) {
+          console.error('putPost controller', error)
+          res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR_500)
+      }
+  }
+
+  public async putPostLike (req: RequestUserStatusPostModelWithParams<{ postId: string }>, res: Response) {
+      try {
+          const accessToken = req.headers.authorization?.split(' ')[1];
+
+          const accessTokenUserId = await this.jwtService.getUserIdByToken(accessToken!);
+
+          if (!accessTokenUserId) {
+              res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
+              return
+          }
+
+          const userLogin = await this.usersQueryRepository.findUserById(accessTokenUserId)
+
+          if (!userLogin) {
+              res.sendStatus(HTTP_STATUSES.UNAUTHORIZED_401);
+              return
+          }
+
+          const postLikeUpdated = await this.postsService.likePost(
+              req.params.postId,
+              req.likesInfo!,
+              req.body.likeStatus,
+              accessTokenUserId,
+              userLogin.accountData.login
+          );
+
+          if (!postLikeUpdated) {
+              res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
+              return
+          }
+
+          res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+      } catch (error) {
+          res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR_500)
+          console.error('putPostLike', error)
+      }
   }
 }

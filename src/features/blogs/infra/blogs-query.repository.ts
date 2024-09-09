@@ -1,14 +1,16 @@
 import "reflect-metadata"
 import { injectable } from "inversify";
-import {ObjectId} from "mongodb";
+import {ObjectId, WithId} from "mongodb";
 
 import {BlogDocument, BlogModel} from "../domain/blog.entity";
 
-import {PostModel} from "../../posts/domain/post.entity";
+import {PostDbType, PostModel} from "../../posts/domain/post.entity";
 
 import {getAllBlogsHelper, getAllBlogsHelperResult, getBlogPostsHelper, GetBlogPostsHelperResult} from "../helper";
 
 import {BlogPostViewModel, BlogViewModel} from "../dto/output";
+import {LikePostDBType, LikePostStatus} from "../../posts/domain/post-like.entity";
+import {PostViewModel} from "../../posts/dto/output";
 
 @injectable()
 export class BlogsQueryRepository {
@@ -61,7 +63,7 @@ export class BlogsQueryRepository {
     } | []> {
         const sanitizedQuery = getBlogPostsHelper(query as { [key: string]: string | undefined });
 
-        const byId = blogId ? { blogId } : {};
+        const byId = blogId ? { blogId: new ObjectId(blogId) } : {};
 
         const filter: any = {
             ...byId,
@@ -83,12 +85,46 @@ export class BlogsQueryRepository {
                 page: sanitizedQuery.pageNumber,
                 pageSize: sanitizedQuery.pageSize,
                 totalCount,
-                items: items.map((b: any) => this._mapPostBlog(b))
+                items: items.map((b: any) => this.mapPostOutput(b))
             }
         } catch (error) {
             console.log(error);
             return [];
         }
+    }
+    protected mapPostOutput(post: WithId<PostDbType>, likes: LikePostDBType[] = [], userLike: LikePostDBType | null = null): PostViewModel {
+        const likesCount = likes.filter(l => l.status === LikePostStatus.LIKE).length;
+        const dislikesCount = likes.filter(l => l.status === LikePostStatus.DISLIKE).length;
+        const myStatus = userLike?.status ?? LikePostStatus.NONE;
+
+
+        const newestLikes = likes
+            .filter(l => l.status === LikePostStatus.LIKE)
+            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+            .slice(0, 3)
+            .map(l => ({
+                addedAt: l.createdAt,
+                userId: l.authorId,
+                login: l.authorId
+            }));
+
+        const postForOutput: PostViewModel = {
+            id: new ObjectId(post._id).toString(),
+            title: post.title,
+            shortDescription: post.shortDescription,
+            content: post.content,
+            blogId: post.blogId,
+            blogName: post.blogName,
+            createdAt: post.createdAt,
+            extendedLikesInfo: {
+                likesCount,
+                dislikesCount,
+                myStatus,
+                newestLikes: newestLikes.length > 0 ? newestLikes : []
+            }
+        };
+
+        return postForOutput;
     }
     protected _mapPostBlog(post: BlogPostViewModel): BlogPostViewModel {
         return {

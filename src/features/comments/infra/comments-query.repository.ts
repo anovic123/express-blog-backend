@@ -2,7 +2,7 @@ import "reflect-metadata"
 import { injectable } from "inversify";
 
 import { CommentDBType, CommentModel } from "../domain/comment.entity";
-import { LikeDBType, LikeModel, LikeStatus } from "../domain/like.entity";
+import { LikeCommentDBType, LikeCommentModel, LikeCommentStatus } from "../domain/like.entity";
 
 import { UserAccountDBType } from "../../auth/domain/auth.entity";
 
@@ -16,7 +16,7 @@ export class CommentsQueryRepository {
 
             if (!comment) return null;
 
-            const likes = await LikeModel.find({ commentId: id });
+            const likes = await LikeCommentModel.find({ commentId: id });
             const userLike = userId ? likes.find(like => like.authorId === userId) : null;
             return this.mapPostCommentsOutput(comment, likes, userLike);
         } catch (error) {
@@ -38,10 +38,10 @@ export class CommentsQueryRepository {
         }
     }
 
-    public mapPostCommentsOutput(comment: CommentDBType, likes: LikeDBType[] = [], userLike: LikeDBType | null = null): CommentViewModel {
-        const likesCount = likes.filter(l => l.status === LikeStatus.LIKE).length;
-        const dislikesCount = likes.filter(l => l.status === LikeStatus.DISLIKE).length;
-        const myStatus = userLike?.status ?? LikeStatus.NONE;
+    public mapPostCommentsOutput(comment: CommentDBType, likes: LikeCommentDBType[] = [], userLike: LikeCommentDBType | null = null): CommentViewModel {
+        const likesCount = likes.filter(l => l.status === LikeCommentStatus.LIKE).length;
+        const dislikesCount = likes.filter(l => l.status === LikeCommentStatus.DISLIKE).length;
+        const myStatus = userLike?.status ?? LikeCommentStatus.NONE;
 
         return {
             id: comment.id,

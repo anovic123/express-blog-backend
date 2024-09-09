@@ -1,19 +1,20 @@
-import { inject, injectable } from 'inversify';
-import { Types } from 'mongoose';
+import {inject, injectable} from 'inversify';
+import {Types} from 'mongoose';
 
-import { UserAccountDBType } from "../../auth/domain/auth.entity";
+import {UserAccountDBType} from "../../auth/domain/auth.entity";
 
 import {PostsRepository} from "../infra/posts.repository";
 import {PostsQueryRepository} from "../infra/posts-query.repository";
-import { BlogsRepository } from '../../blogs/infra/blogs.repository';
-import { CommentsQueryRepository } from '../../comments/infra/comments-query.repository';
+import {BlogsRepository} from '../../blogs/infra/blogs.repository';
+import {CommentsQueryRepository} from '../../comments/infra/comments-query.repository';
 
 import {PostInputModel} from "../dto/input";
-import {PostViewModel} from "../dto/output";
+import {PostLikesViewModel, PostViewModel} from "../dto/output";
 
 import {CommentViewModel} from "../../comments/dto/output";
 
-import { PostDbType } from "../domain/post.entity";
+import {PostDbType} from "../domain/post.entity";
+import {LikePostStatus} from "../domain/post-like.entity";
 
 interface NewPost extends Omit<PostDbType, '_id'> {
     _id: Types.ObjectId;
@@ -47,7 +48,7 @@ export class PostsService {
         const createdPost = await this.postsRepository.createPost(newPost);
         if (!createdPost) return null;
 
-        return this.mapPostOutput(newPost);
+        return this.postsRepository.mapPostOutput(newPost);
     }
 
     public async createPostComment(postId: string, content: string, user: UserAccountDBType): Promise<CommentViewModel> {
@@ -74,15 +75,42 @@ export class PostsService {
         return await this.postsRepository.putPost(body, id);
     }
 
-    protected mapPostOutput(post: NewPost): PostViewModel {
-        return {
-            id: post._id.toString(),
-            title: post.title,
-            shortDescription: post.shortDescription,
-            content: post.content,
-            blogId: post.blogId,
-            blogName: post.blogName,
-            createdAt: post.createdAt,
-        };
+    public async likePost(
+        postId: string,
+        likesInfo: PostLikesViewModel | null,
+        likesStatus: LikePostStatus,
+        userId: string | undefined,
+        userLogin: string
+    ): Promise<boolean> {
+        if (!userId) return false;
+        console.log('likesInfo', likesInfo)
+        console.log('likesStatus', likesStatus)
+        console.log('userLogin', userLogin)
+        if (likesInfo?.myStatus === likesStatus && likesInfo?.myStatus !== LikePostStatus.NONE) {
+            return false;
+        }
+
+        switch (likesStatus) {
+            case LikePostStatus.NONE:
+                if (likesInfo?.myStatus === LikePostStatus.DISLIKE || likesInfo?.myStatus === LikePostStatus.LIKE) {
+                    console.log(123)
+                    await this.postsRepository.noneStatusPost(userId, postId, userLogin);
+                } else if (likesInfo?.myStatus === LikePostStatus.NONE) {
+                    console.log(1234)
+                    await this.postsRepository.likePost(userId, postId, userLogin);
+                }
+
+                break;
+            case LikePostStatus.LIKE:
+                await this.postsRepository.likePost(userId, postId, userLogin);
+                break;
+            case LikePostStatus.DISLIKE:
+                await this.postsRepository.dislikePost(userId, postId, userLogin);
+                break;
+            default:
+                return false;
+        }
+
+        return true;
     }
 };
