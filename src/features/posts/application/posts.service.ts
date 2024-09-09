@@ -83,7 +83,7 @@ export class PostsService {
         userLogin: string
     ): Promise<boolean> {
         if (!userId) return false;
-        if (likesInfo?.myStatus === likesStatus && likesInfo?.myStatus !== LikePostStatus.NONE) {
+        if (likesInfo?.myStatus === likesStatus) {
             return false;
         }
         switch (likesStatus) {
