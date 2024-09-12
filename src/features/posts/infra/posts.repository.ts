@@ -182,20 +182,16 @@ export class PostsRepository {
     
         const userLike = userId ? likes.find(like => like.authorId === userId) : null;
     
-        const likesCount = likes.filter(l => l.status === LikePostStatus.LIKE).length;
-        const dislikesCount = likes.filter(l => l.status === LikePostStatus.DISLIKE).length;
+        const likesCount = likes.filter(l => l.status === LikePostStatus.LIKE).length ?? 0;
+        const dislikesCount = likes.filter(l => l.status === LikePostStatus.DISLIKE).length ?? 0;
         const myStatus = userLike?.status ?? LikePostStatus.NONE;
-    
-        const formatDate = (date: Date | string): string => {
-            return new Date(date).toISOString();
-        };
 
         const newestLikes = likes
             .filter(l => l.status === LikePostStatus.LIKE)
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
             .slice(0, 3)
             .map(l => ({
-                addedAt: formatDate(l.createdAt),
+                addedAt: l.createdAt,
                 userId: l.authorId,
                 login: l.login
             }));

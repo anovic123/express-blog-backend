@@ -12,7 +12,7 @@ import { LikeCommentModel, LikeCommentStatus } from "../../comments/domain/like.
 
 import {BlogViewModel} from "../../blogs/dto/output";
 import {PostViewModel} from "../dto/output";
-import {LikePostDBType, LikePostModel, LikePostStatus} from "../domain/post-like.entity";
+import {LikePostModel, LikePostStatus} from "../domain/post-like.entity";
 
 interface PostDocument extends PostDbType, Document {
     _id: Types.ObjectId;
@@ -136,16 +136,12 @@ export class PostsQueryRepository {
         const dislikesCount = likes.filter(l => l.status === LikePostStatus.DISLIKE).length ?? 0;
         const myStatus = userLike?.status ?? LikePostStatus.NONE;
 
-        const formatDate = (date: Date | string): string => {
-            return new Date(date).toISOString();
-        };
-
         const newestLikes = likes
             .filter(l => l.status === LikePostStatus.LIKE)
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
             .slice(0, 3)
             .map(l => ({
-                addedAt: formatDate(l.createdAt),
+                addedAt: l.createdAt,
                 userId: l.authorId,
                 login: l.login
             }));
@@ -157,7 +153,7 @@ export class PostsQueryRepository {
             content: post.content,
             blogId: post.blogId,
             blogName: post.blogName,
-            createdAt: formatDate(post.createdAt),
+            createdAt: post.createdAt,
             extendedLikesInfo: {
                 likesCount,
                 dislikesCount,

@@ -105,13 +105,9 @@ export class BlogsQueryRepository {
         likes: LikePostDBType[] = [],
         userLike: LikePostDBType | null = null
     ): PostViewModel {
-        const likesCount = likes.filter(l => l.status === LikePostStatus.LIKE).length;
-        const dislikesCount = likes.filter(l => l.status === LikePostStatus.DISLIKE).length;
+        const likesCount = likes.filter(l => l.status === LikePostStatus.LIKE).length ?? 0;
+        const dislikesCount = likes.filter(l => l.status === LikePostStatus.DISLIKE).length ?? 0;
         const myStatus = userLike?.status ?? LikePostStatus.NONE;
-    
-        const formatDate = (date: Date | string): Date => {
-            return date instanceof Date ? date : new Date(date); 
-        };
     
         const newestLikes = likes
             .filter(l => l.status === LikePostStatus.LIKE)
