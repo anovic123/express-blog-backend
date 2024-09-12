@@ -8,7 +8,7 @@ export enum LikePostStatus {
 }
 
 export type LikePostDBType = {
-    createdAt: Date,
+    createdAt: string,
     status: LikePostStatus,
     authorId: string,
     commentId: string,
@@ -21,7 +21,7 @@ type LikePostModel = Model<LikePostDBType>
 export type LikePostDocument = HydratedDocument<LikePostDBType>
 
 const likePostSchema = new mongoose.Schema<LikePostDBType>({
-    createdAt: { type: Date, required: true, default: new Date() },
+    createdAt: { type: String, required: true },
     status: { type: String, enum: LikePostStatus, required: true },
     authorId: { type: String, required: true},
     postId: { type: String, required: true },

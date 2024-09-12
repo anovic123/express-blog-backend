@@ -1,1 +1,1 @@
-// comments repository / removeLike - fix status like
+// В лайках брать три первых

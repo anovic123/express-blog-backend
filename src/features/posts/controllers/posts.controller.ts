@@ -88,9 +88,11 @@ export class PostsController {
 
   public async findPost (req: RequestWithParams<{id: PostViewModel['id']}>, res: Response<PostViewModel | {}>) {
     try {
-        const accessToken = req.cookies['refreshToken'];
-          
-        const accessTokenUserId = await this.jwtService.getUserIdByToken(accessToken!);
+        const accessToken = req.headers.authorization?.split(' ')[1];
+        let accessTokenUserId
+        if (accessToken) {
+            accessTokenUserId = await this.jwtService.getUserIdByToken(accessToken!);
+        }
 
         const blogById = await this.postsQueryRepository.getMappedPostById(req.params.id, accessTokenUserId)
 
@@ -125,10 +127,14 @@ export class PostsController {
 
   public async getPosts (req: RequestWithQueryAndParams<GetAllPostsHelperResult, { id: PostViewModel['id'] }>, res: Response<any>) {
     try {
-        const accessToken = req.cookies['refreshToken'];
-          
-        const accessTokenUserId = await this.jwtService.getUserIdByToken(accessToken!);
+        const accessToken = req.headers.authorization?.split(' ')[1];
+        let accessTokenUserId
+        if (accessToken) {
+            accessTokenUserId = await this.jwtService.getUserIdByToken(accessToken!);
+        }
+
         const posts = await this.postsQueryRepository.getAllPosts(req.query, req.params.id, accessTokenUserId)
+        console.log("🚀 ~ PostsController ~ getPosts ~ posts:", posts)
         res.status(HTTP_STATUSES.OKK_200).json(posts)
     } catch (error) {
         console.error('getPostsController', error)

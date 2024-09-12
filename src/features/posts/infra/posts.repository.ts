@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { Types } from 'mongoose';
+import {ObjectId, WithId} from "mongodb";
 
 import {PostDbType, PostModel} from "../domain/post.entity";
 import {CommentDBType, CommentModel} from "../../comments/domain/comment.entity";
@@ -10,8 +11,8 @@ import {PostViewModel} from "../dto/output";
 import {PostInputModel} from "../dto/input";
 
 import { BlogsRepository } from '../../blogs/infra/blogs.repository';
-import {ObjectId, WithId} from "mongodb";
-import {LikePostDBType, LikePostModel, LikePostStatus} from "../domain/post-like.entity";
+
+import { LikePostModel, LikePostStatus} from "../domain/post-like.entity";
 
 @injectable()
 export class PostsRepository {
@@ -115,7 +116,7 @@ export class PostsRepository {
                 {
                     status: LikePostStatus.LIKE,
                     postId,
-                    updatedAt: new Date(),
+                    createdAt: new Date(),
                     login: userLogin
                 },
                 {
@@ -138,7 +139,7 @@ export class PostsRepository {
                 {
                     status: LikePostStatus.DISLIKE,
                     postId,
-                    updatedAt: new Date(),
+                    createdAt: new Date(),
                     login: userLogin
                 },
                 {
@@ -161,7 +162,7 @@ export class PostsRepository {
             }, {
                 status: LikePostStatus.NONE,
                 postId,
-                updatedAt: new Date(),
+                createdAt: new Date(),
                 login: userLogin
             }, {
                 upsert: true,
@@ -176,27 +177,29 @@ export class PostsRepository {
         }
     }
 
-
     public async mapPostOutput(post: WithId<PostDbType>, userId?: string | null | undefined): Promise<PostViewModel> {
-
         const likes = await LikePostModel.find({ postId: new Types.ObjectId(post._id).toString() });
+    
         const userLike = userId ? likes.find(like => like.authorId === userId) : null;
-
+    
         const likesCount = likes.filter(l => l.status === LikePostStatus.LIKE).length;
         const dislikesCount = likes.filter(l => l.status === LikePostStatus.DISLIKE).length;
         const myStatus = userLike?.status ?? LikePostStatus.NONE;
-
+    
+        const formatDate = (date: Date | string): string => {
+            return new Date(date).toISOString();
+        };
 
         const newestLikes = likes
             .filter(l => l.status === LikePostStatus.LIKE)
-            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
             .slice(0, 3)
             .map(l => ({
-                addedAt: l.createdAt,
+                addedAt: formatDate(l.createdAt),
                 userId: l.authorId,
-                login: l.authorId
+                login: l.login
             }));
-
+    
         const postForOutput: PostViewModel = {
             id: new ObjectId(post._id).toString(),
             title: post.title,
@@ -212,7 +215,17 @@ export class PostsRepository {
                 newestLikes: newestLikes.length > 0 ? newestLikes : []
             }
         };
-
+    
         return postForOutput;
+    }    
+
+    public async removeAllPostsLikes(): Promise<boolean> {
+        try {
+            await LikePostModel.deleteMany({})
+
+            return true
+        } catch (error) {
+            return false
+        }
     }
 };

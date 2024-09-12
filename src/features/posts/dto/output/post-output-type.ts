@@ -16,7 +16,7 @@ export type PostLikesViewModel = {
     dislikesCount: number,
     myStatus: LikePostStatus,
     newestLikes: {
-        addedAt: Date,
+        addedAt: string,
         userId: string,
         login: string
     }[]

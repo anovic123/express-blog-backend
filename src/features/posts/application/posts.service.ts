@@ -88,13 +88,7 @@ export class PostsService {
         }
         switch (likesStatus) {
             case LikePostStatus.NONE:
-                if (likesInfo?.myStatus === LikePostStatus.DISLIKE || likesInfo?.myStatus === LikePostStatus.LIKE) {
-                    await this.postsRepository.noneStatusPost(userId, postId, userLogin);
-                } else if (likesInfo?.myStatus === LikePostStatus.NONE) {
-
-                    await this.postsRepository.likePost(userId, postId, userLogin);
-                }
-
+                await this.postsRepository.noneStatusPost(userId, postId, userLogin);
                 break;
             case LikePostStatus.LIKE:
                 await this.postsRepository.likePost(userId, postId, userLogin);

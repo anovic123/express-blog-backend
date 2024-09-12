@@ -9,7 +9,7 @@ import {PostDbType, PostModel} from "../../posts/domain/post.entity";
 import {getAllBlogsHelper, getAllBlogsHelperResult, getBlogPostsHelper, GetBlogPostsHelperResult} from "../helper";
 
 import {BlogPostViewModel, BlogViewModel} from "../dto/output";
-import {LikePostDBType, LikePostStatus} from "../../posts/domain/post-like.entity";
+import {LikePostDBType, LikePostModel, LikePostStatus} from "../../posts/domain/post-like.entity";
 import {PostViewModel} from "../../posts/dto/output";
 
 @injectable()
@@ -54,7 +54,7 @@ export class BlogsQueryRepository {
         }
 
     }
-    public async getBlogPosts(query: GetBlogPostsHelperResult, blogId: string): Promise<{
+    public async getBlogPosts(query: GetBlogPostsHelperResult, blogId: string, userId: string | null | undefined): Promise<{
         pagesCount: number,
         page: number,
         pageSize: number,
@@ -62,50 +62,64 @@ export class BlogsQueryRepository {
         items: BlogPostViewModel[]
     } | []> {
         const sanitizedQuery = getBlogPostsHelper(query as { [key: string]: string | undefined });
-
+    
         const byId = blogId ? { blogId: new ObjectId(blogId) } : {};
-
+    
         const filter: any = {
             ...byId,
         };
-
+    
         const sortDirection = sanitizedQuery.sortDirection === 'asc' ? 1 : -1;
-
+    
         try {
             const items = await PostModel.find(filter)
                 .sort({ [sanitizedQuery.sortBy]: sortDirection })
                 .skip((sanitizedQuery.pageNumber - 1) * sanitizedQuery.pageSize)
                 .limit(sanitizedQuery.pageSize)
                 .exec();
-
+    
             const totalCount = await PostModel.countDocuments(filter);
-
+    
+            const postIds = items.map((post) => post._id);
+            const likes = await LikePostModel.find({ postId: { $in: postIds } }).exec();
+    
             return {
                 pagesCount: Math.ceil(totalCount / sanitizedQuery.pageSize),
                 page: sanitizedQuery.pageNumber,
                 pageSize: sanitizedQuery.pageSize,
                 totalCount,
-                items: items.map((b: any) => this.mapPostOutput(b))
-            }
+                items: items.map((post: any) => {
+                    const postLikes = likes.filter((like) => like.postId.toString() === post._id.toString());
+                    const userLike = postLikes.find((like) => like.authorId === userId);
+                    return this.mapPostOutput(post, postLikes, userLike);
+                })
+            };
         } catch (error) {
             console.log(error);
             return [];
         }
     }
-    protected mapPostOutput(post: WithId<PostDbType>, likes: LikePostDBType[] = [], userLike: LikePostDBType | null = null): PostViewModel {
+    
+    protected mapPostOutput(
+        post: WithId<PostDbType>,
+        likes: LikePostDBType[] = [],
+        userLike: LikePostDBType | null = null
+    ): PostViewModel {
         const likesCount = likes.filter(l => l.status === LikePostStatus.LIKE).length;
         const dislikesCount = likes.filter(l => l.status === LikePostStatus.DISLIKE).length;
         const myStatus = userLike?.status ?? LikePostStatus.NONE;
-
-
+    
+        const formatDate = (date: Date | string): Date => {
+            return date instanceof Date ? date : new Date(date); 
+        };
+    
         const newestLikes = likes
             .filter(l => l.status === LikePostStatus.LIKE)
-            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
             .slice(0, 3)
             .map(l => ({
                 addedAt: l.createdAt,
                 userId: l.authorId,
-                login: l.authorId
+                login: l.login
             }));
 
         const postForOutput: PostViewModel = {
@@ -117,15 +131,15 @@ export class BlogsQueryRepository {
             blogName: post.blogName,
             createdAt: post.createdAt,
             extendedLikesInfo: {
-                likesCount,
-                dislikesCount,
-                myStatus,
+                likesCount: likesCount || 0,
+                dislikesCount: dislikesCount || 0,
+                myStatus: myStatus,
                 newestLikes: newestLikes.length > 0 ? newestLikes : []
             }
         };
-
+    
         return postForOutput;
-    }
+    }    
     protected _mapPostBlog(post: BlogPostViewModel): BlogPostViewModel {
         return {
             id: post.id,
