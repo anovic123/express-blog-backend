@@ -43,9 +43,10 @@ export class PostsQueryRepository {
         }
 
         const sortDirection = sanitizedQuery.sortDirection === 'asc' ? 1 : -1
+        const sortBy = sanitizedQuery.sortBy || 'createdAt';
 
         try {
-            const items: any = await PostModel.find(filter).sort({ [sanitizedQuery.sortBy]: sortDirection }).skip((sanitizedQuery.pageNumber - 1) * sanitizedQuery.pageSize).limit(sanitizedQuery.pageSize).exec()
+            const items: any = await PostModel.find(filter).sort({ [sortBy]: sortDirection }).skip((sanitizedQuery.pageNumber - 1) * sanitizedQuery.pageSize).limit(sanitizedQuery.pageSize).exec()
 
             const totalCount = await PostModel.countDocuments(filter)
 

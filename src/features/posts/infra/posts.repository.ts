@@ -116,7 +116,7 @@ export class PostsRepository {
                 {
                     status: LikePostStatus.LIKE,
                     postId,
-                    createdAt: new Date(),
+                    createdAt: new Date().toISOString(),
                     login: userLogin
                 },
                 {
@@ -139,7 +139,7 @@ export class PostsRepository {
                 {
                     status: LikePostStatus.DISLIKE,
                     postId,
-                    createdAt: new Date(),
+                    createdAt: new Date().toISOString(),
                     login: userLogin
                 },
                 {

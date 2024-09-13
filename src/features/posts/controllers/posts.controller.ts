@@ -134,7 +134,6 @@ export class PostsController {
         }
 
         const posts = await this.postsQueryRepository.getAllPosts(req.query, req.params.id, accessTokenUserId)
-        console.log("🚀 ~ PostsController ~ getPosts ~ posts:", posts)
         res.status(HTTP_STATUSES.OKK_200).json(posts)
     } catch (error) {
         console.error('getPostsController', error)

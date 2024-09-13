@@ -1,6 +1,6 @@
 import "reflect-metadata"
 import { injectable } from "inversify";
-import {ObjectId, WithId} from "mongodb";
+import { Types } from "mongoose";
 
 import {BlogDocument, BlogModel} from "../domain/blog.entity";
 
@@ -12,12 +12,16 @@ import {BlogPostViewModel, BlogViewModel} from "../dto/output";
 import {LikePostDBType, LikePostModel, LikePostStatus} from "../../posts/domain/post-like.entity";
 import {PostViewModel} from "../../posts/dto/output";
 
+interface PostDocument extends PostDbType, Document {
+    _id: Types.ObjectId;
+}
+
 @injectable()
 export class BlogsQueryRepository {
     public async getAllBlogs(query: getAllBlogsHelperResult, blogId: BlogViewModel['id']) {
         const sanitizedQuery = getAllBlogsHelper(query as { [key: string]: string | undefined })
 
-        const byId = blogId ? { blogId: new ObjectId(blogId) } : {}
+        const byId = blogId ? { blogId: new Types.ObjectId(blogId) } : {}
         const search = sanitizedQuery.searchNameTerm ? { name: { $regex: sanitizedQuery.searchNameTerm, $options: "i" } } : {}
 
         const filter: any = {
@@ -45,7 +49,7 @@ export class BlogsQueryRepository {
     }
     public async findBlog(id: BlogViewModel['id']): Promise<BlogViewModel | null> {
         try {
-            const res = await BlogModel.findOne({ _id: new ObjectId(id) });
+            const res = await BlogModel.findOne({ _id: new Types.ObjectId(id) });
             if (!res) return null
             return this._mapBlog(res)
         } catch (error) {
@@ -63,54 +67,57 @@ export class BlogsQueryRepository {
     } | []> {
         const sanitizedQuery = getBlogPostsHelper(query as { [key: string]: string | undefined });
     
-        const byId = blogId ? { blogId: new ObjectId(blogId) } : {};
+        const byId = blogId ? { blogId: new Types.ObjectId(blogId) } : {};
     
         const filter: any = {
             ...byId,
         };
     
         const sortDirection = sanitizedQuery.sortDirection === 'asc' ? 1 : -1;
+        const sortBy = sanitizedQuery.sortBy || 'createdAt';
     
         try {
             const items = await PostModel.find(filter)
-                .sort({ [sanitizedQuery.sortBy]: sortDirection })
+                .sort({ [sortBy]: sortDirection })
                 .skip((sanitizedQuery.pageNumber - 1) * sanitizedQuery.pageSize)
                 .limit(sanitizedQuery.pageSize)
                 .exec();
     
             const totalCount = await PostModel.countDocuments(filter);
     
-            const postIds = items.map((post) => post._id);
-            const likes = await LikePostModel.find({ postId: { $in: postIds } }).exec();
+            const mappedItems = await Promise.all(items.map((i: any) => this.mapPostOutput(i, userId)));
     
             return {
-                pagesCount: Math.ceil(totalCount / sanitizedQuery.pageSize),
+                pagesCount: Math.ceil(totalCount / (query.pageSize ?? 10)),
                 page: sanitizedQuery.pageNumber,
                 pageSize: sanitizedQuery.pageSize,
                 totalCount,
-                items: items.map((post: any) => {
-                    const postLikes = likes.filter((like) => like.postId.toString() === post._id.toString());
-                    const userLike = postLikes.find((like) => like.authorId === userId);
-                    return this.mapPostOutput(post, postLikes, userLike);
-                })
-            };
+                items: mappedItems
+            }
         } catch (error) {
             console.log(error);
-            return [];
+            return {
+                pagesCount: 0,
+                page: sanitizedQuery.pageNumber,
+                pageSize: sanitizedQuery.pageSize,
+                totalCount: 0,
+                items: []
+            };
         }
     }
     
-    protected mapPostOutput(
-        post: WithId<PostDbType>,
-        likes: LikePostDBType[] = [],
-        userLike: LikePostDBType | null = null
-    ): PostViewModel {
+    public async mapPostOutput(post: PostDocument, userId?: string | null | undefined): Promise<PostViewModel> {
+        const likes = await LikePostModel.find({ postId: new Types.ObjectId(post._id).toString() });
+
+        const userLike = userId ? likes.find(like => like.authorId === userId) : null;
+
         const likesCount = likes.filter(l => l.status === LikePostStatus.LIKE).length ?? 0;
         const dislikesCount = likes.filter(l => l.status === LikePostStatus.DISLIKE).length ?? 0;
         const myStatus = userLike?.status ?? LikePostStatus.NONE;
-    
+
         const newestLikes = likes
             .filter(l => l.status === LikePostStatus.LIKE)
+            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
             .slice(0, 3)
             .map(l => ({
                 addedAt: l.createdAt,
@@ -119,7 +126,7 @@ export class BlogsQueryRepository {
             }));
 
         const postForOutput: PostViewModel = {
-            id: new ObjectId(post._id).toString(),
+            id: new Types.ObjectId(post._id).toString(),
             title: post.title,
             shortDescription: post.shortDescription,
             content: post.content,
@@ -127,25 +134,14 @@ export class BlogsQueryRepository {
             blogName: post.blogName,
             createdAt: post.createdAt,
             extendedLikesInfo: {
-                likesCount: likesCount || 0,
-                dislikesCount: dislikesCount || 0,
-                myStatus: myStatus,
+                likesCount,
+                dislikesCount,
+                myStatus,
                 newestLikes: newestLikes.length > 0 ? newestLikes : []
             }
         };
-    
+
         return postForOutput;
-    }    
-    protected _mapPostBlog(post: BlogPostViewModel): BlogPostViewModel {
-        return {
-            id: post.id,
-            title: post.title,
-            shortDescription: post.shortDescription,
-            content: post.content,
-            blogId: post.blogId,
-            blogName: post.blogName,
-            createdAt: post.createdAt,
-        }
     }
     protected _mapBlog(blog: BlogDocument) {
         const blogForOutput: BlogViewModel = {

@@ -107,7 +107,6 @@ export class BlogsController {
         }
 
         const posts = await this.blogsQueryRepository.getBlogPosts(req.query, req.params.blogId, accessTokenUserId)
-        console.log("🚀 ~ BlogsController ~ getBlogPosts ~ posts:", posts)
         res.status(HTTP_STATUSES.OKK_200).json(posts)
     } catch (error) {
         console.error('getBlogPostsController', error)

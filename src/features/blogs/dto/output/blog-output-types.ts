@@ -1,3 +1,5 @@
+import { PostLikesViewModel } from "../../../posts/dto/output"
+
 export type BlogPostViewModel = {
     id: string
     title: string
@@ -5,7 +7,8 @@ export type BlogPostViewModel = {
     content: string
     blogId: string
     blogName: string
-    createdAt: string
+    createdAt: string,
+    extendedLikesInfo: PostLikesViewModel
 }
 
 export type BlogViewModel = {
