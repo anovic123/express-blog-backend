@@ -39,8 +39,8 @@ export class CommentsQueryRepository {
     }
 
     public mapPostCommentsOutput(comment: CommentDBType, likes: LikeCommentDBType[] = [], userLike: LikeCommentDBType | null = null): CommentViewModel {
-        const likesCount = likes.filter(l => l.status === LikeCommentStatus.LIKE).length;
-        const dislikesCount = likes.filter(l => l.status === LikeCommentStatus.DISLIKE).length;
+        const likesCount = likes.filter(l => l.status === LikeCommentStatus.LIKE).length ?? 0;
+        const dislikesCount = likes.filter(l => l.status === LikeCommentStatus.DISLIKE).length ?? 0;
         const myStatus = userLike?.status ?? LikeCommentStatus.NONE;
 
         return {

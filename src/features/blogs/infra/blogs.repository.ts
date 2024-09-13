@@ -6,6 +6,7 @@ import {PostDbType, PostModel} from "../../posts/domain/post.entity";
 
 import {BlogInputModel, BlogPostInputModel} from "../dto/input";
 import {BlogPostViewModel, BlogViewModel} from "../dto/output";
+import { LikePostStatus } from '../../posts/domain/post-like.entity';
 
 interface PostDocument extends PostDbType, Document {
     _id: Types.ObjectId;
@@ -92,13 +93,13 @@ export class BlogsRepository {
 
             const savedPost = await newPost.save();
 
-            return this.mapPostBlog(savedPost.toObject());
+            return this.mapNewPostBlog(savedPost.toObject());
         } catch (error) {
             console.error(`createPostBlog blogId: ${blogId}`, error);
             return null;
         }
     }
-    public mapPostBlog(post: PostDocument): BlogPostViewModel {
+    public mapNewPostBlog(post: PostDocument): BlogPostViewModel {
         return {
             id: post._id.toString(),
             title: post.title,
@@ -107,6 +108,12 @@ export class BlogsRepository {
             blogId: post.blogId,
             blogName: post.blogName,
             createdAt: post.createdAt,
+            extendedLikesInfo: {
+                dislikesCount: 0,
+                likesCount: 0,
+                myStatus: LikePostStatus.NONE,
+                newestLikes: []
+            }
         };
     }
     public mapBlog(blog: BlogDocument): BlogViewModel {

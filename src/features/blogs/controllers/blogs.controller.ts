@@ -14,12 +14,14 @@ import { BlogViewModel } from "../dto/output";
 import { BlogInputModel, BlogPostInputModel } from "../dto/input";
 
 import { HTTP_STATUSES } from "../../../utils";
+import { JwtService } from "../../../core/services/jwt.service";
 
 @injectable()
 export class BlogsController {
   constructor(
     @inject(BlogsQueryRepository) protected blogsQueryRepository: BlogsQueryRepository,
-    @inject(BlogsService) protected blogsService: BlogsService
+    @inject(BlogsService) protected blogsService: BlogsService,
+    @inject(JwtService) protected jwtService: JwtService
   ) {}
 
   public async createBlogsPost (req: RequestWithParamsAndBody<{ blogId: string }, BlogPostInputModel>, res: Response<BlogPostInputModel | null>) {
@@ -98,8 +100,14 @@ export class BlogsController {
 
   public async getBlogPosts (req: RequestWithQueryAndParams<GetBlogPostsHelperResult, { blogId: string }>, res: Response) {
     try {
-        const posts = await this.blogsQueryRepository.getBlogPosts(req.query, req.params.blogId)
-        res.status(200).json(posts)
+        const accessToken = req.headers.authorization?.split(' ')[1];
+        let accessTokenUserId
+        if (accessToken) {
+            accessTokenUserId = await this.jwtService.getUserIdByToken(accessToken!);
+        }
+
+        const posts = await this.blogsQueryRepository.getBlogPosts(req.query, req.params.blogId, accessTokenUserId)
+        res.status(HTTP_STATUSES.OKK_200).json(posts)
     } catch (error) {
         console.error('getBlogPostsController', error)
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR_500)

@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import {NextFunction, Response} from "express";
 
 import {body} from "express-validator";
@@ -14,7 +15,7 @@ import { LikePostStatus } from "../domain/post-like.entity";
 export const contentCommentValidator = body('content').isString().trim().isLength({ min: 20, max: 300 })
 
 export const findPostsValidator = async (req: RequestUserStatusPostModelWithParams<{ postId: string }>, res: Response, next: NextFunction) => {
-    const post = await postsQueryRepository.findPostsAndMap(req.params.postId)
+    const post = await postsQueryRepository.findPostsAndMap(req.params.postId, new Types.ObjectId(req?.user?._id).toString())
     if (!post) {
         res
             .sendStatus(404)

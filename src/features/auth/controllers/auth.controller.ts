@@ -142,7 +142,6 @@ export class AuthController {
             .header('Authorization', accessToken)
             .send({ accessToken })
     } catch (error) {
-        console.log('refreshTokenController', error)
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR_500)
     }
   }

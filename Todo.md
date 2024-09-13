@@ -1,1 +1,3 @@
-// comments repository / removeLike - fix status like
+// В лайках брать три первых
+// Статус у лайков не отображается!
+// Created_at не верный формат у времени

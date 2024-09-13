@@ -28,6 +28,7 @@ export class TestingService {
                 this.commentsRepository.deleteAll(),
                 this.rateLimitRepository.deleteAll(),
                 this.securityRepository.deleteAll(),
+                this.postsRepository.removeAllPostsLikes()
             ]);
             return true;
         } catch (error) {

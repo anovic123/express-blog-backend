@@ -67,7 +67,7 @@ export class SecurityController {
 
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     }  catch (error) {
-        console.log('deleteDeviceByIdController', error)
+        console.error('deleteDeviceByIdController', error)
         res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR_500)
     }
   }
