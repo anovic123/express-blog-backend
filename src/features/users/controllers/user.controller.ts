@@ -54,9 +54,12 @@ export class UsersController {
     const userId = req.params.id
 
     try {
-        const user = await this.usersService.findUserById(userId)
-      
-        await this.usersService.deleteUser(userId)
+        const result = await this.usersService.deleteUser(userId)
+        
+        if (!result) {
+          res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
+          return
+        }
 
         res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
     } catch (error) {

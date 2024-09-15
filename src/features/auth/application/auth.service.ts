@@ -43,7 +43,7 @@ export class AuthService {
                 isConfirmed: false
             }
         }
-        const createdResult = this.usersRepository.createUser(user)
+        const createdResult = await this.usersRepository.createUser(user)
         try {
             await this.emailsManager.sendConfirmationMessage({
                 email: user.accountData.email,
