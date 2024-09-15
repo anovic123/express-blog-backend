@@ -6,7 +6,7 @@ import {BlogDocument, BlogModel} from "../domain/blog.entity";
 
 import {PostDbType, PostModel} from "../../posts/domain/post.entity";
 
-import {getAllBlogsHelper, getAllBlogsHelperResult, getBlogPostsHelper, GetBlogPostsHelperResult} from "../helper";
+import {getAllBlogsHelper, GetAllBlogsHelperResult, getBlogPostsHelper, GetBlogPostsHelperResult} from "../helper";
 
 import {BlogPostViewModel, BlogViewModel} from "../dto/output";
 import {LikePostDBType, LikePostModel, LikePostStatus} from "../../posts/domain/post-like.entity";
@@ -18,7 +18,7 @@ interface PostDocument extends PostDbType, Document {
 
 @injectable()
 export class BlogsQueryRepository {
-    public async getAllBlogs(query: getAllBlogsHelperResult, blogId: BlogViewModel['id']) {
+    public async getAllBlogs(query: GetAllBlogsHelperResult, blogId: BlogViewModel['id']) {
         const sanitizedQuery = getAllBlogsHelper(query as { [key: string]: string | undefined })
 
         const byId = blogId ? { blogId: new Types.ObjectId(blogId) } : {}

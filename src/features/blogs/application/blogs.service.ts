@@ -2,14 +2,13 @@ import "reflect-metadata"
 import { inject, injectable } from "inversify";
 
 import {BlogsRepository} from "../infra/blogs.repository";
-import {BlogsQueryRepository} from "../infra/blogs-query.repository";
 
 import {BlogInputModel, BlogPostInputModel} from "../dto/input";
 import {BlogPostViewModel, BlogViewModel} from "../dto/output";
 
 @injectable()
 export class BlogsService {
-    constructor(@inject(BlogsRepository) protected blogsRepository: BlogsRepository, @inject(BlogsQueryRepository) protected blogsQueryRepository: BlogsQueryRepository) {}
+    constructor(@inject(BlogsRepository) protected blogsRepository: BlogsRepository) {}
 
     public async createBlog(blog: BlogInputModel): Promise<BlogViewModel | null> {
         return await this.blogsRepository.create(blog)
